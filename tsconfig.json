@@ -13,7 +13,8 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
-    "module": "preserve"
+    "module": "preserve",
+    "noEmit": false // TODO: changed to avoid outDir error in tsconfig.app.json and tsconfig.spec.json, check later
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

@@ -1,1 +1,39 @@
-/* You can add global styles to this file, and also import other style files */
+/* styles.css — global styles */
+
+/* ── Fonts ────────────────────────────────────────────────────────────────────
+   To change fonts: update APP_THEME in theme.config.ts AND swap this @import.
+   ─────────────────────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap');
+
+/* ── Reset ──────────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-body, 'DM Sans', system-ui, sans-serif);
+  font-size: 16px;
+  line-height: 1.6;
+  color: #111827;
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── CSS custom properties (defaults — overridden at runtime by login-page) ── */
+
+:root {
+  --color-primary: #2563EB;
+  --color-primary-hover: #1D4ED8;
+  --font-heading: 'DM Serif Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
