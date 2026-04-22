@@ -1,0 +1,107 @@
+/* register-page.component.css */
+
+.register-page {
+  display: grid;
+  grid-template-columns: 1fr 380px; /* hero fills left, form fixed right — opposite of login */
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .register-page {
+    grid-template-columns: 1fr; /* form takes full width on mobile */
+  }
+}
+
+/* Right: form panel */
+
+.panel--form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  padding: 3rem 2rem;
+  position: relative;
+  z-index: 1;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.06); /* shadow flipped vs login */
+}
+
+.panel__inner {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  animation: slideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Left: hero panel */
+
+.panel--hero {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: flex-start; /* quote sits at the top — matches reference design */
+  padding: 3rem;
+  order: -1; /* always renders before form regardless of DOM order */
+}
+
+@media (max-width: 768px) {
+  .panel--hero {
+    display: none;
+  }
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* Quote block */
+
+.hero-quote {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  max-width: 420px;
+  animation: fadeIn 0.7s 0.3s ease both;
+}
+
+.hero-quote__text {
+  font-family: var(--font-heading);
+  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+  font-weight: 400;
+  color: #fff;
+  line-height: 1.45;
+  margin: 0 0 0.75rem;
+}
+
+.hero-quote__author {
+  display: block;
+  font-style: normal;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.01em;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,28 @@
+<div class="register-page">
+
+  <!-- Left panel: hero image (mirrored from login) -->
+  <section
+    class="panel panel--hero"
+    [style.background-image]="'url(' + theme.heroImageUrl + ')'"
+    aria-hidden="true"
+  >
+    <div class="hero-overlay" [style.background]="theme.heroOverlay"></div>
+
+    @if (theme.heroQuote) {
+      <blockquote class="hero-quote">
+        <p class="hero-quote__text">{{ theme.heroQuote }}</p>
+        @if (theme.heroQuoteAuthor) {
+          <cite class="hero-quote__author">{{ theme.heroQuoteAuthor }}</cite>
+        }
+      </blockquote>
+    }
+  </section>
+
+  <!-- Right panel: register form -->
+  <section class="panel panel--form" aria-label="Register form">
+    <div class="panel__inner">
+      <app-register-form (registerSuccess)="onRegisterSuccess()" />
+    </div>
+  </section>
+
+</div>

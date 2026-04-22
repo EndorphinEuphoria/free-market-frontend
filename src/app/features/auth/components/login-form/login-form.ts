@@ -6,11 +6,12 @@ import {
   ReactiveFormsModule,
   AbstractControl 
 } from '@angular/forms'
-import { Auth, LoginCredentials } from '../../../../core/services/auth' 
+import { Auth, LoginCredentials } from '../../../../core/services/auth'
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login-form',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './login-form.html',
   styleUrl: './login-form.css',
 })
