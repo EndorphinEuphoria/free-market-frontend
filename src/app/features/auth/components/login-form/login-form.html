@@ -1,15 +1,14 @@
-<form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+<form class="login-form w-100" [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate style="max-width: 320px;">
 
-  <div class="form-header">
+  <div class="mb-3">
     <h1 class="form-title">Log In</h1>
   </div>
 
   <!-- Email -->
-  <div class="field" [class.field--error]="email.invalid && email.touched">
-    <div class="input-wrapper">
+  <div class="mb-3">
+    <div class="input-wrapper" [class.is-invalid-wrapper]="email.invalid && email.touched">
       <svg class="input-icon" viewBox="0 0 20 20" fill="none">
-        <path d="M2.5 6.667A1.667 1.667 0 0 1 4.167 5h11.666A1.667 1.667 0 0 1 17.5 6.667v6.666A1.667 1.667 0 0 1 15.833 15H4.167A1.667 1.667 0 0 1 2.5 13.333V6.667Z"
-          stroke="currentColor" stroke-width="1.25"/>
+        <path d="M2.5 6.667A1.667 1.667 0 0 1 4.167 5h11.666A1.667 1.667 0 0 1 17.5 6.667v6.666A1.667 1.667 0 0 1 15.833 15H4.167A1.667 1.667 0 0 1 2.5 13.333V6.667Z" stroke="currentColor" stroke-width="1.25"/>
         <path d="m2.5 6.667 7.5 5 7.5-5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
       </svg>
       <input
@@ -18,19 +17,19 @@
         formControlName="email"
         placeholder="Your email"
         autocomplete="email"
-        class="input"
+        class="custom-input"
       />
     </div>
     @if (email.touched && email.hasError('required')) {
-      <span class="field__error">Email is required</span>
+      <div class="invalid-feedback d-block">Email is required</div>
     } @else if (email.touched && email.hasError('email')) {
-      <span class="field__error">Enter a valid email address</span>
+      <div class="invalid-feedback d-block">Enter a valid email address</div>
     }
   </div>
 
   <!-- Password -->
-  <div class="field" [class.field--error]="password.invalid && password.touched">
-    <div class="input-wrapper">
+  <div class="mb-3">
+    <div class="input-wrapper" [class.is-invalid-wrapper]="password.invalid && password.touched">
       <svg class="input-icon" viewBox="0 0 20 20" fill="none">
         <rect x="4" y="9" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.25"/>
         <path d="M7 9V6.5a3 3 0 0 1 6 0V9" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
@@ -41,9 +40,10 @@
         formControlName="password"
         placeholder="Password"
         autocomplete="current-password"
-        class="input"
+        class="custom-input"
       />
-      <button type="button" class="toggle-password" (click)="togglePassword()" [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'">
+      <button type="button" class="toggle-password" (click)="togglePassword()"
+        [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'">
         @if (showPassword()) {
           <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
             <path d="M2 10s3-5 8-5 8 5 8 5-3 5-8 5-8-5-8-5Z" stroke="currentColor" stroke-width="1.25"/>
@@ -59,21 +59,22 @@
       </button>
     </div>
     @if (password.touched && password.hasError('required')) {
-      <span class="field__error">Password is required</span>
+      <div class="invalid-feedback d-block">Password is required</div>
     } @else if (password.touched && password.hasError('minlength')) {
-      <span class="field__error">At least 6 characters required</span>
+      <div class="invalid-feedback d-block">At least 6 characters required</div>
     }
   </div>
 
   <!-- Server error -->
   @if (serverError()) {
-    <div class="server-error" role="alert">{{ serverError() }}</div>
+    <div class="alert alert-danger py-2 px-3 small" role="alert">{{ serverError() }}</div>
   }
 
   <!-- Submit -->
-  <button type="submit" class="btn-primary" [disabled]="isLoading()" [class.btn-primary--loading]="isLoading()">
+  <button type="submit" class="btn btn-primary w-100 mt-1 d-flex align-items-center justify-content-center gap-2"
+    [disabled]="isLoading()">
     @if (isLoading()) {
-      <span class="spinner" aria-hidden="true"></span>
+      <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
       Signing in…
     } @else {
       Log In
@@ -81,38 +82,43 @@
   </button>
 
   <!-- Forgot password -->
-  <div class="form-footer-link">
-    <!-- BACKEND: wire this to your password reset flow -->
-    <a href="#" class="link" (click)="$event.preventDefault()">Forgot password?</a>
+  <div class="text-end mt-2">
+    <!-- BACKEND: wire to your password reset route -->
+    <a href="#" class="brand-link small" (click)="$event.preventDefault()">Forgot password?</a>
   </div>
 
   <!-- Divider -->
-  <div class="divider"><span>or</span></div>
+  <div class="divider my-3"><span class="text-muted small">or</span></div>
 
-  <!-- Social login -->
-  <div class="social-buttons">
-    <button type="button" class="btn-social" (click)="onGoogleLogin()">
-      <svg viewBox="0 0 24 24" width="18" height="18">
-        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09Z" fill="#4285F4"/>
-        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23Z" fill="#34A853"/>
-        <path d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.83Z" fill="#FBBC05"/>
-        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.83c.87-2.6 3.3-4.52 6.16-4.52Z" fill="#EA4335"/>
-      </svg>
-      Google
-    </button>
-    <button type="button" class="btn-social" (click)="onFacebookLogin()">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="#1877F2">
-        <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.269h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073Z"/>
-      </svg>
-      Facebook
-    </button>
+  <!-- Social -->
+  <div class="row g-2">
+    <div class="col">
+      <button type="button" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2 social-btn"
+        (click)="onGoogleLogin()">
+        <svg viewBox="0 0 24 24" width="18" height="18">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09Z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23Z" fill="#34A853"/>
+          <path d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.83Z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.83c.87-2.6 3.3-4.52 6.16-4.52Z" fill="#EA4335"/>
+        </svg>
+        Google
+      </button>
+    </div>
+    <div class="col">
+      <button type="button" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2 social-btn"
+        (click)="onFacebookLogin()">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="#1877F2">
+          <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.269h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073Z"/>
+        </svg>
+        Facebook
+      </button>
+    </div>
   </div>
 
   <!-- Sign up link -->
-  <p class="signup-prompt">
+  <p class="text-center text-muted small mt-3 mb-0">
     Don't have an account?
-    <!-- BACKEND: wire routerLink to registration page when ready -->
-    <a routerLink="/register" class="link link--bold">Sign Up</a>
+    <a routerLink="/register" class="brand-link fw-semibold">Sign Up</a>
   </p>
 
 </form>

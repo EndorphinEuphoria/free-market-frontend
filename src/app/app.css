@@ -1,0 +1,22 @@
+/* styles.css - global */
+
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap');
+
+/* Reset mínimo (Bootstrap ya incluye Reboot, esto solo agrega lo que falta) */
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-body, 'DM Sans', system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* CSS custom properties del tema, se sobreescriben en runtime por login/register page */
+:root {
+  --color-primary: #2563EB;
+  --color-primary-hover: #1D4ED8;
+  --font-heading: 'DM Serif Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}

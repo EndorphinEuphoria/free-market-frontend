@@ -1,18 +1,16 @@
-/* register-page.component.css */
+/* register-page.css */
 
 .register-page {
   display: grid;
-  grid-template-columns: 1fr 380px; /* hero fills left, form fixed right — opposite of login */
+  grid-template-columns: 1fr 380px;
   min-height: 100vh;
 }
 
 @media (max-width: 768px) {
   .register-page {
-    grid-template-columns: 1fr; /* form takes full width on mobile */
+    grid-template-columns: 1fr;
   }
 }
-
-/* Right: form panel */
 
 .panel--form {
   display: flex;
@@ -22,7 +20,7 @@
   padding: 3rem 2rem;
   position: relative;
   z-index: 1;
-  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.06); /* shadow flipped vs login */
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.06);
 }
 
 .panel__inner {
@@ -33,17 +31,9 @@
 }
 
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
-/* Left: hero panel */
 
 .panel--hero {
   position: relative;
@@ -51,9 +41,9 @@
   background-position: center;
   background-repeat: no-repeat;
   display: flex;
-  align-items: flex-start; /* quote sits at the top — matches reference design */
+  align-items: flex-start;
   padding: 3rem;
-  order: -1; /* always renders before form regardless of DOM order */
+  order: -1;
 }
 
 @media (max-width: 768px) {
@@ -67,8 +57,6 @@
   inset: 0;
   z-index: 0;
 }
-
-/* Quote block */
 
 .hero-quote {
   position: relative;
@@ -96,12 +84,6 @@
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
