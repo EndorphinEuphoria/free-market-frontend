@@ -1,23 +1,16 @@
-/* login-page.component.css
-   Bootstrap no tiene un split-screen 50/50 con panel de imagen fijo,
-   así que el layout principal sigue siendo CSS custom.
-   Todo lo demás (sombra, animaciones, tipografía hero) también es custom. */
+/* register-page.css */
 
-/* Split layout: form izquierda fija, hero llena el resto */
-
-.login-page {
+.register-page {
   display: grid;
-  grid-template-columns: 380px 1fr;
+  grid-template-columns: 1fr 380px;
   min-height: 100vh;
 }
 
 @media (max-width: 768px) {
-  .login-page {
+  .register-page {
     grid-template-columns: 1fr;
   }
 }
-
-/* Panel izquierdo: formulario */
 
 .panel--form {
   display: flex;
@@ -27,7 +20,7 @@
   padding: 3rem 2rem;
   position: relative;
   z-index: 1;
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.06);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.06);
 }
 
 .panel__inner {
@@ -42,16 +35,15 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Panel derecho: hero */
-
 .panel--hero {
   position: relative;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   padding: 3rem;
+  order: -1;
 }
 
 @media (max-width: 768px) {
@@ -66,13 +58,11 @@
   z-index: 0;
 }
 
-/* Cita hero */
-
 .hero-quote {
   position: relative;
   z-index: 1;
   margin: 0;
-  max-width: 520px;
+  max-width: 420px;
   animation: fadeIn 0.7s 0.3s ease both;
 }
 

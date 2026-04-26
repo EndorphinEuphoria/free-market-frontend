@@ -15,6 +15,16 @@ export interface LoginCredentials {
   password: string;
 }
 
+export interface RegisterCredential {
+  email: string;
+  password: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  genre: string;
+  rolId: number | null; /** TODO: Change to number if necessary */
+}
+
 export interface AuthResponse {
   token: string;
   user: User;
@@ -47,6 +57,17 @@ export class Auth {
     const mockResponse: AuthResponse = {
       token: 'mock-jwt-token-12345',
       user: { id: '1', email: credentials.email, name: 'Demo User' },
+    };
+    return of(mockResponse).pipe(
+      delay(800),
+      tap(response => this._handleAuthSuccess(response))
+    );
+  }
+
+  register(credentials: RegisterCredential): Observable<AuthResponse> {
+    const mockResponse: AuthResponse = {
+      token: 'mock-jwt-token-12345',
+      user: { id: '1', email: credentials.email, name: 'Demo User' }
     };
     return of(mockResponse).pipe(
       delay(800),

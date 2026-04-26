@@ -1,7 +1,7 @@
-<form class="login-form w-100" [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate style="max-width: 320px;">
+<form class="w-100" [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate style="max-width: 320px;">
 
   <div class="mb-3">
-    <h1 class="form-title">Log In</h1>
+    <h1 class="form-title">Sign Up</h1>
   </div>
 
   <!-- Email -->
@@ -11,14 +11,7 @@
         <path d="M2.5 6.667A1.667 1.667 0 0 1 4.167 5h11.666A1.667 1.667 0 0 1 17.5 6.667v6.666A1.667 1.667 0 0 1 15.833 15H4.167A1.667 1.667 0 0 1 2.5 13.333V6.667Z" stroke="currentColor" stroke-width="1.25"/>
         <path d="m2.5 6.667 7.5 5 7.5-5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
       </svg>
-      <input
-        id="email"
-        type="email"
-        formControlName="email"
-        placeholder="Your email"
-        autocomplete="email"
-        class="custom-input"
-      />
+      <input id="email" type="email" formControlName="email" placeholder="Your email" autocomplete="email" class="custom-input"/>
     </div>
     @if (email.touched && email.hasError('required')) {
       <div class="invalid-feedback d-block">Email is required</div>
@@ -34,14 +27,8 @@
         <rect x="4" y="9" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.25"/>
         <path d="M7 9V6.5a3 3 0 0 1 6 0V9" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
       </svg>
-      <input
-        id="password"
-        [type]="showPassword() ? 'text' : 'password'"
-        formControlName="password"
-        placeholder="Password"
-        autocomplete="current-password"
-        class="custom-input"
-      />
+      <input id="password" [type]="showPassword() ? 'text' : 'password'" formControlName="password"
+        placeholder="Password" autocomplete="new-password" class="custom-input"/>
       <button type="button" class="toggle-password" (click)="togglePassword()"
         [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'">
         @if (showPassword()) {
@@ -65,6 +52,38 @@
     }
   </div>
 
+  <!-- Repeat Password -->
+  <div class="mb-3">
+    <div class="input-wrapper" [class.is-invalid-wrapper]="(repeatPassword.invalid && repeatPassword.touched) || showMismatch">
+      <svg class="input-icon" viewBox="0 0 20 20" fill="none">
+        <rect x="4" y="9" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.25"/>
+        <path d="M7 9V6.5a3 3 0 0 1 6 0V9" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+      </svg>
+      <input id="repeatPassword" [type]="showRepeat() ? 'text' : 'password'" formControlName="repeatPassword"
+        placeholder="Repeat Password" autocomplete="new-password" class="custom-input"/>
+      <button type="button" class="toggle-password" (click)="toggleRepeat()"
+        [attr.aria-label]="showRepeat() ? 'Hide password' : 'Show password'">
+        @if (showRepeat()) {
+          <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+            <path d="M2 10s3-5 8-5 8 5 8 5-3 5-8 5-8-5-8-5Z" stroke="currentColor" stroke-width="1.25"/>
+            <circle cx="10" cy="10" r="2" stroke="currentColor" stroke-width="1.25"/>
+            <path d="m3 3 14 14" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+          </svg>
+        } @else {
+          <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+            <path d="M2 10s3-5 8-5 8 5 8 5-3 5-8 5-8-5-8-5Z" stroke="currentColor" stroke-width="1.25"/>
+            <circle cx="10" cy="10" r="2" stroke="currentColor" stroke-width="1.25"/>
+          </svg>
+        }
+      </button>
+    </div>
+    @if (repeatPassword.touched && repeatPassword.hasError('required')) {
+      <div class="invalid-feedback d-block">Please repeat your password</div>
+    } @else if (showMismatch) {
+      <div class="invalid-feedback d-block">Passwords do not match</div>
+    }
+  </div>
+
   <!-- Server error -->
   @if (serverError()) {
     <div class="alert alert-danger py-2 px-3 small" role="alert">{{ serverError() }}</div>
@@ -75,17 +94,11 @@
     [disabled]="isLoading()">
     @if (isLoading()) {
       <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-      Signing in…
+      Creating account…
     } @else {
-      Log In
+      Sign Up
     }
   </button>
-
-  <!-- Forgot password -->
-  <div class="text-end mt-2">
-    <!-- BACKEND: wire to your password reset route -->
-    <a href="#" class="brand-link small" (click)="$event.preventDefault()">Forgot password?</a>
-  </div>
 
   <!-- Divider -->
   <div class="divider my-3"><span class="text-muted small">or</span></div>
@@ -115,10 +128,10 @@
     </div>
   </div>
 
-  <!-- Sign up link -->
+  <!-- Log in link -->
   <p class="text-center text-muted small mt-3 mb-0">
-    Don't have an account?
-    <a routerLink="/register" class="brand-link fw-semibold">Sign Up</a>
+    Already have an account?
+    <a routerLink="/login" class="brand-link fw-semibold">Log In</a>
   </p>
 
 </form>
