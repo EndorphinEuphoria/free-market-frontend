@@ -1,0 +1,103 @@
+/* navbar.css */
+
+.navbar {
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: box-shadow 0.2s;
+}
+
+.navbar--scrolled {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Brand */
+
+.brand-name {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #252b42;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.brand-name:hover {
+  color: var(--color-primary);
+}
+
+/* Nav links */
+
+.nav-link {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #737373;
+  padding: 0.4rem 0.75rem;
+  transition: color 0.15s;
+  white-space: nowrap;
+}
+
+.nav-link:hover,
+.nav-link--active {
+  color: #252b42;
+}
+
+.dropdown-menu {
+  border-radius: 8px;
+  padding: 0.5rem 0;
+  min-width: 160px;
+}
+
+.dropdown-item {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: #737373;
+  padding: 0.5rem 1rem;
+  transition: color 0.15s, background 0.15s;
+}
+
+.dropdown-item:hover {
+  color: var(--color-primary);
+  background: #f8f9fa;
+}
+
+/* Right actions */
+
+.nav-action-link {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #252b42;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.nav-action-link:hover {
+  color: var(--color-primary);
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #252b42;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+
+.icon-btn:hover {
+  color: var(--color-primary);
+}
+
+.nav-user-name {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: #737373;
+}

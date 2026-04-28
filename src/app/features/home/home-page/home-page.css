@@ -1,0 +1,6 @@
+/* home-page.css */
+
+main {
+  /* Elimina cualquier gap entre navbar y hero */
+  display: block;
+}
