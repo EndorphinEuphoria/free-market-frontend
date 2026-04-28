@@ -1,0 +1,60 @@
+<section class="hero-slider" [style.background-color]="slides[currentIndex()].bgColor">
+
+  <!-- Slides — *ngFor renderiza todos, CSS muestra solo el activo -->
+  <div class="slides-track">
+    <div
+      *ngFor="let slide of slides; let i = index"
+      class="slide"
+      [class.slide--active]="i === currentIndex()"
+    >
+      <!-- Texto izquierda -->
+      <div class="slide__content">
+        <span class="slide__label">{{ slide.label }}</span>
+        <h1 class="slide__title">{{ slide.title }}</h1>
+        <p class="slide__description">{{ slide.description }}</p>
+        <button
+          class="btn slide__cta"
+          (click)="navigateTo(slide.ctaLink)"
+        >
+          {{ slide.ctaText }}
+        </button>
+      </div>
+
+      <!-- Imagen derecha -->
+      <div class="slide__image-wrapper">
+        <img
+          [src]="slide.imageUrl"
+          [alt]="slide.title"
+          class="slide__image"
+          loading="eager"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Flecha izquierda -->
+  <button class="slider-arrow slider-arrow--prev" (click)="prev()" aria-label="Previous slide">
+    <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+      <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  <!-- Flecha derecha -->
+  <button class="slider-arrow slider-arrow--next" (click)="next()" aria-label="Next slide">
+    <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+      <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  <!-- Dots — *ngFor genera un dot por cada slide -->
+  <div class="slider-dots">
+    <button
+      *ngFor="let slide of slides; let i = index"
+      class="dot"
+      [class.dot--active]="i === currentIndex()"
+      (click)="goTo(i)"
+      [attr.aria-label]="'Go to slide ' + (i + 1)"
+    ></button>
+  </div>
+
+</section>
