@@ -1,0 +1,125 @@
+<div class="filters-panel">
+
+  <div class="filters-header">
+    <h2 class="filters-title">Filtros</h2>
+    <button class="btn-clear" (click)="clearAll()">Limpiar todo</button>
+  </div>
+
+  <!-- Categorías -->
+  <div class="filter-section">
+    <button
+      class="filter-section-toggle"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#collapseCategories"
+      aria-expanded="true"
+    >
+      Categorías
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 01.708 0L8 10.293l5.646-5.647a.5.5 0 01.708.708l-6 6a.5.5 0 01-.708 0l-6-6a.5.5 0 010-.708z"/>
+      </svg>
+    </button>
+    <div id="collapseCategories" class="collapse show">
+      <ul class="filter-list">
+        <li *ngFor="let cat of categories()" class="filter-item">
+          <label class="filter-checkbox">
+            <input
+              type="checkbox"
+              [checked]="selectedCategories().includes(cat.id)"
+              (change)="toggleCategory(cat.id)"
+            />
+            <span class="checkbox-label">{{ cat.name }}</span>
+            <span *ngIf="cat.count !== undefined" class="checkbox-count">{{ cat.count }}</span>
+          </label>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="filter-divider"></div>
+
+  <!-- Precio -->
+  <div class="filter-section">
+    <button
+      class="filter-section-toggle"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#collapsePrice"
+      aria-expanded="true"
+    >
+      Precio
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 01.708 0L8 10.293l5.646-5.647a.5.5 0 01.708.708l-6 6a.5.5 0 01-.708 0l-6-6a.5.5 0 010-.708z"/>
+      </svg>
+    </button>
+    <div id="collapsePrice" class="collapse show">
+      <div class="price-display">
+        <span>${{ minPrice() }}</span>
+        <span>${{ maxPrice() }}</span>
+      </div>
+      <div class="price-sliders">
+        <input
+          type="range"
+          class="price-range"
+          min="0" max="1000" step="10"
+          [value]="minPrice()"
+          (input)="onMinPrice($event)"
+        />
+        <input
+          type="range"
+          class="price-range"
+          min="0" max="1000" step="10"
+          [value]="maxPrice()"
+          (input)="onMaxPrice($event)"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-divider"></div>
+
+  <!-- Rating -->
+  <div class="filter-section">
+    <button
+      class="filter-section-toggle"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#collapseRating"
+      aria-expanded="true"
+    >
+      Valoración mínima
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 01.708 0L8 10.293l5.646-5.647a.5.5 0 01.708.708l-6 6a.5.5 0 01-.708 0l-6-6a.5.5 0 010-.708z"/>
+      </svg>
+    </button>
+    <div id="collapseRating" class="collapse show">
+      <ul class="filter-list">
+        <li *ngFor="let r of ratings" class="filter-item">
+          <button
+            class="rating-btn"
+            [class.active]="minRating() === r"
+            (click)="setRating(r)"
+          >
+            <span *ngFor="let s of [1,2,3,4,5]" class="star" [class.filled]="s <= r">★</span>
+            <span class="rating-label">y más</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="filter-divider"></div>
+
+  <!-- Stock -->
+  <div class="filter-section">
+    <label class="filter-checkbox stock-check">
+      <input
+        type="checkbox"
+        [checked]="inStockOnly()"
+        (change)="onStockChange($event)"
+      />
+      <span class="checkbox-label">Solo productos en stock</span>
+    </label>
+  </div>
+
+</div>

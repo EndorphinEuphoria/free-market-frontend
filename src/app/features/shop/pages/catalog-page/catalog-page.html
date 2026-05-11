@@ -1,0 +1,87 @@
+<div class="catalog-layout">
+
+  <!-- Sidebar filtros -->
+  <aside class="catalog-sidebar">
+    <app-product-filters
+      [categories]="categories()"
+      [filters]="filters()"
+      (filtersChange)="onFiltersChange($event)"
+    />
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="catalog-main">
+
+    <!-- Barra superior -->
+    <div class="catalog-toolbar">
+      <p class="catalog-count">
+        <strong>{{ filteredProducts().length }}</strong> productos encontrados
+      </p>
+
+      <div class="toolbar-right">
+        <!-- Ordenar -->
+        <select class="sort-select" (change)="onSortChange($event)">
+          <option value="relevance">Relevancia</option>
+          <option value="price-asc">Precio: menor a mayor</option>
+          <option value="price-desc">Precio: mayor a menor</option>
+          <option value="rating-desc">Mejor valorados</option>
+          <option value="newest">Más recientes</option>
+        </select>
+
+        <!-- Vista grid / list -->
+        <div class="view-toggle">
+          <button
+            class="view-btn"
+            [class.active]="viewMode() === 'grid'"
+            (click)="viewMode.set('grid')"
+            aria-label="Vista cuadrícula"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M1 2.5A1.5 1.5 0 012.5 1h3A1.5 1.5 0 017 2.5v3A1.5 1.5 0 015.5 7h-3A1.5 1.5 0 011 5.5v-3zm8 0A1.5 1.5 0 0110.5 1h3A1.5 1.5 0 0115 2.5v3A1.5 1.5 0 0113.5 7h-3A1.5 1.5 0 019 5.5v-3zm-8 8A1.5 1.5 0 012.5 9h3A1.5 1.5 0 017 10.5v3A1.5 1.5 0 015.5 15h-3A1.5 1.5 0 011 13.5v-3zm8 0A1.5 1.5 0 0110.5 9h3a1.5 1.5 0 011.5 1.5v3a1.5 1.5 0 01-1.5 1.5h-3A1.5 1.5 0 019 13.5v-3z"/>
+            </svg>
+          </button>
+          <button
+            class="view-btn"
+            [class.active]="viewMode() === 'list'"
+            (click)="viewMode.set('list')"
+            aria-label="Vista lista"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M2.5 12a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="isLoading()" class="catalog-loading">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+
+    <!-- Sin resultados -->
+    <div *ngIf="!isLoading() && filteredProducts().length === 0" class="catalog-empty">
+      <p>No se encontraron productos con los filtros seleccionados.</p>
+      <button class="btn btn-outline-primary btn-sm" (click)="onFiltersChange({ categories: [], minPrice: 0, maxPrice: 1000, minRating: 0, inStockOnly: false, sortBy: 'relevance' })">
+        Limpiar filtros
+      </button>
+    </div>
+
+    <!-- Grid de productos -->
+    <div
+      *ngIf="!isLoading()"
+      class="products-grid"
+      [class.list-view]="viewMode() === 'list'"
+    >
+      <app-product
+        *ngFor="let product of filteredProducts(); trackBy: trackById"
+        [product]="product"
+        (addToCart)="onAddToCart($event)"
+        (toggleFavorite)="onToggleFavorite($event)"
+      />
+    </div>
+
+  </main>
+</div>

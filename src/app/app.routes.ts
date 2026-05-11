@@ -3,6 +3,7 @@ import { RegisterPage } from './features/auth/pages/register-page/register-page'
 import { LoginPage } from './features/auth/pages/login-page/login-page';
 import { NotFound } from './features/auth/pages/not-found/not-found';
 import { HomePage } from './features/home/home-page/home-page';
+import { CatalogPage } from './features/shop/pages/catalog-page/catalog-page';
 
 export const routes: Routes = [
   {
@@ -28,6 +29,10 @@ export const routes: Routes = [
   //   Component:HomePage
   //   canActivate: [authGuard]
   // },
+  {
+    path: 'shop',
+    component: CatalogPage
+  },
   {
     path: '**',
     component: NotFound
