@@ -1,0 +1,120 @@
+.catalog-layout {
+  display: flex;
+  gap: 28px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  align-items: flex-start;
+}
+
+/* Sidebar */
+.catalog-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 80px;
+}
+
+/* Main */
+.catalog-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Toolbar */
+.catalog-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.catalog-count {
+  margin: 0;
+  color: #6B7280;
+  font-size: 0.9rem;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sort-select {
+  padding: 6px 12px;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #374151;
+  background: #fff;
+  cursor: pointer;
+  outline: none;
+}
+
+.sort-select:focus {
+  border-color: var(--color-primary, #2563EB);
+}
+
+/* Vista toggle */
+.view-toggle {
+  display: flex;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.view-btn {
+  padding: 6px 10px;
+  border: none;
+  background: #fff;
+  color: #9CA3AF;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.view-btn.active {
+  background: var(--color-primary, #2563EB);
+  color: #fff;
+}
+
+/* Grid de productos */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.products-grid.list-view {
+  grid-template-columns: 1fr;
+}
+
+/* Estados */
+.catalog-loading,
+.catalog-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 16px;
+  color: #6B7280;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .catalog-layout {
+    flex-direction: column;
+  }
+
+  .catalog-sidebar {
+    width: 100%;
+    position: static;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+}
