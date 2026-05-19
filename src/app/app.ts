@@ -1,9 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
+import { Navbar } from './features/home/components/navbar/navbar';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [Navbar, RouterOutlet, CommonModule],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -15,8 +17,8 @@ export class App {
   
   private noNavRoutes: string[] = ['/login', '/register'];
 
-  isForHiddenNav(): Boolean {
-    return this.router.url in this.noNavRoutes
+  showNavbar(): Boolean {
+    return !this.noNavRoutes.includes(this.router.url)
   }
   
   protected readonly title = signal('free-market');

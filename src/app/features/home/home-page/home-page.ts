@@ -4,7 +4,7 @@ import { HeroSlider } from '../components/hero-slider/hero-slider';
 
 @Component({
   selector: 'app-home-page',
-  imports: [Navbar, HeroSlider],
+  imports: [HeroSlider],
   templateUrl: './home-page.html',
   styleUrl: './home-page.css',
 })
