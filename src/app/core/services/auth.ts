@@ -5,13 +5,19 @@ import { Observable, of, delay } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 export interface User {
-  id: string;
+  userId: number;
   email: string;
-  name: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  genre?: string;
+  rol?: {
+    rolName: string;
+  };
 }
 
 export interface LoginCredentials {
-  email: string;
+  username: string;
   password: string;
 }
 
@@ -27,7 +33,7 @@ export interface RegisterCredential {
 
 export interface AuthResponse {
   token: string;
-  user: User;
+  refreshToken: string;
 }
 
 @Injectable({
@@ -56,8 +62,8 @@ export class Auth {
     // MOCK: simulates a successful login after 800ms
     const mockResponse: AuthResponse = {
       token: 'mock-jwt-token-12345',
-      user: { id: '1', email: credentials.email, name: 'Demo User' },
-    };
+      refreshToken: 'mock-refresh-token-12345',
+      };
     return of(mockResponse).pipe(
       delay(800),
       tap(response => this._handleAuthSuccess(response))
@@ -67,8 +73,8 @@ export class Auth {
   register(credentials: RegisterCredential): Observable<AuthResponse> {
     const mockResponse: AuthResponse = {
       token: 'mock-jwt-token-12345',
-      user: { id: '1', email: credentials.email, name: 'Demo User' }
-    };
+      refreshToken: 'mock-refresh-token-12345',
+      };
     return of(mockResponse).pipe(
       delay(800),
       tap(response => this._handleAuthSuccess(response))
@@ -103,7 +109,9 @@ export class Auth {
  
   private _handleAuthSuccess(response: AuthResponse): void {
     localStorage.setItem('token', response.token);
-    localStorage.setItem('user', JSON.stringify(response.user));
-    this._currentUser.set(response.user);
+    localStorage.setItem('refreshToken', response.refreshToken);
+    // decodificar token y setear usuario actual  
+    //localStorage.setItem('user', JSON.stringify(response.user));
+    //this._currentUser.set(response.user);
   }
 }

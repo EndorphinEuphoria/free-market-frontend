@@ -1,7 +1,8 @@
-import { Component, inject, Renderer2 } from '@angular/core';
+import { Component, inject, PLATFORM_ID, Renderer2 } from '@angular/core';
 import { RegisterForm } from '../../components/register-form/register-form';
 import { Router } from '@angular/router';
 import { APP_THEME } from '../../../../core/config/theme.config';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-register-page',
@@ -12,10 +13,13 @@ import { APP_THEME } from '../../../../core/config/theme.config';
 export class RegisterPage {
   private readonly router = inject(Router);
   private readonly renderer = inject(Renderer2);
+  private readonly platformId = inject(PLATFORM_ID);
 
   readonly theme = APP_THEME;
 
   ngOnInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     const root = document.documentElement;
     this.renderer.setStyle(root, '--color-primary', APP_THEME.primaryColor, 2);
     this.renderer.setStyle(root, '--color-primary-hover', APP_THEME.primaryHover, 2);
