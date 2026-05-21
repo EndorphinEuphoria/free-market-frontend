@@ -1,6 +1,6 @@
 import { Component, inject, output, signal } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Auth, RegisterCredential } from '../../../../core/services/auth';
+import { Auth, RegisterCredentials } from '../../../../core/services/auth';
 import { ValidationErrors } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
@@ -9,6 +9,7 @@ function passwordMatchValidator(group: AbstractControl): ValidationErrors | null
   const repeat = group.get('repeatPassword')?.value;
   return password === repeat ? null : { passwordMismatch: true }
 }
+
 
 @Component({
   selector: 'app-register-form',
@@ -32,11 +33,11 @@ export class RegisterForm {
       nonNullable: true
     }),
     password: new FormControl('', {
-      validators: [Validators.required, Validators.minLength(6)], // TODO: add validation
+      validators: [Validators.required, Validators.minLength(6)],
       nonNullable: true
     }),
     repeatPassword: new FormControl('', {
-      validators: [Validators.required, Validators.minLength(6)], // TODO: add validation
+      validators: [Validators.required, Validators.minLength(6)],
       nonNullable: true
     }),
     username: new FormControl('', {
@@ -52,10 +53,14 @@ export class RegisterForm {
       nonNullable: true
     }),
     genre: new FormControl('', {
-      validators: [Validators.required, Validators.max(3)],
-      nonNullable: true /** Use dirty validation for genre */
+      validators: [Validators.required],
+      nonNullable: true
     }),
-    rolId: new FormControl(<number | null> (null), [Validators.required, Validators.max(2)]),
+    rolId: new FormControl<number | null>(null, {
+      validators: [Validators.required]
+    }),
+  }, {
+  validators: passwordMatchValidator
   });
 
   /** DRY methods */
@@ -68,11 +73,11 @@ export class RegisterForm {
   get genre(): AbstractControl { return this.registerForm.get('genre')!; }
   get rolId(): AbstractControl { return this.registerForm.get('rolId')!; }
 
-  get showMismatch(): boolean {
-    return (
-      this.registerForm.hasError('passwordMismatch') &&
-      this.repeatPassword.touched
-    )
+  get passwordMismatch(): boolean {
+    const groupError = this.registerForm.hasError('passwordMismatch');
+    const touched = this.repeatPassword.touched || this.password.touched;
+
+    return groupError && touched;
   }
 
   togglePassword(): void {
@@ -91,7 +96,19 @@ export class RegisterForm {
     this.isLoading.set(true);
     this.serverError.set('');
 
-    const credentials: RegisterCredential = this.registerForm.getRawValue();
+  const formValue = this.registerForm.getRawValue();
+
+  const credentials: RegisterCredentials = {
+    firstName: formValue.firstName,
+    lastName: formValue.lastName,
+    username: formValue.username,
+    email: formValue.email,
+    password: formValue.password,
+    genre: formValue.genre,
+    rol: {
+      rolId: formValue.rolId!
+    } 
+  };
 
     this.auth.register(credentials).subscribe({
       next: () => {
@@ -99,21 +116,21 @@ export class RegisterForm {
         this.registerSuccess.emit();
       },
       error: (err) => {
-        // BACKEND: adjust error path to match API's shape
-        // Express:  err.error.message
-        // FastAPI:  err.error.detail
-        // NestJS:   err.error.message
-        this.serverError.set(err?.error?.message ?? 'Invalid email or password.');
+        const backendError =
+          err?.error?.message ||
+          err?.error?.error ||
+          err?.error ||
+          err?.message;
+
+        this.serverError.set(
+          typeof backendError === 'string'
+            ? backendError
+            : 'Something went wrong. Please try again later.'
+        );
+
         this.isLoading.set(false);
       }
     });
   }
 
-  onGoogleLogin(): void {
-    this.auth.loginWithGoogle();
-  }
- 
-  onFacebookLogin(): void {
-    this.auth.loginWithFacebook();
-  }
 }

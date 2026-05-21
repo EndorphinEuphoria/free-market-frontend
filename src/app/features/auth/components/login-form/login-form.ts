@@ -30,7 +30,7 @@ private readonly auth = inject(Auth);
       nonNullable: true,
     }),
     password: new FormControl('', {
-      validators: [Validators.required, Validators.minLength(6)],
+      validators: [Validators.required],
       nonNullable: true,
     }),
   });
@@ -69,11 +69,4 @@ private readonly auth = inject(Auth);
     });
   }
  
-  onGoogleLogin(): void {
-    this.auth.loginWithGoogle();
-  }
- 
-  onFacebookLogin(): void {
-    this.auth.loginWithFacebook();
-  }
 }

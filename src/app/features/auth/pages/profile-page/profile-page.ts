@@ -24,15 +24,15 @@ export class ProfilePage {
 ngOnInit() {
   const user = this.auth.currentUser();
 
-  this.form = this.fb.group({
-    firstName: [user?.firstName ?? '', Validators.required],
-    lastName: [user?.lastName ?? '', Validators.required],
-    username: [user?.username ?? '', Validators.required],
-    email: [user?.email ?? '', [Validators.required, Validators.email]],
-    genre: [user?.genre ?? ''],
-    role: [user?.rol?.rolName ?? '', Validators.required, { disabled: true }],
-    avatar: [null]
-  });
+  //this.form = this.fb.group({
+  //  firstName: [user?.firstName ?? '', Validators.required],
+  //  lastName: [user?.lastName ?? '', Validators.required],
+  //  username: [user?.username ?? '', Validators.required],
+  //  email: [user?.email ?? '', [Validators.required, Validators.email]],
+  //  genre: [user?.genre ?? ''],
+  //  role: [user?.rol?.rolName ?? '', Validators.required, { disabled: true }],
+  //  avatar: [null]
+  //});
 }
 
   onAvatarChange(event: Event): void {
