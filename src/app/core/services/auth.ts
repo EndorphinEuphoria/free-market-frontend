@@ -16,19 +16,29 @@ export interface User {
   };
 }
 
+export interface UserToken {
+  userId: number;
+  username: string;
+  rol?: {
+    rolName: string;
+  }
+}
+
 export interface LoginCredentials {
   username: string;
   password: string;
 }
 
-export interface RegisterCredential {
+export interface RegisterCredentials{
   email: string;
   password: string;
   username: string;
   firstName: string;
   lastName: string;
   genre: string;
-  rolId: number | null; /** TODO: Change to number if necessary */
+  rol: {
+    rolId: number | null;
+  }
 }
 
 export interface AuthResponse {
@@ -40,13 +50,12 @@ export interface AuthResponse {
   providedIn: 'root',
 })
 export class Auth {
-  // ─── BACKEND: replace with API URL
-  // private readonly API_URL = 'https://your-api.com/auth';
+  private readonly API_URL = 'http://localhost:8086/api-v1/auth';
  
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
  
-  private _currentUser = signal<User | null>(null);
+  private _currentUser = signal<UserToken | null>(null);
   readonly currentUser = this._currentUser.asReadonly();
  
   isLoggedIn(): boolean {
@@ -54,43 +63,19 @@ export class Auth {
   }
  
   login(credentials: LoginCredentials): Observable<AuthResponse> {
-    // BACKEND: replace mock with real HTTP call
-    // return this.http.post<AuthResponse>(`${this.API_URL}/login`, credentials).pipe(
-    //   tap(response => this._handleAuthSuccess(response))
-    // );
- 
-    // MOCK: simulates a successful login after 800ms
-    const mockResponse: AuthResponse = {
-      token: 'mock-jwt-token-12345',
-      refreshToken: 'mock-refresh-token-12345',
-      };
-    return of(mockResponse).pipe(
-      delay(800),
-      tap(response => this._handleAuthSuccess(response))
-    );
+    return this.http
+      .post<AuthResponse>(`${this.API_URL}/login`, credentials)
+      .pipe(
+        tap(response => this._handleAuthSuccess(response))
+      )
   }
 
-  register(credentials: RegisterCredential): Observable<AuthResponse> {
-    const mockResponse: AuthResponse = {
-      token: 'mock-jwt-token-12345',
-      refreshToken: 'mock-refresh-token-12345',
-      };
-    return of(mockResponse).pipe(
-      delay(800),
-      tap(response => this._handleAuthSuccess(response))
-    );
-  }
- 
-  loginWithGoogle(): void {
-    // BACKEND: implement OAuth redirect or popup
-    // window.location.href = `${this.API_URL}/google`;
-    console.log('Google OAuth — connect backend');
-  }
- 
-  loginWithFacebook(): void {
-    // BACKEND: implement OAuth redirect or popup
-    // window.location.href = `${this.API_URL}/facebook`;
-    console.log('Facebook OAuth — connect backend');
+  register(credentials: RegisterCredentials): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${this.API_URL}/register`, credentials)
+      .pipe(
+        tap(response => this._handleAuthSuccess(response))
+      );
   }
  
   logout(): void {
@@ -100,18 +85,36 @@ export class Auth {
     this.router.navigate(['/login']);
   }
  
-  // BACKEND: call this on app init to restore session from stored token
-  // restoreSession(): void {
-  //   const token = localStorage.getItem('token');
-  //   const user  = localStorage.getItem('user');
-  //   if (token && user) this._currentUser.set(JSON.parse(user));
-  // }
+  restoreSession(): void {
+    const token = localStorage.getItem('token');
+    const user  = localStorage.getItem('user');
+    if (token && user) this._currentUser.set(JSON.parse(user));
+  }
  
   private _handleAuthSuccess(response: AuthResponse): void {
     localStorage.setItem('token', response.token);
     localStorage.setItem('refreshToken', response.refreshToken);
-    // decodificar token y setear usuario actual  
-    //localStorage.setItem('user', JSON.stringify(response.user));
-    //this._currentUser.set(response.user);
+
+    const payload = this.decodeToken(response.token);
+
+    const user: UserToken = {
+      userId: payload.userId,
+      username: payload.sub,
+      rol: {
+        rolName: payload.roles?.[0] || 'USER'
+      }
+    };
+
+    localStorage.setItem('user', JSON.stringify(user));
+
+    this._currentUser.set(user);
+  }
+
+  private decodeToken(token: string): any {
+    const payload = token.split('.')[1];
+
+    const decodePayload = atob(payload);
+
+    return JSON.parse(decodePayload);
   }
 }
