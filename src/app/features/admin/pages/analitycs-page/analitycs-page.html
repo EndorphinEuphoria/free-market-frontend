@@ -1,0 +1,26 @@
+<app-admin-navbar />
+
+<div class="analytics-container">
+
+  <div class="analytics-header">
+    <h1 class="analytics-title">Analytics</h1>
+    <p class="analytics-subtitle">Consulta el estado de todas las reservas y deliveries del sistema</p>
+  </div>
+
+  <section class="analytics-section">
+    <div class="analytics-section-header">
+      <h2 class="analytics-section-title">Reservas</h2>
+      <span class="analytics-section-icon">🗓</span>
+    </div>
+    <app-reserva-table />
+  </section>
+
+  <section class="analytics-section">
+    <div class="analytics-section-header">
+      <h2 class="analytics-section-title">Deliveries</h2>
+      <span class="analytics-section-icon">🚚</span>
+    </div>
+    <app-deliveries-table />
+  </section>
+
+</div>

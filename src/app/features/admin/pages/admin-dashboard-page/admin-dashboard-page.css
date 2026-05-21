@@ -1,0 +1,169 @@
+.admin-main {
+  background: #f8f8f8;
+  height: calc(100vh - 56px);   /* ← ocupa exactamente lo que queda */
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.admin-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;   /* ← necesario para que flex funcione bien con overflow */
+}
+
+.admin-welcome {
+  margin-bottom: 1rem;
+  flex-shrink: 0;
+}
+
+.carousel {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-height: 0;
+}
+
+.carousel__track {
+  flex: 1;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 16px;
+  overflow: hidden;
+  height: 100%;     /* ← toma todo el espacio disponible */
+  position: relative;
+}
+
+.carousel__slide {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 6rem;
+  height: 100%;
+}
+
+.carousel__slide--active {
+  display: flex;
+}
+
+.carousel__icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+}
+
+.carousel__step-chip {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #23856d;
+  background: #e8f5f1;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 1.25rem;
+}
+
+.carousel__title {
+  font-family: var(--font-heading);
+  font-size: 2.8rem;     /* ← más grande */
+  font-weight: 700;
+  color: #252b42;
+  margin-bottom: 1.25rem;
+}
+
+.carousel__desc {
+  font-size: 1.05rem;
+  color: #737373;
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+  max-width: 600px;
+}
+
+.carousel__btn {
+  display: inline-block;
+  background: #23856d;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.875rem 2.5rem;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.carousel__btn:hover { background: #1a6354; }
+
+.carousel__arrow {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: #252b42;
+  transition: background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel__arrow:hover {
+  background: #f5f5f5;
+  border-color: #ccc;
+}
+
+.carousel__progress {
+  height: 4px;
+  background: #f0f0f0;
+  border-radius: 0 0 16px 16px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.carousel__progress-bar {
+  height: 100%;
+  background: #23856d;
+  width: 0%;
+  animation: progress 20s linear infinite;
+}
+
+.carousel__progress-bar--reset {
+  animation: progress2 20s linear infinite;
+}
+
+@keyframes progress  { from { width: 0%; } to { width: 100%; } }
+@keyframes progress2 { from { width: 0%; } to { width: 100%; } }
+
+.carousel__dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 1rem;
+  flex-shrink: 0;
+}
+
+.carousel__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: #d0d0d0;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  padding: 0;
+}
+
+.carousel__dot--active {
+  background: #23856d;
+  transform: scale(1.3);
+}

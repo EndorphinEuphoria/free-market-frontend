@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, of, delay } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
+// ─── Interfaces ───────────────────────────────────────────────
 export interface User {
   userId: number;
   email: string;
@@ -11,9 +12,17 @@ export interface User {
   firstName: string;
   lastName: string;
   genre?: string;
-  rol?: {
-    rolName: string;
-  };
+  rol?: { rolName: string };
+}
+
+export interface User2 {
+  id: number;
+  username: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+  status: 'active' | 'inactive';
+  idRol: number;
 }
 
 export interface UserToken {
@@ -46,22 +55,24 @@ export interface AuthResponse {
   refreshToken: string;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+// ─── Service ──────────────────────────────────────────────────
+@Injectable({ providedIn: 'root' })
 export class Auth {
+
   private readonly API_URL = 'http://localhost:8086/api-v1/auth';
  
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
  
   private _currentUser = signal<UserToken | null>(null);
+
   readonly currentUser = this._currentUser.asReadonly();
- 
+
   isLoggedIn(): boolean {
     return this._currentUser() !== null;
   }
- 
+
+  // ─── Auth ──────────────────────────────────────────────────
   login(credentials: LoginCredentials): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.API_URL}/login`, credentials)
@@ -76,8 +87,9 @@ export class Auth {
       .pipe(
         tap(response => this._handleAuthSuccess(response))
       );
+
   }
- 
+
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -116,5 +128,18 @@ export class Auth {
     const decodePayload = atob(payload);
 
     return JSON.parse(decodePayload);
+  }
+
+  // ─── PIM / Usuarios ────────────────────────────────────────
+  getAllUsers(): Observable<User2[]> {
+    return this.http.get<User2[]>(`${this.API_URL}/users`);
+  }
+
+  deleteUser(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.API_URL}/users/${id}`);
+  }
+
+  toggleStatus(id: number, status: 'active' | 'inactive'): Observable<User2> {
+    return this.http.patch<User2>(`${this.API_URL}/users/${id}/status`, { status });
   }
 }

@@ -1,0 +1,22 @@
+<nav class="admin-navbar">
+  <div class="admin-navbar__inner">
+
+    <a class="admin-brand" routerLink="/admin">FreeMarket</a>
+
+    <ul class="admin-nav-links">
+      <li><a class="admin-nav-link" routerLink="/admin/pim" routerLinkActive="admin-nav-link--active">PIM</a></li>
+      <li><a class="admin-nav-link" routerLink="/admin/analytics" routerLinkActive="admin-nav-link--active">Analytics</a></li>
+      <li><a class="admin-nav-link" routerLink="/admin/settings" routerLinkActive="admin-nav-link--active">Configuraciones</a></li>
+      <li><a class="admin-nav-link" routerLink="/admin/products" routerLinkActive="admin-nav-link--active">Gestión de productos</a></li>
+    </ul>
+
+    <div class="admin-nav-right">
+      <a class="admin-user" routerLink="/profile">
+        <div class="admin-avatar">{{ (auth.currentUser()?.username ?? 'A')[0].toUpperCase() }}</div>
+        Hola, {{ auth.currentUser()?.username ?? 'admin' }}
+      </a>
+      <button class="admin-logout-btn" (click)="auth.logout()">logout</button>
+    </div>
+
+  </div>
+</nav>
