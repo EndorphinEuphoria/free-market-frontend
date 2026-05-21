@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, of, delay } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
+// ─── Interfaces ───────────────────────────────────────────────
 export interface User {
   userId: number;
   email: string;
@@ -11,9 +12,17 @@ export interface User {
   firstName: string;
   lastName: string;
   genre?: string;
-  rol?: {
-    rolName: string;
-  };
+  rol?: { rolName: string };
+}
+
+export interface User2 {
+  id: number;
+  username: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+  status: 'active' | 'inactive';
+  idRol: number;
 }
 
 export interface LoginCredentials {
@@ -28,7 +37,7 @@ export interface RegisterCredential {
   firstName: string;
   lastName: string;
   genre: string;
-  rolId: number | null; /** TODO: Change to number if necessary */
+  rolId: number | null;
 }
 
 export interface AuthResponse {
@@ -36,34 +45,26 @@ export interface AuthResponse {
   refreshToken: string;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+// ─── Service ──────────────────────────────────────────────────
+@Injectable({ providedIn: 'root' })
 export class Auth {
-  // ─── BACKEND: replace with API URL
-  // private readonly API_URL = 'https://your-api.com/auth';
- 
+  private readonly API_URL = 'http://localhost:8086/api-v1/auth/getall'; 
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
- 
+
   private _currentUser = signal<User | null>(null);
   readonly currentUser = this._currentUser.asReadonly();
- 
+
   isLoggedIn(): boolean {
     return this._currentUser() !== null;
   }
- 
+
+  // ─── Auth ──────────────────────────────────────────────────
   login(credentials: LoginCredentials): Observable<AuthResponse> {
-    // BACKEND: replace mock with real HTTP call
-    // return this.http.post<AuthResponse>(`${this.API_URL}/login`, credentials).pipe(
-    //   tap(response => this._handleAuthSuccess(response))
-    // );
- 
-    // MOCK: simulates a successful login after 800ms
     const mockResponse: AuthResponse = {
       token: 'mock-jwt-token-12345',
       refreshToken: 'mock-refresh-token-12345',
-      };
+    };
     return of(mockResponse).pipe(
       delay(800),
       tap(response => this._handleAuthSuccess(response))
@@ -74,44 +75,43 @@ export class Auth {
     const mockResponse: AuthResponse = {
       token: 'mock-jwt-token-12345',
       refreshToken: 'mock-refresh-token-12345',
-      };
+    };
     return of(mockResponse).pipe(
       delay(800),
       tap(response => this._handleAuthSuccess(response))
     );
   }
- 
+
   loginWithGoogle(): void {
-    // BACKEND: implement OAuth redirect or popup
-    // window.location.href = `${this.API_URL}/google`;
     console.log('Google OAuth — connect backend');
   }
- 
+
   loginWithFacebook(): void {
-    // BACKEND: implement OAuth redirect or popup
-    // window.location.href = `${this.API_URL}/facebook`;
     console.log('Facebook OAuth — connect backend');
   }
- 
+
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     this._currentUser.set(null);
     this.router.navigate(['/login']);
   }
- 
-  // BACKEND: call this on app init to restore session from stored token
-  // restoreSession(): void {
-  //   const token = localStorage.getItem('token');
-  //   const user  = localStorage.getItem('user');
-  //   if (token && user) this._currentUser.set(JSON.parse(user));
-  // }
- 
+
   private _handleAuthSuccess(response: AuthResponse): void {
     localStorage.setItem('token', response.token);
     localStorage.setItem('refreshToken', response.refreshToken);
-    // decodificar token y setear usuario actual  
-    //localStorage.setItem('user', JSON.stringify(response.user));
-    //this._currentUser.set(response.user);
+  }
+
+  // ─── PIM / Usuarios ────────────────────────────────────────
+  getAllUsers(): Observable<User2[]> {
+    return this.http.get<User2[]>(`${this.API_URL}/users`);
+  }
+
+  deleteUser(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.API_URL}/users/${id}`);
+  }
+
+  toggleStatus(id: number, status: 'active' | 'inactive'): Observable<User2> {
+    return this.http.patch<User2>(`${this.API_URL}/users/${id}/status`, { status });
   }
 }

@@ -15,7 +15,7 @@ export class App {
    */
   private router = inject(Router)
   
-  private noNavRoutes: string[] = ['/login', '/register', '/profile'];
+  private noNavRoutes: string[] = ['/login', '/register', '/profile','/admin','/admin/pim','/admin/analytics'];
 
   showNavbar(): Boolean {
     return !this.noNavRoutes.includes(this.router.url)

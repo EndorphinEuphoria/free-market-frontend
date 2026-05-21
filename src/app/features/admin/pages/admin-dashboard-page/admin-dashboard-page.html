@@ -1,0 +1,48 @@
+<app-admin-navbar />
+
+<main class="admin-main">
+  <div class="admin-container">
+
+    <div class="admin-welcome">
+      <h1 class="admin-welcome__title">Bienvenido al panel de administración</h1>
+      <p class="admin-welcome__sub">Sigue estos pasos para configurar tu tienda.</p>
+    </div>
+
+    <div class="carousel">
+      <button class="carousel__arrow" (click)="prev()" aria-label="Anterior">&#8592;</button>
+
+      <div style="flex:1; display:flex; flex-direction:column;">
+        <div class="carousel__track">
+          @for (slide of slides; track slide.step; let i = $index) {
+            <div class="carousel__slide" [class.carousel__slide--active]="i === currentSlide()">
+              <div class="carousel__icon">{{ slide.icon }}</div>
+              <span class="carousel__step-chip">{{ slide.step }}</span>
+              <h2 class="carousel__title">{{ slide.title }}</h2>
+              <p class="carousel__desc">{{ slide.desc }}</p>
+              <a class="carousel__btn" [routerLink]="slide.route">{{ slide.action }}</a>
+            </div>
+          }
+        </div>
+
+        <!-- Barra de progreso del autoplay -->
+       <div class="carousel__progress">
+         <div class="carousel__progress-bar" [class.carousel__progress-bar--reset]="currentSlide() % 2 === 0"></div>
+      </div>
+      </div>
+
+      <button class="carousel__arrow" (click)="next()" aria-label="Siguiente">&#8594;</button>
+    </div>
+
+    <div class="carousel__dots">
+      @for (slide of slides; track slide.step; let i = $index) {
+        <button
+          class="carousel__dot"
+          [class.carousel__dot--active]="i === currentSlide()"
+          (click)="goTo(i)"
+          [attr.aria-label]="'Ir al paso ' + (i + 1)"
+        ></button>
+      }
+    </div>
+
+  </div>
+</main>
