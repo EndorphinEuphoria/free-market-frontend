@@ -61,10 +61,10 @@
               <td>
                 <div class="productos-actions">
                   <button class="productos-btn-edit" (click)="openEditModal(producto)">
-                    ✏️ Editar
+                     Editar
                   </button>
                   <button class="productos-btn-delete" (click)="deleteProducto(producto.id)">
-                    🗑️ Eliminar
+                     Eliminar
                   </button>
                 </div>
               </td>
@@ -151,7 +151,6 @@
               (dragleave)="onDragLeave($event)"
               (drop)="onDrop($event)"
             >
-              <span class="dropzone-icon">🖼️</span>
               <p class="dropzone-text">
                 Arrastra una imagen aquí<br>
                 <span>o usa el botón para seleccionarla</span>

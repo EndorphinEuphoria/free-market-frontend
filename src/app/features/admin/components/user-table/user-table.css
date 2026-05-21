@@ -113,41 +113,48 @@
 }
 
 .pim-btn {
-  padding: 0.35rem 0.75rem;
-  border-radius: 6px;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
   border: none;
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: all 0.2s ease;
 }
 
+/* BOTÓN ACTIVAR/DESACTIVAR */
 .pim-btn--toggle {
-  background: #f0f0f0;
+  background: #f3f4f6;
   color: #252b42;
 }
 
-.pim-btn--toggle:hover { background: #e0e0e0; }
+.pim-btn--toggle:hover:not(:disabled) {
+  background: #e5e7eb;
+}
 
+/* DELETE */
 .pim-btn--delete {
   background: #fef2f2;
   color: #dc2626;
 }
 
-.pim-btn--delete:hover { background: #fee2e2; }
-
-/* Estados */
-.pim-loading, .pim-error, .pim-empty {
-  padding: 2rem;
-  text-align: center;
-  color: #737373;
-  font-size: 0.875rem;
+.pim-btn--delete:hover:not(:disabled) {
+  background: #fee2e2;
 }
 
-.pim-error { color: #dc2626; }
+/* DISABLED */
+.pim-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  pointer-events: none;
 
-.pim-count {
-  margin-top: 0.75rem;
-  font-size: 0.8rem;
-  color: #737373;
+  border: none;
+  outline: none;
+  box-shadow: none;
+
+  background: #f3f4f6;
+}
+
+.pim-btn--toggle {
+  min-width: 110px;
 }
