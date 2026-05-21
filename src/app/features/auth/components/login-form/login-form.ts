@@ -25,8 +25,8 @@ private readonly auth = inject(Auth);
   showPassword = signal(false);
  
   loginForm = new FormGroup({
-    email: new FormControl('', {
-      validators: [Validators.required, Validators.email],
+    username: new FormControl('', {
+      validators: [Validators.required, Validators.maxLength(30)],
       nonNullable: true,
     }),
     password: new FormControl('', {
@@ -35,7 +35,7 @@ private readonly auth = inject(Auth);
     }),
   });
  
-  get email(): AbstractControl { return this.loginForm.get('email')!; }
+  get username(): AbstractControl { return this.loginForm.get('username')!; }
   get password(): AbstractControl { return this.loginForm.get('password')!; }
  
   togglePassword(): void {
@@ -63,7 +63,7 @@ private readonly auth = inject(Auth);
         // Express:  err.error.message
         // FastAPI:  err.error.detail
         // NestJS:   err.error.message
-        this.serverError.set(err?.error?.message ?? 'Invalid email or password.');
+        this.serverError.set(err?.error?.message ?? 'Invalid username or password.');
         this.isLoading.set(false);
       },
     });

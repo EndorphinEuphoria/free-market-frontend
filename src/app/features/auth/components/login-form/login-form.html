@@ -4,26 +4,26 @@
     <h1 class="form-title">Log In</h1>
   </div>
 
-  <!-- Email -->
+  <!-- Username -->
   <div class="mb-3">
-    <div class="input-wrapper" [class.is-invalid-wrapper]="email.invalid && email.touched">
+    <div class="input-wrapper" [class.is-invalid-wrapper]="username.invalid && username.touched">
       <svg class="input-icon" viewBox="0 0 20 20" fill="none">
         <path d="M2.5 6.667A1.667 1.667 0 0 1 4.167 5h11.666A1.667 1.667 0 0 1 17.5 6.667v6.666A1.667 1.667 0 0 1 15.833 15H4.167A1.667 1.667 0 0 1 2.5 13.333V6.667Z" stroke="currentColor" stroke-width="1.25"/>
         <path d="m2.5 6.667 7.5 5 7.5-5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
       </svg>
       <input
-        id="email"
-        type="email"
-        formControlName="email"
-        placeholder="Your email"
-        autocomplete="email"
+        id="username"
+        type="text"
+        formControlName="username"
+        placeholder="Username"
+        autocomplete="username"
         class="custom-input"
       />
     </div>
-    @if (email.touched && email.hasError('required')) {
-      <div class="invalid-feedback d-block">Email is required</div>
-    } @else if (email.touched && email.hasError('email')) {
-      <div class="invalid-feedback d-block">Enter a valid email address</div>
+    @if (username.touched && username.hasError('required')) {
+      <div class="invalid-feedback d-block">Username is required</div>
+    } @else if (username.touched && username.hasError('maxlength')) {
+      <div class="invalid-feedback d-block">Username must be at most 30 characters</div>
     }
   </div>
 

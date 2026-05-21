@@ -59,9 +59,14 @@ export class RegisterForm {
   });
 
   /** DRY methods */
+  get firstName(): AbstractControl { return this.registerForm.get('firstName')!; }
+  get lastName(): AbstractControl { return this.registerForm.get('lastName')!; }
+  get username(): AbstractControl { return this.registerForm.get('username')!; }
   get email(): AbstractControl { return this.registerForm.get('email')!; }
   get password(): AbstractControl { return this.registerForm.get('password')!; }
   get repeatPassword(): AbstractControl { return this.registerForm.get('repeatPassword')!; }
+  get genre(): AbstractControl { return this.registerForm.get('genre')!; }
+  get rolId(): AbstractControl { return this.registerForm.get('rolId')!; }
 
   get showMismatch(): boolean {
     return (

@@ -56,7 +56,7 @@
             </svg>
           </button>
         @if (auth.isLoggedIn()) {
-          <span class="nav-user-name">{{ auth.currentUser()?.name }}</span>
+          <a class="nav-user-name" routerLink="/profile">{{ auth.currentUser()?.username }}</a>
           <button class="btn btn-link nav-link p-0" (click)="auth.logout()">Logout</button>
         } @else {
           <a routerLink="/login" class="nav-action-link d-flex align-items-center gap-1">
