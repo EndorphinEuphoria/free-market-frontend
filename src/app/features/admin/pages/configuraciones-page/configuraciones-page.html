@@ -1,0 +1,153 @@
+<app-admin-navbar />
+
+<div class="config-container">
+
+  <div class="config-header">
+    <h1 class="config-title">Configuraciones</h1>
+    <p class="config-subtitle">Personaliza la apariencia y datos de tu comercio</p>
+  </div>
+
+  @if (loading()) {
+    <div class="config-loading">Cargando configuración...</div>
+  } @else {
+    <div class="config-card">
+
+      <!-- Identidad -->
+      <section class="config-section">
+        <h2 class="config-section-title">Identidad del comercio</h2>
+
+        <div class="config-field-group">
+          <div class="config-field">
+            <label class="config-label">Nombre del comercio</label>
+            <input
+              class="config-input"
+              type="text"
+              placeholder="Mi Tienda Online"
+              [value]="form().commerceName"
+              (input)="onInput($event, 'commerceName')"
+            />
+          </div>
+        </div>
+
+        <div class="config-field-group config-field-group--two">
+          <div class="config-field">
+            <label class="config-label">URL del Logo</label>
+            <input
+              class="config-input"
+              type="text"
+              placeholder="https://cdn.mitienda.com/logo.png"
+              [value]="form().logoUrl"
+              (input)="onInput($event, 'logoUrl')"
+            />
+          </div>
+          <div class="config-field">
+            <label class="config-label">URL del Favicon</label>
+            <input
+              class="config-input"
+              type="text"
+              placeholder="https://cdn.mitienda.com/favicon.ico"
+              [value]="form().favicomUrl"
+              (input)="onInput($event, 'favicomUrl')"
+            />
+          </div>
+        </div>
+
+        <!-- Preview logo -->
+        @if (form().logoUrl) {
+          <div class="config-logo-preview">
+            <span class="config-label">Preview logo</span>
+            <img [src]="form().logoUrl" alt="Logo preview" class="config-logo-img" />
+          </div>
+        }
+      </section>
+
+      <div class="config-divider"></div>
+
+      <!-- Estilo visual -->
+      <section class="config-section">
+        <h2 class="config-section-title">Estilo visual</h2>
+
+        <div class="config-field-group config-field-group--two">
+          <div class="config-field">
+            <label class="config-label">Color primario</label>
+            <div class="config-color-row">
+              <input
+                class="config-color-picker"
+                type="color"
+                [value]="form().primaryColor"
+                (input)="onInput($event, 'primaryColor')"
+              />
+              <input
+                class="config-input config-input--hex"
+                type="text"
+                [value]="form().primaryColor"
+                (input)="onInput($event, 'primaryColor')"
+              />
+            </div>
+          </div>
+          <div class="config-field">
+            <label class="config-label">Color secundario</label>
+            <div class="config-color-row">
+              <input
+                class="config-color-picker"
+                type="color"
+                [value]="form().secondaryColor"
+                (input)="onInput($event, 'secondaryColor')"
+              />
+              <input
+                class="config-input config-input--hex"
+                type="text"
+                [value]="form().secondaryColor"
+                (input)="onInput($event, 'secondaryColor')"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="config-field-group">
+          <div class="config-field">
+            <label class="config-label">Fuente principal</label>
+            <select
+              class="config-select"
+              [value]="form().principalFont"
+              (change)="onInput($event, 'principalFont')"
+            >
+              <option value="Roboto">Roboto</option>
+              <option value="Open Sans">Open Sans</option>
+              <option value="Lato">Lato</option>
+              <option value="Montserrat">Montserrat</option>
+              <option value="Poppins">Poppins</option>
+              <option value="Inter">Inter</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <div class="config-divider"></div>
+
+      <!-- Feedback -->
+      @if (error()) {
+        <div class="config-error">{{ error() }}</div>
+      }
+      @if (success()) {
+        <div class="config-success">{{ success() }}</div>
+      }
+
+      <!-- Acciones -->
+      <div class="config-actions">
+        <button class="config-btn config-btn--cancel" (click)="loadConfig()">
+          Cancelar
+        </button>
+        <button
+          class="config-btn config-btn--save"
+          (click)="saveConfig()"
+          [disabled]="saving()"
+        >
+          {{ saving() ? 'Guardando...' : hasExistingConfig() ? 'Actualizar' : 'Crear configuración' }}
+        </button>
+      </div>
+
+    </div>
+  }
+
+</div>
