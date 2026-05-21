@@ -26,52 +26,44 @@
   font-size: 0.875rem;
 }
 
+/* Card */
+
 .config-card {
   background: #fff;
   border: 1px solid #f0f0f0;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 2rem;
-  max-width: 720px;
+  max-width: 760px;
 }
 
+/* Sections */
+
 .config-section {
-  margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .config-section-title {
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #252b42;
-  margin: 0 0 1.25rem;
+  margin: 0;
 }
 
 .config-divider {
+  height: 1px;
+  background: #f0f0f0;
+  margin: 2rem 0;
   border: none;
-  border-top: 1px solid #f0f0f0;
-  margin: 1.75rem 0;
 }
 
-/* Campos */
-.config-field-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.config-field-group--two {
-  flex-direction: row;
-  gap: 1rem;
-}
-
-.config-field-group--two .config-field {
-  flex: 1;
-}
+/* Fields */
 
 .config-field {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: 0.4rem;
 }
 
 .config-label {
@@ -82,12 +74,13 @@
 
 .config-input,
 .config-select {
-  padding: 0.5rem 0.875rem;
+  width: 100%;
+  padding: 0.55rem 0.875rem;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  font-size: 0.875rem;
-  color: #252b42;
   background: #fff;
+  color: #252b42;
+  font-size: 0.875rem;
   outline: none;
   transition: border-color 0.15s;
 }
@@ -97,65 +90,150 @@
   border-color: #23856d;
 }
 
-.config-input--hex {
-  min-width: 0;
-  flex: 1;
+/* Upload Grid */
+
+.config-upload-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 220px);
+  gap: 1rem;
 }
 
-/* Color picker */
+.config-upload-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Dropzone */
+
+.dropzone {
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 1rem;
+  min-height: 170px;
+  background: #fafafa;
+  transition: 0.2s;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.dropzone--active {
+  border-color: #23856d;
+  background: #f0faf6;
+}
+
+.dropzone-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.dropzone-text {
+  font-size: 0.75rem;
+  color: #737373;
+  line-height: 1.4;
+}
+
+.dropzone-text span {
+  font-size: 0.7rem;
+  color: #9e9e9e;
+}
+
+.dropzone-input {
+  margin-top: 0.75rem;
+  width: 100%;
+  font-size: 0.75rem;
+}
+
+/* Preview */
+
+.img-preview-wrapper {
+  position: relative;
+}
+
+.img-preview {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: white;
+  border: 1px solid #e5e5e5;
+}
+
+.img-preview--favicon {
+  width: 48px;
+  height: 48px;
+}
+
+.img-preview-remove {
+  position: absolute;
+  top: -0.4rem;
+  right: -0.4rem;
+
+  width: 1.35rem;
+  height: 1.35rem;
+
+  border: none;
+  border-radius: 999px;
+
+  background: rgba(0,0,0,0.65);
+  color: white;
+
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+/* Colors */
+
+.config-colors-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
 .config-color-row {
   display: flex;
-  align-items: center;
   gap: 0.625rem;
+  align-items: center;
 }
 
 .config-color-picker {
-  width: 40px;
+  width: 42px;
   height: 38px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: 2px;
-  cursor: pointer;
   background: #fff;
+  cursor: pointer;
+  padding: 2px;
 }
 
-/* Logo preview */
-.config-logo-preview {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-  margin-top: 0.5rem;
-}
-
-.config-logo-img {
-  max-height: 60px;
-  max-width: 200px;
-  border: 1px solid #f0f0f0;
-  border-radius: 8px;
-  padding: 0.5rem;
-  object-fit: contain;
+.config-input--hex {
+  flex: 1;
 }
 
 /* Feedback */
+
 .config-error {
   padding: 0.75rem 1rem;
+  border-radius: 8px;
   background: #fef2f2;
   color: #dc2626;
-  border-radius: 8px;
   font-size: 0.875rem;
-  margin-bottom: 1rem;
 }
 
 .config-success {
   padding: 0.75rem 1rem;
+  border-radius: 8px;
   background: #e8f5f1;
   color: #23856d;
-  border-radius: 8px;
   font-size: 0.875rem;
-  margin-bottom: 1rem;
 }
 
-/* Acciones */
+/* Actions */
+
 .config-actions {
   display: flex;
   justify-content: flex-end;
@@ -163,13 +241,13 @@
 }
 
 .config-btn {
-  padding: 0.5rem 1.25rem;
+  padding: 0.55rem 1.25rem;
   border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
   border: none;
-  transition: background 0.15s;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.15s;
 }
 
 .config-btn--cancel {
@@ -178,12 +256,20 @@
   border: 1px solid #e0e0e0;
 }
 
-.config-btn--cancel:hover { background: #ebebeb; }
+.config-btn--cancel:hover {
+  background: #ebebeb;
+}
 
 .config-btn--save {
   background: #23856d;
-  color: #fff;
+  color: white;
 }
 
-.config-btn--save:hover { background: #1a6b57; }
-.config-btn--save:disabled { background: #9dc9bf; cursor: not-allowed; }
+.config-btn--save:hover {
+  background: #1a6b57;
+}
+
+.config-btn--save:disabled {
+  background: #9dc9bf;
+  cursor: not-allowed;
+}

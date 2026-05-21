@@ -8,5 +8,6 @@ import { DeliveriesTableComponent } from '../../components/deliveries-table/deli
   standalone: true,
   imports: [AdminNavbar, ReservaTableComponent, DeliveriesTableComponent],
   templateUrl: './analitycs-page.html',
+  styleUrl: './analitycs-page.css'
 })
 export class AnalyticsPageComponent {}

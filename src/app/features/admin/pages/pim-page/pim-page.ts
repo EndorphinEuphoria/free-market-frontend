@@ -7,5 +7,6 @@ import { UserTableComponent } from '../../components/user-table/user-table';
   standalone: true,
   imports: [AdminNavbar, UserTableComponent],
   templateUrl: './pim-page.html',
+  styleUrl: './pim-page.css'
 })
 export class PimPageComponent {}

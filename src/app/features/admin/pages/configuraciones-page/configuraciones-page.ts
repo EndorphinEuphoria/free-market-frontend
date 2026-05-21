@@ -53,6 +53,12 @@ export class ConfiguracionesPageComponent implements OnInit {
     updateAt: ''
   });
 
+  logoPreview = signal<string | null>(null);
+  faviconPreview = signal<string | null>(null);
+
+  isDraggingLogo = signal(false);
+  isDraggingFavicon = signal(false);
+
   ngOnInit() {
     this.loadConfig();
   }
@@ -98,4 +104,114 @@ loadConfig() {
   onInput(e: Event, field: keyof ConfigRequest) {
     this.updateField(field, (e.target as HTMLInputElement).value);
   }
+  onDragEnter(e: DragEvent, type: 'logo' | 'favicon') {
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (type === 'logo') {
+    this.isDraggingLogo.set(true);
+  } else {
+    this.isDraggingFavicon.set(true);
+  }
+}
+
+onDragOver(e: DragEvent, type: 'logo' | 'favicon') {
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (e.dataTransfer) {
+    e.dataTransfer.dropEffect = 'copy';
+  }
+
+  if (type === 'logo') {
+    this.isDraggingLogo.set(true);
+  } else {
+    this.isDraggingFavicon.set(true);
+  }
+}
+
+onDragLeave(e: DragEvent, type: 'logo' | 'favicon') {
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (type === 'logo') {
+    this.isDraggingLogo.set(false);
+  } else {
+    this.isDraggingFavicon.set(false);
+  }
+}
+
+onDrop(e: DragEvent, type: 'logo' | 'favicon') {
+  e.preventDefault();
+  e.stopPropagation();
+
+  this.isDraggingLogo.set(false);
+  this.isDraggingFavicon.set(false);
+
+  const file = e.dataTransfer?.files?.[0];
+
+  if (file && file.type.startsWith('image/')) {
+    this.readImageFile(file, type);
+  }
+}
+
+onFileInputChange(e: Event, type: 'logo' | 'favicon') {
+  const file = (e.target as HTMLInputElement).files?.[0];
+
+  if (file) {
+    this.readImageFile(file, type);
+  }
+}
+
+private readImageFile(file: File, type: 'logo' | 'favicon') {
+  const reader = new FileReader();
+
+  reader.onload = (ev) => {
+    const dataUrl = ev.target?.result as string;
+
+    if (type === 'logo') {
+      this.logoPreview.set(dataUrl);
+
+      this.form.update(f => ({
+        ...f,
+        logoUrl: dataUrl
+      }));
+
+    } else {
+
+      this.faviconPreview.set(dataUrl);
+
+      this.form.update(f => ({
+        ...f,
+        favicomUrl: dataUrl
+      }));
+    }
+  };
+
+  reader.readAsDataURL(file);
+}
+
+clearImage(type: 'logo' | 'favicon') {
+
+  if (type === 'logo') {
+
+    this.logoPreview.set(null);
+
+    this.form.update(f => ({
+      ...f,
+      logoUrl: ''
+    }));
+
+  } else {
+
+    this.faviconPreview.set(null);
+
+    this.form.update(f => ({
+      ...f,
+      favicomUrl: ''
+    }));
+
+  }
+
+}
 }
