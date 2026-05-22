@@ -2,10 +2,11 @@ import { Component, inject, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { Navbar } from './features/home/components/navbar/navbar';
 import { CommonModule } from '@angular/common';
+import { FloatingCart } from "./features/shop/components/floating-cart/floating-cart";
 
 @Component({
   selector: 'app-root',
-  imports: [Navbar, RouterOutlet, CommonModule],
+  imports: [Navbar, RouterOutlet, CommonModule, FloatingCart],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

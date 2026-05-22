@@ -1,6 +1,7 @@
 import { Component, HostListener, inject, signal } from '@angular/core';
 import { Auth } from '../../../../core/services/auth';
-import { RouterLinkActive, RouterLinkWithHref } from '@angular/router';
+import { Router, RouterLinkActive, RouterLinkWithHref } from '@angular/router';
+import { Cart } from '../../../../core/services/cart';
 
 @Component({
   selector: 'app-navbar',
@@ -10,9 +11,13 @@ import { RouterLinkActive, RouterLinkWithHref } from '@angular/router';
 })
 export class Navbar {
   readonly auth = inject(Auth)
+  readonly router = inject(Router)
+  readonly cartService = inject(Cart)
+
 
   isScrolled = signal(false);
   isMobileMenuOpen = signal(false);
+  isInShop = signal(false);
 
   // Agrega sombra al navbar cuando se hace scroll
   @HostListener('window:scroll')
@@ -22,5 +27,16 @@ export class Navbar {
 
   toggleMobileMenu(): void {
     this.isMobileMenuOpen.update(v => !v);
+  }
+
+  openCart(): void {
+    if (!this.auth.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return
+    }
+    if (!this.router.url.startsWith('/shop')) {
+      return;
+    }
+    this.cartService.openCart();
   }
 }
