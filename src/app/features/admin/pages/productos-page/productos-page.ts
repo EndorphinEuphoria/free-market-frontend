@@ -1,23 +1,7 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminNavbar } from '../../components/admin-navbar/admin-navbar';
-
-export interface ProductoResponse {
-  id: number;
-  proovedorNombre: string;
-  name: string;
-  url: string;
-  price: number;
-  stock: number;
-}
-
-export interface ProductoRequest {
-  proovedorNombre: string;
-  name: string;
-  url: string;
-  price: number;
-  stock: number;
-}
+import { ProductosService, ProductoResponse, ProductoRequest } from '../../../../core/services/productos-service';
 
 export interface FormErrors {
   name?: string;
@@ -43,21 +27,20 @@ const EMPTY_FORM: ProductoRequest = {
 })
 export class ProductosPageComponent implements OnInit {
 
-  productos = signal<ProductoResponse[]>([]);
-  loading = signal(true);
-  error = signal<string | null>(null);
-  filterText = signal('');
+  private productosService = inject(ProductosService);
 
-  showModal = signal(false);
-  saving = signal(false);
-  formError = signal<string | null>(null);
-  formErrors = signal<FormErrors>({});
+  productos     = signal<ProductoResponse[]>([]);
+  loading       = signal(true);
+  error         = signal<string | null>(null);
+  filterText    = signal('');
+  showModal     = signal(false);
+  saving        = signal(false);
+  formError     = signal<string | null>(null);
+  formErrors    = signal<FormErrors>({});
   editingProducto = signal<ProductoResponse | null>(null);
-  form = signal<ProductoRequest>({ ...EMPTY_FORM });
-
-  // Drag & drop
+  form          = signal<ProductoRequest>({ ...EMPTY_FORM });
   isDraggingOver = signal(false);
-  imagePreview = signal<string | null>(null);
+  imagePreview  = signal<string | null>(null);
 
   filteredProductos = computed(() => {
     const text = this.filterText().toLowerCase();
@@ -75,12 +58,17 @@ export class ProductosPageComponent implements OnInit {
   loadProductos() {
     this.loading.set(true);
     this.error.set(null);
-    this.productos.set([
-      { id: 1, proovedorNombre: 'Distribuidora Norte', name: 'Auriculares Bluetooth', url: 'https://placehold.co/48x48', price: 15990, stock: 42 },
-      { id: 2, proovedorNombre: 'TechSur Ltda.', name: 'Mouse Inalámbrico', url: 'https://placehold.co/48x48', price: 9990, stock: 7 },
-      { id: 3, proovedorNombre: 'Distribuidora Norte', name: 'Teclado Mecánico', url: 'https://placehold.co/48x48', price: 34990, stock: 15 },
-    ]);
-    this.loading.set(false);
+
+    this.productosService.getAll().subscribe({
+      next: data => {
+        this.productos.set(data);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set('Error al cargar productos');
+        this.loading.set(false);
+      }
+    });
   }
 
   onFilterText(e: Event) {
@@ -125,86 +113,100 @@ export class ProductosPageComponent implements OnInit {
 
     this.form.update(f => ({ ...f, [field]: value }));
 
-    // Limpiar error del campo al escribir
     this.formErrors.update(errs => {
       const copy = { ...errs };
       delete copy[field as keyof FormErrors];
       return copy;
     });
 
-    // Actualizar preview si editan URL manualmente
     if (field === 'url') {
       this.imagePreview.set(raw.trim() ? raw.trim() : null);
     }
   }
 
-  // ── Validación ────────────────────────────────────────────────────────────
-
   private validateForm(): boolean {
     const f = this.form();
     const errors: FormErrors = {};
 
-    if (!f.name.trim()) {
-      errors.name = 'El nombre es obligatorio.';
-    }
-    if (!f.proovedorNombre.trim()) {
-      errors.proovedorNombre = 'El proveedor es obligatorio.';
-    }
-    if (!f.price || f.price < 1) {
-      errors.price = 'El precio debe ser al menos $1.';
-    }
-    if (!f.stock || f.stock < 1) {
-      errors.stock = 'El stock debe ser al menos 1 unidad.';
-    }
+    if (!f.name.trim())            errors.name = 'El nombre es obligatorio.';
+    if (!f.proovedorNombre.trim()) errors.proovedorNombre = 'El proveedor es obligatorio.';
+    if (!f.price || f.price < 1)   errors.price = 'El precio debe ser al menos $1.';
+    if (!f.stock || f.stock < 1)   errors.stock = 'El stock debe ser al menos 1 unidad.';
 
     this.formErrors.set(errors);
     return Object.keys(errors).length === 0;
   }
 
-  // ── Drag & Drop ───────────────────────────────────────────────────────────
+  saveProducto() {
+    if (!this.validateForm()) return;
 
-  /** dragenter y dragover deben llamar preventDefault() para que drop funcione */
-  onDragEnter(e: DragEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.isDraggingOver.set(true);
-  }
+    this.saving.set(true);
+    this.formError.set(null);
 
-  onDragOver(e: DragEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    // Necesario: sin esto el browser cancela el drop
-    if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = 'copy';
+    const f = this.form();
+    const editing = this.editingProducto();
+
+    if (editing) {
+      this.productosService.update(editing.id, f).subscribe({
+        next: updated => {
+          this.productos.update(list =>
+            list.map(p => p.id === updated.id ? updated : p)
+          );
+          this.saving.set(false);
+          this.closeModal();
+        },
+        error: () => {
+          this.formError.set('Error al actualizar el producto.');
+          this.saving.set(false);
+        }
+      });
+    } else {
+      this.productosService.create(f).subscribe({
+        next: created => {
+          this.productos.update(list => [...list, created]);
+          this.saving.set(false);
+          this.closeModal();
+        },
+        error: () => {
+          this.formError.set('Error al crear el producto.');
+          this.saving.set(false);
+        }
+      });
     }
-    this.isDraggingOver.set(true);
   }
 
-  onDragLeave(e: DragEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.isDraggingOver.set(false);
+  deleteProducto(id: number) {
+    if (!confirm('¿Eliminar este producto?')) return;
+
+    this.productosService.delete(id).subscribe({
+      next: () => {
+        this.productos.update(list => list.filter(p => p.id !== id));
+      },
+      error: () => {
+        alert('Error al eliminar el producto.');
+      }
+    });
   }
+
+  // Drag & drop (sin cambios)
+  onDragEnter(e: DragEvent) { e.preventDefault(); e.stopPropagation(); this.isDraggingOver.set(true); }
+  onDragOver(e: DragEvent)  { e.preventDefault(); e.stopPropagation(); if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy'; this.isDraggingOver.set(true); }
+  onDragLeave(e: DragEvent) { e.preventDefault(); e.stopPropagation(); this.isDraggingOver.set(false); }
 
   onDrop(e: DragEvent) {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
     this.isDraggingOver.set(false);
 
+    
+    
     const file = e.dataTransfer?.files?.[0];
     if (file && file.type.startsWith('image/')) {
       this.readImageFile(file);
       return;
     }
 
-    // Si arrastraron una URL desde el navegador
-    const url = e.dataTransfer?.getData('text/uri-list')
-      || e.dataTransfer?.getData('text/plain')
-      || '';
-
-    if (url.startsWith('http')) {
-      this.setImageUrl(url.trim());
-    }
+    const url = e.dataTransfer?.getData('text/uri-list') || e.dataTransfer?.getData('text/plain') || '';
+    if (url.startsWith('http')) this.setImageUrl(url.trim());
   }
 
   onFileInputChange(e: Event) {
@@ -213,8 +215,16 @@ export class ProductosPageComponent implements OnInit {
   }
 
   private readImageFile(file: File) {
+    const maxSizeMB = 2;
+    const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+    if (file.size > maxSizeBytes) {
+    this.formError.set(`La imagen no puede superar los ${maxSizeMB}MB.`);
+    return;
+    }
+
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = ev => {
       const dataUrl = ev.target?.result as string;
       this.imagePreview.set(dataUrl);
       this.form.update(f => ({ ...f, url: dataUrl }));
@@ -230,36 +240,6 @@ export class ProductosPageComponent implements OnInit {
   clearImage() {
     this.imagePreview.set(null);
     this.form.update(f => ({ ...f, url: '' }));
-  }
-
-  // ── Guardar ───────────────────────────────────────────────────────────────
-
-  saveProducto() {
-    if (!this.validateForm()) return;
-
-    this.saving.set(true);
-    this.formError.set(null);
-
-    setTimeout(() => {
-      const f = this.form();
-      if (this.editingProducto()) {
-        // TODO: PUT /productos/{id}
-        this.productos.update(list =>
-          list.map(p => p.id === this.editingProducto()!.id ? { ...p, ...f } : p)
-        );
-      } else {
-        // TODO: POST /productos
-        const newId = Math.max(0, ...this.productos().map(p => p.id)) + 1;
-        this.productos.update(list => [...list, { id: newId, ...f }]);
-      }
-      this.saving.set(false);
-      this.closeModal();
-    }, 400);
-  }
-
-  deleteProducto(id: number) {
-    if (!confirm('¿Eliminar este producto?')) return;
-    this.productos.update(list => list.filter(p => p.id !== id));
   }
 
   formatPrice(price: number): string {

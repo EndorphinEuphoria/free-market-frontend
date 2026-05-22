@@ -129,20 +129,13 @@
         <!-- Imagen drag & drop -->
         <div class="modal-field">
           <label class="modal-label">Imagen del producto</label>
-
           @if (imagePreview()) {
-            <div class="img-preview-wrapper">
-              <img [src]="imagePreview()!" alt="Preview" class="img-preview" />
-              <button class="img-preview-remove" (click)="clearImage()" title="Quitar imagen">✕</button>
-            </div>
-            <input
-              class="modal-input modal-input--url"
-              type="text"
-              placeholder="URL de imagen"
-              [value]="form().url"
-              (input)="onFormInput($event, 'url')"
-            />
-          } @else {
+          <div class="img-preview-wrapper">
+            <img [src]="imagePreview()!" alt="Preview" class="img-preview" />
+            <button class="img-preview-remove" (click)="clearImage()" title="Quitar imagen">✕</button>
+          </div>
+          <p class="modal-input modal-input--url modal-input--readonly">{{ form().url }}</p>
+          }@else {
             <div
               class="dropzone"
               [class.dropzone--active]="isDraggingOver()"

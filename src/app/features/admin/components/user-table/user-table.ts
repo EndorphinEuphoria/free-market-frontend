@@ -1,12 +1,19 @@
 import {Component,inject,OnInit,signal,computed} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {AdminService,User} from '../../../../core/services/admin';
+import {AdminService,User,Role} from '../../../../core/services/admin';
 import { finalize } from 'rxjs';
 
 @Component({selector: 'app-user-table',standalone: true,imports: [CommonModule, FormsModule],templateUrl: './user-table.html',styleUrl: './user-table.css'})
 
 export class UserTableComponent implements OnInit {
+
+
+roles = signal<Role[]>([]);
+
+updatingRoles = signal<number[]>([]);
+
+
 
 private adminService =inject(AdminService);
   users = signal<User[]>([]);
@@ -24,11 +31,41 @@ private adminService =inject(AdminService);
     );
 
     isUpdating(userId: number): boolean {
+    return this.updatingUsers().includes(userId);
+    }
 
-  return this
-    .updatingUsers()
-    .includes(userId);
+  isUpdatingRole(userId: number): boolean {
+  return this.updatingRoles().includes(userId);
+  }
 
+
+loadRoles() {
+
+  this.adminService.getRoles()
+    .subscribe({
+
+      next: data => {
+
+        this.roles.set(data);
+
+      },
+
+      error: () => {
+
+        console.error(
+          'Error cargando roles'
+        );
+
+      }
+
+    });
+
+}
+
+
+
+isProtectedUser(user: User): boolean {
+  return user.username === 'admin';
 }
   // ─────────────────────────────
   // FILTERED USERS
@@ -37,6 +74,7 @@ private adminService =inject(AdminService);
   filteredUsers = computed(() => {
 
     return this.users().filter(u => {
+
 
       const matchUsername =
         u.username
@@ -72,6 +110,7 @@ private adminService =inject(AdminService);
   ngOnInit() {
 
     this.loadUsers();
+    this.loadRoles();
 
   }
 
@@ -103,6 +142,8 @@ private adminService =inject(AdminService);
           this.error.set(
             'Error al cargar usuarios'
           );
+
+
 
           this.loading.set(false);
 
@@ -171,7 +212,7 @@ toggleStatus(user: User) {
             list.filter(id => id !== user.id)
           );
 
-        }, 10000);
+        }, 3000);
 
       })
     )
@@ -230,4 +271,68 @@ toggleStatus(user: User) {
 
   }
 
+  changeRole(user: User, roleId: number) {
+  if (this.isUpdatingRole(user.id)) return;
+
+  this.updatingRoles.update(list => [...list, user.id]);
+
+  this.adminService
+    .changeRole(user.id, roleId)
+    .pipe(
+      finalize(() => {
+        setTimeout(() => {
+          this.updatingRoles.update(list =>
+            list.filter(id => id !== user.id)
+          );
+        }, 3000); 
+      })
+    )
+    .subscribe({
+      next: () => {
+        const selectedRole = this.roles().find(r => r.idRol === roleId);
+        this.users.update(list =>
+          list.map(u =>
+            u.id === user.id
+              ? { ...u, idRol: roleId, rol: selectedRole?.nombreRol ?? u.rol }
+              : u
+          )
+        );
+      },
+      error: () => {
+        alert('Error al cambiar rol');
+      }
+    });
+}
+
+pendingRoles = signal<Record<number, number>>({});
+
+getPendingRole(userId: number): number | null {
+  return this.pendingRoles()[userId] ?? null;
+}
+
+onRoleSelect(user: User, roleId: number) {
+  if (roleId === user.idRol) {
+    // Si vuelve al rol original, limpia el pending
+    this.pendingRoles.update(p => {
+      const copy = { ...p };
+      delete copy[user.id];
+      return copy;
+    });
+    return;
+  }
+  this.pendingRoles.update(p => ({ ...p, [user.id]: roleId }));
+}
+
+saveRole(user: User) {
+  const roleId = this.getPendingRole(user.id);
+  if (roleId === null) return;
+
+  this.changeRole(user, roleId);
+
+  this.pendingRoles.update(p => {
+    const copy = { ...p };
+    delete copy[user.id];
+    return copy;
+  });
+}
 }

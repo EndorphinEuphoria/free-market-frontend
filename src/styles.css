@@ -32,8 +32,88 @@ body {
 /* ── CSS custom properties (defaults — overridden at runtime by login-page) ── */
 
 :root {
-  --color-primary: #2563EB;
+  --color-primary:       #2563EB;
   --color-primary-hover: #1D4ED8;
-  --font-heading: 'DM Serif Display', Georgia, serif;
-  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-heading:        'DM Serif Display', Georgia, serif;
+  --font-body:           'DM Sans', system-ui, sans-serif;
+
+  /* Variables del comercio */
+  --commerce-primary:   #23856d;
+  --commerce-secondary: #252b42;
+  --commerce-font:      'Roboto';
+}
+
+/* ================================
+   THEME OVERRIDES — commerce colors
+================================ */
+
+/* Botones primarios verdes */
+.productos-btn-create,
+.modal-btn--save,
+.config-btn--save,
+.pim-btn--save,
+.carousel__btn,
+.slide__cta,
+.btn-upload {
+  background: var(--commerce-primary) !important;
+}
+
+.productos-btn-create:hover,
+.modal-btn--save:hover,
+.config-btn--save:hover,
+.carousel__btn:hover,
+.slide__cta:hover {
+  filter: brightness(0.88);
+  background: var(--commerce-primary) !important;
+}
+
+/* Badges activos */
+.pim-badge--active,
+.at-badge--activa,
+.at-badge--entregado,
+.at-badge--completada,
+.productos-stock {
+  color: var(--commerce-primary) !important;
+  background: color-mix(in srgb, var(--commerce-primary) 12%, white) !important;
+}
+
+/* Textos de color primario */
+.pim-role-loading,
+.config-success,
+.carousel__step-chip {
+  color: var(--commerce-primary) !important;
+}
+
+/* Borders focus */
+.pim-input:focus,
+.pim-select:focus,
+.pim-select-role:focus,
+.config-input:focus,
+.config-select:focus,
+.productos-input:focus,
+.modal-input:focus {
+  border-color: var(--commerce-primary) !important;
+}
+
+/* Dropzone activo */
+.dropzone--active {
+  border-color: var(--commerce-primary) !important;
+  background: color-mix(in srgb, var(--commerce-primary) 6%, white) !important;
+}
+
+/* Avatar admin */
+.admin-avatar {
+  background: color-mix(in srgb, var(--commerce-primary) 15%, white) !important;
+  color: var(--commerce-primary) !important;
+}
+
+/* Carousel progress y dots */
+.carousel__progress-bar,
+.carousel__dot--active {
+  background: var(--commerce-primary) !important;
+}
+
+/* Fuente global */
+body {
+  font-family: var(--commerce-font), var(--font-body), sans-serif;
 }
