@@ -3,7 +3,6 @@
   <!-- Sidebar filtros -->
   <aside class="catalog-sidebar">
     <app-product-filters
-      [categories]="categories()"
       [filters]="filters()"
       (filtersChange)="onFiltersChange($event)"
     />
@@ -24,7 +23,6 @@
           <option value="relevance">Relevancia</option>
           <option value="price-asc">Precio: menor a mayor</option>
           <option value="price-desc">Precio: mayor a menor</option>
-          <option value="rating-desc">Mejor valorados</option>
           <option value="newest">Más recientes</option>
         </select>
 
@@ -54,34 +52,37 @@
       </div>
     </div>
 
-    <!-- Loading -->
-    <div *ngIf="isLoading()" class="catalog-loading">
+  <!-- Loading -->
+  @if (isLoading()) {
+    <div class="catalog-loading">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Cargando...</span>
       </div>
     </div>
+  }
 
-    <!-- Sin resultados -->
-    <div *ngIf="!isLoading() && filteredProducts().length === 0" class="catalog-empty">
+  <!-- Sin resultados -->
+  @if (!isLoading() && filteredProducts().length === 0) {
+    <div class="catalog-empty">
       <p>No se encontraron productos con los filtros seleccionados.</p>
-      <button class="btn btn-outline-primary btn-sm" (click)="onFiltersChange({ categories: [], minPrice: 0, maxPrice: 1000, minRating: 0, inStockOnly: false, sortBy: 'relevance' })">
+      <button class="btn btn-outline-primary btn-sm"
+        (click)="onFiltersChange({ minPrice: 0, maxPrice: 1000000, sortBy: 'relevance', inStockOnly: false })">
         Limpiar filtros
       </button>
     </div>
+  }
 
-    <!-- Grid de productos -->
-    <div
-      *ngIf="!isLoading()"
-      class="products-grid"
-      [class.list-view]="viewMode() === 'list'"
-    >
-      <app-product
-        *ngFor="let product of filteredProducts(); trackBy: trackById"
-        [product]="product"
-        (addToCart)="onAddToCart($event)"
-        (toggleFavorite)="onToggleFavorite($event)"
-      />
+  <!-- Grid de productos -->
+  @if (!isLoading()) {
+    <div class="products-grid" [class.list-view]="viewMode() === 'list'">
+      @for (product of filteredProducts(); track product.id) {
+        <app-product
+          [product]="product"
+          (addToCart)="onAddToCart($event)"
+        />
+      }
     </div>
+  }
 
   </main>
 </div>

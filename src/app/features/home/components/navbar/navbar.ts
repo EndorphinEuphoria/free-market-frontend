@@ -1,6 +1,7 @@
 import { Component, HostListener, inject, signal } from '@angular/core';
 import { Auth } from '../../../../core/services/auth';
-import { RouterLinkActive, RouterLinkWithHref } from '@angular/router';
+import { Router, RouterLinkActive, RouterLinkWithHref } from '@angular/router';
+import { Cart } from '../../../../core/services/cart';
 import { ConfigService } from '../../../../core/services/config-service';
 
 @Component({
@@ -10,11 +11,14 @@ import { ConfigService } from '../../../../core/services/config-service';
   styleUrl: './navbar.css',
 })
 export class Navbar {
-  readonly auth         = inject(Auth);
+  readonly auth = inject(Auth)
+  readonly router = inject(Router)
+  readonly cartService = inject(Cart)
   readonly configService = inject(ConfigService);
 
   isScrolled       = signal(false);
   isMobileMenuOpen = signal(false);
+  isInShop = signal(false);
 
   @HostListener('window:scroll')
   onScroll(): void {
@@ -23,5 +27,16 @@ export class Navbar {
 
   toggleMobileMenu(): void {
     this.isMobileMenuOpen.update(v => !v);
+  }
+
+  openCart(): void {
+    if (!this.auth.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return
+    }
+    if (!this.router.url.startsWith('/shop')) {
+      return;
+    }
+    this.cartService.openCart();
   }
 }

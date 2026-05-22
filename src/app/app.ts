@@ -3,12 +3,13 @@ import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 import { Navbar } from './features/home/components/navbar/navbar';
 import { CommonModule } from '@angular/common';
+import { FloatingCart } from "./features/shop/components/floating-cart/floating-cart";
 import { ConfigService } from './core/services/config-service';
 import { Auth } from './core/services/auth';
 
 @Component({
   selector: 'app-root',
-  imports: [Navbar, RouterOutlet, CommonModule],
+  imports: [Navbar, RouterOutlet, CommonModule, FloatingCart],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
