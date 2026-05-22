@@ -1,0 +1,31 @@
+<div class="cart-drawer" [class.open]="cartService.isOpen()">
+  <div class="cart-header">
+    <h2>Carrito ({{ cartService.totalItems() }})</h2>
+    <button (click)="cartService.closeCart()">✕</button>
+  </div>
+
+  @if (cartService.items().length === 0) {
+    <p class="cart-empty">Tu carrito está vacío</p>
+  }
+
+  @for (item of cartService.items(); track item.idProduct) {
+    <div class="cart-item">
+      <img [src]="item.url" [alt]="item.name" />
+      <div class="cart-item-info">
+        <p>{{ item.name }}</p>
+        <p>${{ item.price }}</p>
+        <div class="qty-controls">
+          <button (click)="cartService.updateQuantity(item.idProduct, item.quantity - 1)">−</button>
+          <span>{{ item.quantity }}</span>
+          <button (click)="cartService.updateQuantity(item.idProduct, item.quantity + 1)">+</button>
+        </div>
+      </div>
+      <button (click)="cartService.removeItem(item.idProduct)">🗑</button>
+    </div>
+  }
+
+  <div class="cart-footer">
+    <p><strong>Total: ${{ cartService.totalPrice() }}</strong></p>
+    <button class="btn-checkout" (click)="checkout()">Confirmar reserva</button>
+  </div>
+</div>

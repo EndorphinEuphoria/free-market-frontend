@@ -1,5 +1,5 @@
 import { Component, input, output } from '@angular/core';
-import { Prod } from '../../models/product.model';
+import { ProductoResponse } from '../../models/product.model';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -10,10 +10,10 @@ import { CommonModule } from '@angular/common';
 })
 
 export class Product {
-  product = input.required<Prod>();
+  product = input.required<ProductoResponse>();
 
-  addToCart = output<Prod>();
-  toggleFavorite = output<Prod>();
+  addToCart = output<ProductoResponse>();
+  toggleFavorite = output<ProductoResponse>();
 
   onAddToCart(event: MouseEvent): void {
     event.stopPropagation();
@@ -23,9 +23,5 @@ export class Product {
   onToggleFavorite(event: MouseEvent): void {
     event.stopPropagation();
     this.toggleFavorite.emit(this.product());
-  }
-
-  get stars(): number[] {
-    return Array(5).fill(0);
   }
 }
