@@ -273,3 +273,11 @@
   background: #9dc9bf;
   cursor: not-allowed;
 }
+
+.config-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+

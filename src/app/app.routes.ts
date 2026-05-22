@@ -8,6 +8,8 @@ import { ProfilePage } from './features/auth/pages/profile-page/profile-page';
 import { AdminDashboardPage } from './features/admin/pages/admin-dashboard-page/admin-dashboard-page';
 import { PimPageComponent } from './features/admin/pages/pim-page/pim-page'; 
 import { AnalyticsPageComponent } from './features/admin/pages/analitycs-page/analitycs-page'; 
+import {ConfiguracionesPageComponent} from './features/admin/pages/configuraciones-page/configuraciones-page'
+import{ProductosPageComponent} from './features/admin/pages/productos-page/productos-page'
 export const routes: Routes = [
   {
     path: '',
@@ -36,7 +38,14 @@ export const routes: Routes = [
    component: PimPageComponent 
   }, 
   { path: 'admin/analytics', 
-    component: AnalyticsPageComponent }, 
+  component: AnalyticsPageComponent },
+
+  { path: 'admin/configuraciones', 
+  component: ConfiguracionesPageComponent },
+  
+  { path: 'admin/productos', 
+  component: ProductosPageComponent },
+
   // {
   //   path: 'home',
   //   Component:HomePage

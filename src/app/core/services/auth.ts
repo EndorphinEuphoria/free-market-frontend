@@ -15,15 +15,7 @@ export interface User {
   rol?: { rolName: string };
 }
 
-export interface User2 {
-  id: number;
-  username: string;
-  email: string;
-  firstname: string;
-  lastname: string;
-  status: 'active' | 'inactive';
-  idRol: number;
-}
+
 
 export interface UserToken {
   userId: number;
@@ -91,10 +83,21 @@ export class Auth {
   }
 
   logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    this._currentUser.set(null);
-    this.router.navigate(['/login']);
+  const refreshToken = localStorage.getItem('refreshToken');
+
+  if (refreshToken) {
+    this.http.post(`${this.API_URL}/logout`, { refreshToken }).subscribe({
+      complete: () => this._clearSession()
+    });
+  } else {
+    this._clearSession();
+  }
+  }
+
+  private _clearSession(): void {
+  localStorage.clear();
+  this._currentUser.set(null);
+  this.router.navigate(['/login']);
   }
  
   restoreSession(): void {
@@ -130,16 +133,4 @@ export class Auth {
     return JSON.parse(decodePayload);
   }
 
-  // ─── PIM / Usuarios ────────────────────────────────────────
-  getAllUsers(): Observable<User2[]> {
-    return this.http.get<User2[]>(`${this.API_URL}/users`);
-  }
-
-  deleteUser(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.API_URL}/users/${id}`);
-  }
-
-  toggleStatus(id: number, status: 'active' | 'inactive'): Observable<User2> {
-    return this.http.patch<User2>(`${this.API_URL}/users/${id}/status`, { status });
-  }
 }

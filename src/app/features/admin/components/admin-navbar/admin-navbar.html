@@ -3,8 +3,12 @@
     
 
 
-    <a class="admin-brand" routerLink="/admin">FreeMarket</a>
-
+    <a class="admin-brand" routerLink="/admin">@if (configService.commerceName()) {{{ configService.commerceName() }}
+    } @else {
+      <span class="spinner-border spinner-border-sm" role="status"></span>
+    }
+    
+</a>    
     <ul class="admin-nav-links">
       <li><a class="admin-nav-link" routerLink="/admin/pim" routerLinkActive="admin-nav-link--active">PIM</a></li>
       <li><a class="admin-nav-link" routerLink="/admin/analytics" routerLinkActive="admin-nav-link--active">Analytics</a></li>

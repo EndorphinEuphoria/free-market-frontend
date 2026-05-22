@@ -1,59 +1,54 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
-
-export interface ReservaResponse {
-  idReserva: number;
-  reserveDate: string;
-  totalPrice: number;
-  status: 'ACTIVA' | 'CANCELADA' | 'COMPLETADA';
-}
+// reserva-table.ts
+import { Component, inject, OnInit, signal,computed } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { AnalyticsService, ReservaResponse } from '../../../../core/services/analityc-service';
 
 @Component({
   selector: 'app-reserva-table',
   standalone: true,
-  imports: [CommonModule],
+  imports:[DecimalPipe],
   templateUrl: './reserva-table.html',
   styleUrl: './reserva-table.css'
 })
 export class ReservaTableComponent implements OnInit {
 
-  reservas = signal<ReservaResponse[]>([]);
-  loading = signal(true);
-  error = signal<string | null>(null);
+  private analyticsService = inject(AnalyticsService);
 
-  filterId = signal('');
-  filterStatus = signal<'all' | 'ACTIVA' | 'CANCELADA' | 'COMPLETADA'>('all');
-
-  filteredReservas = computed(() => {
-    return this.reservas().filter(r => {
-      const matchId = this.filterId() === '' ||
-        r.idReserva.toString().includes(this.filterId());
-      const matchStatus = this.filterStatus() === 'all' ||
-        r.status === this.filterStatus();
-      return matchId && matchStatus;
-    });
-  });
+  reservas  = signal<ReservaResponse[]>([]);
+  loading   = signal(true);
+  error     = signal<string | null>(null);
 
   ngOnInit() {
-    this.loadReservas();
+    this.analyticsService.getAllReservas().subscribe({
+      next: data => {
+        this.reservas.set(data);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set('Error al cargar reservas');
+        this.loading.set(false);
+      }
+    });
   }
-  
-loadReservas() {
-  this.loading.set(true);
-  this.error.set(null);
-  // TODO: conectar servicio
-  this.loading.set(false);
+
+page        = signal(1);
+pageSize    = signal(10);
+
+pagedReservas = computed(() => {
+  const start = (this.page() - 1) * this.pageSize();
+  const end   = start + this.pageSize();
+  return this.reservas().slice(start, end);
+});
+
+totalPages = computed(() =>
+  Math.ceil(this.reservas().length / this.pageSize())
+);
+
+prevPage() {
+  if (this.page() > 1) this.page.update(p => p - 1);
 }
 
-  onFilterId(e: Event) {
-    this.filterId.set((e.target as HTMLInputElement).value);
-  }
-
-  onFilterStatus(e: Event) {
-    this.filterStatus.set((e.target as HTMLSelectElement).value as any);
-  }
-
-  formatPrice(price: number): string {
-    return price.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
-  }
+nextPage() {
+  if (this.page() < this.totalPages()) this.page.update(p => p + 1);
+}
 }

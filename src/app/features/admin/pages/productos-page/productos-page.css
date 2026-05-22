@@ -433,3 +433,14 @@
 }
 .modal-btn--save:hover { background: #1a6b57; }
 .modal-btn--save:disabled { background: #9dc9bf; cursor: not-allowed; }
+
+.modal-input--readonly {
+  background: #f9f9f9;
+  color: #9e9e9e;
+  cursor: default;
+  font-size: 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
+}
