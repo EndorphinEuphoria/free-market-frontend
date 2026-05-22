@@ -1,8 +1,14 @@
+/* ================================
+   CONTAINER
+================================ */
 .pim-container {
   padding: 2rem;
+  font-family: inherit;
 }
 
-/* Filtros */
+/* ================================
+   FILTROS
+================================ */
 .pim-filters {
   display: flex;
   gap: 0.75rem;
@@ -11,7 +17,8 @@
   align-items: center;
 }
 
-.pim-input, .pim-select {
+.pim-input,
+.pim-select {
   padding: 0.5rem 0.875rem;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -23,7 +30,8 @@
   min-width: 180px;
 }
 
-.pim-input:focus, .pim-select:focus {
+.pim-input:focus,
+.pim-select:focus {
   border-color: #23856d;
 }
 
@@ -43,7 +51,25 @@
   color: #252b42;
 }
 
-/* Tabla */
+/* ================================
+   ESTADOS (loading / error / empty)
+================================ */
+.pim-loading,
+.pim-error,
+.pim-empty {
+  text-align: center;
+  padding: 2rem;
+  font-size: 0.875rem;
+  color: #737373;
+}
+
+.pim-error {
+  color: #dc2626;
+}
+
+/* ================================
+   TABLA
+================================ */
 .pim-table-wrapper {
   overflow-x: auto;
   border-radius: 10px;
@@ -57,7 +83,7 @@
   font-size: 0.875rem;
 }
 
-.pim-table th {
+.pim-table thead th {
   text-align: left;
   padding: 0.875rem 1rem;
   font-size: 0.75rem;
@@ -67,33 +93,43 @@
   letter-spacing: 0.05em;
   background: #fafafa;
   border-bottom: 1px solid #f0f0f0;
+  white-space: nowrap;
 }
 
-.pim-table td {
+.pim-table tbody td {
   padding: 0.875rem 1rem;
   border-bottom: 1px solid #f8f8f8;
   color: #252b42;
   vertical-align: middle;
 }
 
-.pim-table tr:last-child td {
+.pim-table tbody tr:last-child td {
   border-bottom: none;
 }
 
-.pim-table tr:hover td {
+.pim-table tbody tr:hover td {
   background: #fafafa;
 }
 
-.pim-td-muted { color: #737373; }
-.pim-td-bold  { font-weight: 600; }
+.pim-td-muted {
+  color: #737373;
+  font-size: 0.8rem;
+}
 
-/* Badge */
+.pim-td-bold {
+  font-weight: 600;
+}
+
+/* ================================
+   BADGE ESTADO
+================================ */
 .pim-badge {
   display: inline-block;
   padding: 0.25rem 0.625rem;
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .pim-badge--active {
@@ -106,48 +142,116 @@
   color: #dc2626;
 }
 
-/* Acciones */
+/* ================================
+   SELECT ROL
+================================ */
+.pim-select-role {
+  padding: 0.45rem 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.8rem;
+  color: #252b42;
+  outline: none;
+  max-width: 150px;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+
+.pim-select-role:focus {
+  border-color: #23856d;
+}
+
+.pim-select-role:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #f9f9f9;
+}
+
+.pim-role-loading {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.7rem;
+  color: #23856d;
+}
+
+/* ================================
+   ACCIONES
+================================ */
 .pim-td-actions {
-  display: flex;
-  gap: 0.5rem;
+  white-space: nowrap;
 }
 
 .pim-btn {
-  padding: 0.35rem 0.75rem;
-  border-radius: 6px;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
   border: none;
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
+  margin-right: 0.4rem;
+}
+
+.pim-btn:last-child {
+  margin-right: 0;
 }
 
 .pim-btn--toggle {
-  background: #f0f0f0;
+  min-width: 110px;
+  background: #f3f4f6;
   color: #252b42;
 }
 
-.pim-btn--toggle:hover { background: #e0e0e0; }
+.pim-btn--toggle:hover:not(:disabled) {
+  background: #e5e7eb;
+}
 
 .pim-btn--delete {
   background: #fef2f2;
   color: #dc2626;
 }
 
-.pim-btn--delete:hover { background: #fee2e2; }
-
-/* Estados */
-.pim-loading, .pim-error, .pim-empty {
-  padding: 2rem;
-  text-align: center;
-  color: #737373;
-  font-size: 0.875rem;
+.pim-btn--delete:hover:not(:disabled) {
+  background: #fee2e2;
 }
 
-.pim-error { color: #dc2626; }
+.pim-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: #f3f4f6;
+  color: #aaa;
+}
 
-.pim-count {
-  margin-top: 0.75rem;
+.pim-protected {
   font-size: 0.8rem;
   color: #737373;
+  font-weight: 600;
+}
+
+/* ================================
+   CONTADOR
+================================ */
+.pim-count {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: #737373;
+  text-align: right;
+}
+
+.pim-role-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pim-btn--save {
+  background: #23856d;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.pim-btn--save:hover:not(:disabled) {
+  background: #1a6b57;
 }

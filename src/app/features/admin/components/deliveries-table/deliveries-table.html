@@ -1,72 +1,61 @@
-<div class="pim-container">
-  <div class="pim-filters">
-    <input
-      class="pim-input"
-      type="text"
-      placeholder="Buscar por ID delivery..."
-      [value]="filterId()"
-      (input)="onFilterId($event)"
-    />
-    <input
-      class="pim-input"
-      type="text"
-      placeholder="Buscar por ID reserva..."
-      [value]="filterIdReserva()"
-      (input)="onFilterIdReserva($event)"
-    />
-    <select class="pim-select" [value]="filterStatus()" (change)="onFilterStatus($event)">
-      <option value="all">Todos los estados</option>
-      <option value="PENDIENTE">Pendiente</option>
-      <option value="EN_CAMINO">En camino</option>
-      <option value="ENTREGADO">Entregado</option>
-      <option value="CANCELADO">Cancelado</option>
-    </select>
-    <button class="pim-btn-refresh" (click)="loadDeliveries()">↻ Recargar</button>
-  </div>
+<!-- deliveries-table.html -->
+<div class="at-wrapper">
 
   @if (loading()) {
-    <div class="pim-loading">Cargando deliveries...</div>
-  } @else if (error()) {
-    <div class="pim-error">{{ error() }}</div>
-  } @else {
-    <div class="pim-table-wrapper">
-      <table class="pim-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>ID Reserva</th>
-            <th>ID Usuario</th>
-            <th>Fecha inicio</th>
-            <th>Fecha estimada</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (delivery of filteredDeliveries(); track delivery.idDelivery) {
-            <tr>
-              <td class="pim-td-muted">{{ delivery.idDelivery }}</td>
-              <td class="pim-td-muted">{{ delivery.idReserva }}</td>
-              <td class="pim-td-muted">{{ delivery.idUsuario }}</td>
-              <td>{{ delivery.deliveryBeginDate }}</td>
-              <td>{{ delivery.deliveryEndDate }}</td>
-              <td>
-                <span class="pim-badge"
-                  [class.pim-badge--pendiente]="delivery.status === 'PENDIENTE'"
-                  [class.pim-badge--en-camino]="delivery.status === 'EN_CAMINO'"
-                  [class.pim-badge--entregado]="delivery.status === 'ENTREGADO'"
-                  [class.pim-badge--cancelado]="delivery.status === 'CANCELADO'">
-                  {{ delivery.status }}
-                </span>
-              </td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="6" class="pim-empty">No se encontraron deliveries</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-    <p class="pim-count">{{ filteredDeliveries().length }} delivery(s) encontrado(s)</p>
+    <div class="at-loading">Cargando deliveries...</div>
   }
+
+  @else if (error()) {
+    <div class="at-error">{{ error() }}</div>
+  }
+
+  @else {
+    <table class="at-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Reserva</th>
+          <th>Usuario</th>
+          <th>Inicio</th>
+          <th>Entrega estimada</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (d of pagedReservas(); track d.idDelivery) {
+          <tr>
+            <td class="at-muted">{{ d.idDelivery }}</td>
+            <td class="at-muted">#{{ d.idReserva }}</td>
+            <td class="at-muted">{{ d.idUsuario }}</td>
+            <td>{{ d.deliveryBeginDate }}</td>
+            <td>{{ d.deliveryEndDate }}</td>
+            <td>
+              <span class="at-badge" [class]="'at-badge--' + d.status.toLowerCase()">
+                {{ d.status }}
+              </span>
+            </td>
+          </tr>
+        }
+        @empty {
+          <tr>
+            <td colspan="6" class="at-empty">No hay deliveries registrados</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="at-footer">
+      <span class="at-count">{{ deliveries().length }} delivery(s) encontrado(s)</span>
+      <div class="at-pagination">
+        <button class="at-page-btn" (click)="prevPage()" [disabled]="page() === 1">
+          Anterior
+        </button>
+        <span class="at-page-info">Página {{ page() }} de {{ totalPages() }}</span>
+        <button class="at-page-btn" (click)="nextPage()" [disabled]="page() === totalPages()">
+          Siguiente
+        </button>
+      </div>
+    </div>
+  }
+
 </div>

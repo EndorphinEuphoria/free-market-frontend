@@ -1,51 +1,28 @@
-/* Reutiliza el mismo sistema visual que pim */
-.pim-container { padding: 0; }
-
-.pim-filters {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  align-items: center;
+.at-wrapper {
+  width: 100%;
 }
 
-.pim-input, .pim-select {
-  padding: 0.5rem 0.875rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  color: #252b42;
-  background: #fff;
-  outline: none;
-  transition: border-color 0.15s;
-  min-width: 160px;
-}
-.pim-input:focus, .pim-select:focus { border-color: #23856d; }
-
-.pim-btn-refresh {
-  padding: 0.5rem 1rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  background: #fff;
+.at-loading,
+.at-error,
+.at-empty {
+  padding: 2rem;
+  text-align: center;
   font-size: 0.875rem;
   color: #737373;
-  cursor: pointer;
-  transition: background 0.15s;
 }
-.pim-btn-refresh:hover { background: #f5f5f5; color: #252b42; }
 
-.pim-table-wrapper {
-  overflow-x: auto;
-  border-radius: 10px;
-  border: 1px solid #f0f0f0;
+.at-error {
+  color: #dc2626;
 }
-.pim-table {
+
+.at-table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
   font-size: 0.875rem;
+  background: #fff;
 }
-.pim-table th {
+
+.at-table thead th {
   text-align: left;
   padding: 0.875rem 1rem;
   font-size: 0.75rem;
@@ -55,35 +32,107 @@
   letter-spacing: 0.05em;
   background: #fafafa;
   border-bottom: 1px solid #f0f0f0;
+  white-space: nowrap;
 }
-.pim-table td {
+
+.at-table tbody td {
   padding: 0.875rem 1rem;
   border-bottom: 1px solid #f8f8f8;
   color: #252b42;
   vertical-align: middle;
 }
-.pim-table tr:last-child td { border-bottom: none; }
-.pim-table tr:hover td { background: #fafafa; }
-.pim-td-muted { color: #737373; }
-.pim-td-bold  { font-weight: 600; }
 
-/* Badges de estado */
-.pim-badge {
+.at-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.at-table tbody tr:hover td {
+  background: #fafafa;
+}
+
+.at-muted { color: #737373; font-size: 0.8rem; }
+.at-bold  { font-weight: 600; }
+
+/* Badges */
+.at-badge {
   display: inline-block;
   padding: 0.25rem 0.625rem;
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 600;
+  white-space: nowrap;
 }
-.pim-badge--activa    { background: #e8f5f1; color: #23856d; }
-.pim-badge--cancelada { background: #fef2f2; color: #dc2626; }
-.pim-badge--completada{ background: #eff6ff; color: #2563eb; }
 
-.pim-loading, .pim-error, .pim-empty {
-  padding: 2rem;
-  text-align: center;
-  color: #737373;
-  font-size: 0.875rem;
+.at-badge--activa,
+.at-badge--entregado,
+.at-badge--completada {
+  background: #e8f5f1;
+  color: #23856d;
 }
-.pim-error { color: #dc2626; }
-.pim-count { margin-top: 0.75rem; font-size: 0.8rem; color: #737373; }
+
+.at-badge--cancelada,
+.at-badge--cancelado {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.at-badge--pendiente {
+  background: #fef9e7;
+  color: #d97706;
+}
+
+.at-badge--en_camino {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.at-count {
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  color: #737373;
+  text-align: right;
+  border-top: 1px solid #f0f0f0;
+  margin: 0;
+}
+
+.at-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.at-page-btn {
+  padding: 0.4rem 0.85rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.8rem;
+  color: #252b42;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.at-page-btn:hover:not(:disabled) {
+  background: #f5f5f5;
+}
+
+.at-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.at-page-info {
+  font-size: 0.8rem;
+  color: #737373;
+}
+
+.at-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #f0f0f0;
+}
