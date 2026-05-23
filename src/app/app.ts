@@ -17,22 +17,34 @@ export class App implements OnInit {
   private router        = inject(Router);
   private configService = inject(ConfigService);
   private auth          = inject(Auth);
-  private platformId    = inject(PLATFORM_ID); // ← NUEVO
+  private platformId    = inject(PLATFORM_ID);
+
+  constructor() {
+    if (isPlatformBrowser(inject(PLATFORM_ID))) {
+      this.auth.restoreSession();
+    }
+  }
 
   private noNavRoutes: string[] = [
     '/login', '/register', '/profile',
     '/admin', '/admin/pim', '/admin/analytics',
-    '/admin/configuraciones', '/admin/productos'
+    '/admin/configuraciones', '/admin/productos',
+    '/delivery','/delivery/entregas',
+    '/delivery/:id',
   ];
+
+  
 
   protected readonly title = signal('free-market');
 
   ngOnInit() {
     console.log('AppComponent ngOnInit, isBrowser:', isPlatformBrowser(this.platformId));
-    if (!isPlatformBrowser(this.platformId)) return;+
+    if (!isPlatformBrowser(this.platformId)) return;
     this.auth.restoreSession();
     this.loadAndApplyConfig();
   }
+
+ 
 
   private loadAndApplyConfig() {
   console.log('loadAndApplyConfig llamado');
@@ -67,6 +79,6 @@ export class App implements OnInit {
 }
 
   showNavbar(): Boolean {
-    return !this.noNavRoutes.includes(this.router.url);
-  }
+  return !this.noNavRoutes.includes(this.router.url) && !this.router.url.startsWith('/delivery');
+}
 }

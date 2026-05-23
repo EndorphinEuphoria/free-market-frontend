@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AnalyticsPageComponent } from './analitycs-page';
+import { DeliveryNavbar } from './delivery-navbar';
 
-describe('AnalitycsPage', () => {
-  let component: AnalyticsPageComponent;
-  let fixture: ComponentFixture<AnalyticsPageComponent>;
+describe('DeliveryNavbar', () => {
+  let component: DeliveryNavbar;
+  let fixture: ComponentFixture<DeliveryNavbar>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AnalyticsPageComponent],
+      imports: [DeliveryNavbar],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AnalyticsPageComponent);
+    fixture = TestBed.createComponent(DeliveryNavbar);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

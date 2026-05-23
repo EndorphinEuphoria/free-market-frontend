@@ -1,0 +1,84 @@
+<app-delivery-navbar />
+<div class="delivery-container">
+  <div class="delivery-header">
+    <div>
+      <h1 class="delivery-title">My Deliveries</h1>
+      <p class="delivery-subtitle">History of orders you have taken</p>
+    </div>
+    <button class="delivery-btn-refresh" (click)="loadEntregas(auth.currentUser()!.userId)">
+      Reload
+    </button>
+  </div>
+
+  @if (error())      { <div class="delivery-error">{{ error() }}</div> }
+  @if (successMsg()) { <div class="delivery-success">{{ successMsg() }}</div> }
+
+  @if (loading()) {
+    <div class="delivery-loading">Loading your deliveries...</div>
+  } @else {
+    <div class="delivery-stats">
+      <div class="stat-card">
+        <span class="stat-number">{{ totalEntregas() }}</span>
+        <span class="stat-label">Total deliveries</span>
+      </div>
+      <div class="stat-card stat-card--blue">
+        <span class="stat-number">{{ enCamino() }}</span>
+        <span class="stat-label">On the way</span>
+      </div>
+      <div class="stat-card stat-card--green">
+        <span class="stat-number">{{ entregadas() }}</span>
+        <span class="stat-label">Completed</span>
+      </div>
+    </div>
+
+    <div class="delivery-table-wrapper">
+      <table class="delivery-table">
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Start date</th>
+            <th>Delivery date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (entrega of entregas(); track entrega.idDelivery) {
+            <tr>
+              <td class="delivery-td-bold">Customer #{{ entrega.idUsuario }}</td>
+              <td class="delivery-td-muted">{{ entrega.deliveryBeginDate }}</td>
+              <td class="delivery-td-muted">{{ entrega.status === 'ENTREGADO' ? entrega.deliveryEndDate : '—' }}</td>
+              <td>
+                <span class="delivery-badge" [class]="getStatusClass(entrega.status)">
+                  {{ getStatusLabel(entrega.status) }}
+                </span>
+              </td>
+              <td>
+                @if (entrega.status === 'EN_CAMINO') {
+                  <button
+                    class="delivery-btn delivery-btn--entregado"
+                    (click)="marcarEntregado(entrega)"
+                    [disabled]="updatingId() === entrega.idDelivery">
+                    {{ updatingId() === entrega.idDelivery ? '...' : '✓ Complete' }}
+                  </button>
+                } @else if (entrega.status === 'ENTREGADO') {
+                  <span class="delivery-td-muted">✓ Completed</span>
+                } @else {
+                  <span class="delivery-td-muted">—</span>
+                }
+              </td>
+            </tr>
+          }
+          @empty {
+            <tr>
+              <td colspan="5" class="delivery-empty">
+                You have no deliveries registered yet
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="delivery-count">{{ totalEntregas() }} delivery(s) in total</p>
+  }
+</div>

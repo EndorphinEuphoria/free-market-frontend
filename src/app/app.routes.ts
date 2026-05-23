@@ -10,6 +10,8 @@ import { PimPageComponent } from './features/admin/pages/pim-page/pim-page';
 import { AnalyticsPageComponent } from './features/admin/pages/analitycs-page/analitycs-page'; 
 import {ConfiguracionesPageComponent} from './features/admin/pages/configuraciones-page/configuraciones-page'
 import{ProductosPageComponent} from './features/admin/pages/productos-page/productos-page'
+import{DeliveryDashboardPage} from './features/delivery/pages/delivery-dashboard-page/delivery-dashboard-page'
+import{MisEntregasPage} from './features/delivery/pages/mis-entregas-page/mis-entregas-page'
 export const routes: Routes = [
   {
     path: '',
@@ -24,10 +26,15 @@ export const routes: Routes = [
     path: 'register',
     component: RegisterPage
   },
+  { path: 'delivery', 
+    component: DeliveryDashboardPage 
+  },
+  { path: 'delivery/entregas', 
+      component: MisEntregasPage 
+    }, 
   {
     path:'home',
     component: HomePage
-    //canActivate: [authGuard]
   },
   {
   path: 'admin',

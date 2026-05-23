@@ -18,18 +18,18 @@ export class ReservaTableComponent implements OnInit {
   loading   = signal(true);
   error     = signal<string | null>(null);
 
-  ngOnInit() {
-    this.analyticsService.getAllReservas().subscribe({
-      next: data => {
-        this.reservas.set(data);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.error.set('Error al cargar reservas');
-        this.loading.set(false);
-      }
-    });
-  }
+ngOnInit() {
+  this.analyticsService.getAllReservas().subscribe({
+    next: data => {
+      this.reservas.set(data);
+      this.loading.set(false);
+    },
+    error: () => {
+      this.error.set('Error al cargar reservas');
+      this.loading.set(false);
+    }
+  });
+}
 
 page        = signal(1);
 pageSize    = signal(10);
@@ -50,5 +50,14 @@ prevPage() {
 
 nextPage() {
   if (this.page() < this.totalPages()) this.page.update(p => p + 1);
+}
+
+getStatusLabel(status: string): string {
+  const map: Record<string, string> = {
+    'RESERVADO': 'Reserved',
+    'COMPLETO':  'Completed',
+    'CANCELADO': 'Cancelled',
+  };
+  return map[status] ?? status;
 }
 }

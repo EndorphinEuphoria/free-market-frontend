@@ -255,3 +255,41 @@
 .pim-btn--save:hover:not(:disabled) {
   background: #1a6b57;
 }
+
+.at-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.at-count {
+  font-size: 0.8rem;
+  color: #737373;
+}
+
+.at-pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.at-page-btn {
+  padding: 0.4rem 0.85rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.8rem;
+  color: #252b42;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.at-page-btn:hover:not(:disabled) { background: #f5f5f5; }
+.at-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.at-page-info {
+  font-size: 0.8rem;
+  color: #737373;
+}

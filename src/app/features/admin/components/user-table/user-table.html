@@ -1,175 +1,145 @@
 <div class="pim-container">
 
-  <!-- FILTROS -->
+  <!-- FILTERS -->
   <div class="pim-filters">
-
     <input
       class="pim-input"
       type="text"
-      placeholder="Buscar por username..."
+      placeholder="Search by username..."
       [value]="filterUsername()"
       (input)="onFilterUsername($event)"
     />
-
     <input
       class="pim-input"
       type="text"
-      placeholder="Buscar por ID..."
+      placeholder="Search by ID..."
       [value]="filterId()"
       (input)="onFilterId($event)"
     />
-
     <select
       class="pim-select"
       [value]="filterStatus()"
       (change)="onFilterStatus($event)"
     >
-      <option value="all">Todos los estados</option>
-      <option value="ACTIVO">Activo</option>
-      <option value="INACTIVO">Inactivo</option>
+      <option value="all">All statuses</option>
+      <option value="ACTIVO">Active</option>
+      <option value="INACTIVO">Inactive</option>
     </select>
-
-    <button class="pim-btn-refresh" (click)="loadUsers()">
-      Recargar
-    </button>
-
+    <button class="pim-btn-refresh" (click)="loadUsers()">Reload</button>
   </div>
 
-  <!-- LOADING -->
   @if (loading()) {
-    <div class="pim-loading">Cargando usuarios...</div>
-  }
-
-  <!-- ERROR -->
-  @else if (error()) {
+    <div class="pim-loading">Loading users...</div>
+  } @else if (error()) {
     <div class="pim-error">{{ error() }}</div>
-  }
-
-  <!-- TABLA -->
-  @else {
-
+  } @else {
     <div class="pim-table-wrapper">
       <table class="pim-table">
-
         <thead>
           <tr>
             <th>ID</th>
             <th>Username</th>
-            <th>Nombre</th>
+            <th>Name</th>
             <th>Email</th>
-            <th>Rol</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
-
         <tbody>
-
-          @for (user of filteredUsers(); track user.id) {
+          @for (user of pagedUsers(); track user.id) {
             <tr>
-
               <td class="pim-td-muted">{{ user.id }}</td>
-
               <td class="pim-td-bold">{{ user.username }}</td>
-
               <td>{{ user.firstname }} {{ user.lastname }}</td>
-
               <td class="pim-td-muted">{{ user.email }}</td>
 
-              <!-- ROL -->
+              <!-- ROLE -->
               <td>
                 <div class="pim-role-wrapper">
                   <select
                     class="pim-select-role"
                     (change)="onRoleSelect(user, +($any($event.target).value))"
                     [disabled]="isProtectedUser(user) || isUpdatingRole(user.id)"
-                    [title]="isProtectedUser(user) ? 'Usuario protegido' : 'Cambiar rol'"
+                    [title]="isProtectedUser(user) ? 'Protected user' : 'Change role'"
                   >
                     @for (role of roles(); track role.idRol) {
-                      <option
-                        [value]="role.idRol"
-                        [selected]="role.idRol === user.idRol"
-                      >
+                      <option [value]="role.idRol" [selected]="role.idRol === user.idRol">
                         {{ role.nombreRol }}
                       </option>
                     }
                   </select>
-
-                    <button
-                      class="pim-btn pim-btn--save"
-                      (click)="saveRole(user)"
-                      [disabled]="isUpdatingRole(user.id) || isProtectedUser(user) || getPendingRole(user.id) === null">
-                      @if (isUpdatingRole(user.id)) {
-                        Guardando...
-                      } @else {
-                        Guardar
-                      }
-                    </button>
-                  
+                  <button
+                    class="pim-btn pim-btn--save"
+                    (click)="saveRole(user)"
+                    [disabled]="isUpdatingRole(user.id) || isProtectedUser(user) || getPendingRole(user.id) === null"
+                  >
+                    {{ isUpdatingRole(user.id) ? 'Saving...' : 'Save' }}
+                  </button>
                 </div>
-
                 @if (isUpdatingRole(user.id)) {
-                  <small class="pim-role-loading">Cambiando rol...</small>
+                  <small class="pim-role-loading">Changing role...</small>
                 }
               </td>
 
-              <!-- ESTADO -->
+              <!-- STATUS -->
               <td>
                 <span
                   class="pim-badge"
                   [class.pim-badge--active]="user.state === 'ACTIVO'"
                   [class.pim-badge--inactive]="user.state === 'INACTIVO'"
                 >
-                  {{ user.state === 'ACTIVO' ? 'Activo' : 'Inactivo' }}
+                  {{ user.state === 'ACTIVO' ? 'Active' : 'Inactive' }}
                 </span>
               </td>
 
-              <!-- ACCIONES -->
+              <!-- ACTIONS -->
               <td class="pim-td-actions">
-
                 <button
                   class="pim-btn pim-btn--toggle"
                   (click)="toggleStatus(user)"
                   [disabled]="isUpdating(user.id) || isProtectedUser(user)"
-                  [title]="isProtectedUser(user) ? 'Usuario protegido' : (user.state === 'ACTIVO' ? 'Desactivar' : 'Activar')"
+                  [title]="isProtectedUser(user) ? 'Protected user' : (user.state === 'ACTIVO' ? 'Deactivate' : 'Activate')"
                 >
                   @if (isUpdating(user.id)) {
-                    Cambiando...
+                    Changing...
                   } @else if (isProtectedUser(user)) {
-                    Protegido
+                    Protected
                   } @else {
-                    {{ user.state === 'ACTIVO' ? 'Desactivar' : 'Activar' }}
+                    {{ user.state === 'ACTIVO' ? 'Deactivate' : 'Activate' }}
                   }
                 </button>
-
                 <button
                   class="pim-btn pim-btn--delete"
                   [class.pim-protected]="isProtectedUser(user)"
                   (click)="deleteUser(user.id)"
                   [disabled]="isUpdating(user.id) || isProtectedUser(user)"
-                  [title]="isProtectedUser(user) ? 'Usuario protegido' : 'Eliminar usuario'"
+                  [title]="isProtectedUser(user) ? 'Protected user' : 'Delete user'"
                 >
-                  {{ isProtectedUser(user) ? 'Protegido' : 'Eliminar' }}
+                  {{ isProtectedUser(user) ? 'Protected' : 'Delete' }}
                 </button>
-
               </td>
 
             </tr>
           }
-
           @empty {
             <tr>
-              <td colspan="7" class="pim-empty">No se encontraron usuarios</td>
+              <td colspan="7" class="pim-empty">No users found</td>
             </tr>
           }
-
         </tbody>
-
       </table>
     </div>
 
-    <p class="pim-count">{{ filteredUsers().length }} usuario(s) encontrado(s)</p>
-
+    <!-- PAGINATION -->
+    <div class="at-footer">
+      <span class="at-count">{{ filteredUsers().length }} user(s) found</span>
+      <div class="at-pagination">
+        <button class="at-page-btn" (click)="prevPage()" [disabled]="page() === 1">Previous</button>
+        <span class="at-page-info">Page {{ page() }} of {{ totalPages() }}</span>
+        <button class="at-page-btn" (click)="nextPage()" [disabled]="page() === totalPages()">Next</button>
+      </div>
+    </div>
   }
 
 </div>

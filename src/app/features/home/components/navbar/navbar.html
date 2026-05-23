@@ -2,8 +2,13 @@
   <div class="container-fluid px-4">
 
     <!-- Brand -->
-     <a class="navbar-brand brand-name" routerLink="/home"> @if (configService.commerceName()) {{{ configService.commerceName() }}
-    } @else {
+    <a class="navbar-brand brand-name d-flex align-items-center gap-2" routerLink="/home">
+  @if (configService.logoUrl()) {
+    <img [src]="configService.logoUrl()" alt="logo" class="navbar-logo" />
+  }
+  @if (configService.commerceName()) {
+    {{ configService.commerceName() }}
+  } @else {
     <span class="spinner-border spinner-border-sm" role="status"></span>
   }
 </a>

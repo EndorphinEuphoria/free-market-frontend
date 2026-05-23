@@ -1,0 +1,10 @@
+@import '../delivery-dashboard-page/delivery-dashboard-page.css';
+
+.delivery-success {
+  padding: 0.75rem 1rem;
+  background: #e8f5f1;
+  color: #23856d;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}

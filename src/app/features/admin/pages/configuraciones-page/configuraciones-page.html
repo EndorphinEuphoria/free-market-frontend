@@ -3,24 +3,24 @@
 <div class="config-container">
 
   <div class="config-header">
-    <h1 class="config-title">Configuraciones</h1>
-    <p class="config-subtitle">Personaliza la apariencia y datos de tu comercio</p>
+    <h1 class="config-title">Settings</h1>
+    <p class="config-subtitle">Customize the appearance and data of your store</p>
   </div>
 
   @if (loading()) {
-    <div class="config-loading">Cargando configuración...</div>
+    <div class="config-loading">Loading configuration...</div>
   } @else {
 
     <div class="config-card">
 
-      <!-- IDENTIDAD -->
+      <!-- IDENTITY -->
       <section class="config-section">
 
-        <h2 class="config-section-title">Identidad del comercio</h2>
+        <h2 class="config-section-title">Store identity</h2>
 
         <div class="config-field">
-          <label class="config-label">Nombre del comercio</label>
-          <input class="config-input" type="text" placeholder="Mi Tienda Online"
+          <label class="config-label">Store name</label>
+          <input class="config-input" type="text" placeholder="My Online Store"
             [value]="form().commerceName" (input)="onInput($event, 'commerceName')" />
         </div>
 
@@ -28,7 +28,7 @@
 
           <!-- LOGO -->
           <div class="config-upload-card">
-            <label class="config-label">Logo del comercio</label>
+            <label class="config-label">Store logo</label>
             <div class="dropzone" [class.dropzone--active]="isDraggingLogo()"
               (dragenter)="onDragEnter($event, 'logo')" (dragover)="onDragOver($event, 'logo')"
               (dragleave)="onDragLeave($event, 'logo')" (drop)="onDrop($event, 'logo')">
@@ -38,7 +38,7 @@
                   <button type="button" class="img-preview-remove" (click)="clearImage('logo')">✕</button>
                 </div>
               } @else {
-                <p class="dropzone-text">Arrastra el logo aquí<br /><span>PNG, JPG o WEBP</span></p>
+                <p class="dropzone-text">Drag your logo here<br /><span>PNG, JPG or WEBP</span></p>
               }
               <input type="file" accept="image/*" class="dropzone-input" (change)="onFileInputChange($event, 'logo')" />
             </div>
@@ -56,7 +56,7 @@
                   <button type="button" class="img-preview-remove" (click)="clearImage('favicon')">✕</button>
                 </div>
               } @else {
-                <p class="dropzone-text">Arrastra el favicon aquí<br /><span>Idealmente 32x32</span></p>
+                <p class="dropzone-text">Drag your favicon here<br /><span>Ideally 32x32</span></p>
               }
               <input type="file" accept="image/*" class="dropzone-input" (change)="onFileInputChange($event, 'favicon')" />
             </div>
@@ -68,15 +68,15 @@
 
       <div class="config-divider"></div>
 
-      <!-- ESTILO VISUAL -->
+      <!-- VISUAL STYLE -->
       <section class="config-section">
 
-        <h2 class="config-section-title">Estilo visual</h2>
+        <h2 class="config-section-title">Visual style</h2>
 
         <div class="config-colors-grid">
 
           <div class="config-field">
-            <label class="config-label">Color primario</label>
+            <label class="config-label">Primary color</label>
             <div class="config-color-row">
               <input type="color" class="config-color-picker" [value]="form().primaryColor" (input)="onInput($event, 'primaryColor')" />
               <input type="text" class="config-input config-input--hex" [value]="form().primaryColor" (input)="onInput($event, 'primaryColor')" />
@@ -84,7 +84,7 @@
           </div>
 
           <div class="config-field">
-            <label class="config-label">Color secundario</label>
+            <label class="config-label">Secondary color</label>
             <div class="config-color-row">
               <input type="color" class="config-color-picker" [value]="form().secondaryColor" (input)="onInput($event, 'secondaryColor')" />
               <input type="text" class="config-input config-input--hex" [value]="form().secondaryColor" (input)="onInput($event, 'secondaryColor')" />
@@ -94,7 +94,7 @@
         </div>
 
         <div class="config-field">
-          <label class="config-label">Fuente principal</label>
+          <label class="config-label">Primary font</label>
           <select class="config-select" [value]="form().principalFont" (change)="onInput($event, 'principalFont')">
             <option value="Roboto">Roboto</option>
             <option value="Open Sans">Open Sans</option>
@@ -121,15 +121,15 @@
       <div class="config-actions">
 
         <button class="config-btn config-btn--cancel" [disabled]="saving()" (click)="loadConfig()">
-          Cancelar
+          Cancel
         </button>
 
         <button class="config-btn config-btn--default" type="button" [disabled]="saving()" (click)="restoreDefaults()">
-          Restaurar por defecto
+          Restore defaults
         </button>
 
         <button class="config-btn config-btn--save" [disabled]="saving()" (click)="saveConfig()">
-          {{ saving() ? 'Guardando...' : hasExistingConfig() ? 'Actualizar configuración' : 'Crear configuración' }}
+          {{ saving() ? 'Saving...' : 'Save settings' }}
         </button>
 
       </div>
