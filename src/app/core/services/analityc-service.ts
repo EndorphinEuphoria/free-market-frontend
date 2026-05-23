@@ -17,6 +17,15 @@ export interface DeliveryResponse {
   idUsuario: number;
   deliveryBeginDate: string;
   deliveryEndDate: string;
+  idRepartidor: number | null; 
+
+}
+
+export interface UserResponse {
+  id: number;
+  firstname: string;
+  lastname: string;
+  username: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -24,6 +33,7 @@ export class AnalyticsService {
 
   private readonly RESERVA_URL  = 'http://localhost:8086/api-v1/reserve';
   private readonly DELIVERY_URL = 'http://localhost:8086/api-v1/delivery';
+  private readonly AUTH_URL = 'http://localhost:8086/api-v1/auth';
   private readonly http = inject(HttpClient);
 
   getAllReservas(): Observable<ReservaResponse[]> {
@@ -33,4 +43,8 @@ export class AnalyticsService {
   getAllDeliveries(): Observable<DeliveryResponse[]> {
     return this.http.get<DeliveryResponse[]>(`${this.DELIVERY_URL}/all`);
   }
+
+  getUsers(): Observable<UserResponse[]> {
+  return this.http.get<UserResponse[]>(`${this.AUTH_URL}/getall`);
+}
 }

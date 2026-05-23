@@ -1,16 +1,14 @@
 <app-admin-navbar />
-
 <main class="admin-main">
   <div class="admin-container">
 
     <div class="admin-welcome">
-      <h1 class="admin-welcome__title">Bienvenido al panel de administración</h1>
-      <p class="admin-welcome__sub">Sigue estos pasos para configurar tu tienda.</p>
+      <h1 class="admin-welcome__title">Welcome to the admin panel</h1>
+      <p class="admin-welcome__sub">Follow these steps to set up your store.</p>
     </div>
 
     <div class="carousel">
-      <button class="carousel__arrow" (click)="prev()" aria-label="Anterior">&#8592;</button>
-
+      <button class="carousel__arrow" (click)="prev()" aria-label="Previous">&#8592;</button>
       <div style="flex:1; display:flex; flex-direction:column;">
         <div class="carousel__track">
           @for (slide of slides; track slide.step; let i = $index) {
@@ -23,14 +21,12 @@
             </div>
           }
         </div>
-
-        <!-- Barra de progreso del autoplay -->
-       <div class="carousel__progress">
-         <div class="carousel__progress-bar" [class.carousel__progress-bar--reset]="currentSlide() % 2 === 0"></div>
+        <!-- Autoplay progress bar -->
+        <div class="carousel__progress">
+          <div class="carousel__progress-bar" [class.carousel__progress-bar--reset]="currentSlide() % 2 === 0"></div>
+        </div>
       </div>
-      </div>
-
-      <button class="carousel__arrow" (click)="next()" aria-label="Siguiente">&#8594;</button>
+      <button class="carousel__arrow" (click)="next()" aria-label="Next">&#8594;</button>
     </div>
 
     <div class="carousel__dots">
@@ -39,7 +35,7 @@
           class="carousel__dot"
           [class.carousel__dot--active]="i === currentSlide()"
           (click)="goTo(i)"
-          [attr.aria-label]="'Ir al paso ' + (i + 1)"
+          [attr.aria-label]="'Go to step ' + (i + 1)"
         ></button>
       }
     </div>

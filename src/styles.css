@@ -20,6 +20,16 @@ body {
   height: 100%;
 }
 
+.navbar-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.config-card {
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+}
+
 body {
   font-family: var(--font-body, 'DM Sans', system-ui, sans-serif);
   font-size: 16px;
@@ -116,4 +126,26 @@ body {
 /* Fuente global */
 body {
   font-family: var(--commerce-font), var(--font-body), sans-serif;
+}
+
+/* Navbar brand, títulos de página, texto oscuro principal */
+.brand-name,
+.admin-brand,
+.productos-title,
+.config-title,
+.pim-title,
+.analytics-title {
+  color: var(--commerce-secondary) !important;
+}
+
+/* Navbar fondo o borde inferior */
+.navbar,
+.admin-navbar {
+  border-bottom-color: color-mix(in srgb, var(--commerce-secondary) 15%, transparent) !important;
+}
+
+/* Badges de estado secundario */
+.at-badge--pendiente {
+  background: color-mix(in srgb, var(--commerce-secondary) 10%, white) !important;
+  color: var(--commerce-secondary) !important;
 }

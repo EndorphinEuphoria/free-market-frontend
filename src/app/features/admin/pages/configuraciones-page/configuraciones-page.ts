@@ -6,14 +6,14 @@ import { Auth } from '../../../../core/services/auth';
 import { ConfigService, ConfigRequest, ConfigResponse } from '../../../../core/services/config-service';
 
 const EMPTY_FORM: ConfigRequest = {
-  idUser: 0,
-  commerceName: '',
-  logoUrl: '',
-  favicomUrl: '',
-  principalFont: 'Roboto',
-  primaryColor: '#23856d',
+  idUser:         1,
+  commerceName:   '',
+  logoUrl:        '',
+  favicomUrl:     '',
+  principalFont:  'Roboto',
+  primaryColor:   '#23856d',
   secondaryColor: '#252b42',
-  updateAt: ''
+  updateAt:       ''
 };
 
 @Component({
@@ -32,7 +32,6 @@ export class ConfiguracionesPageComponent implements OnInit {
   saving            = signal(false);
   error             = signal<string | null>(null);
   success           = signal<string | null>(null);
-  hasExistingConfig = signal(false);
   configId          = signal<number | null>(null);
 
   form              = signal<ConfigRequest>({ ...EMPTY_FORM });
@@ -49,24 +48,15 @@ export class ConfiguracionesPageComponent implements OnInit {
   loadConfig() {
     this.loading.set(true);
     this.error.set(null);
-    this.success.set(null);
 
-    const userId = this.auth.currentUser()?.userId;
-    if (!userId) {
-      this.loading.set(false);
-      return;
-    }
-
-    this.form.update(f => ({ ...f, idUser: userId }));
-
-    this.configService.getConfig(userId).subscribe({
+    this.configService.getPublicConfig().subscribe({
       next: (data: ConfigResponse) => {
         this.configId.set(data.id);
         this.form.set({
-          idUser:         userId,
+          idUser:         1,
           commerceName:   data.commerceName,
-          logoUrl:        data.logoUrl,
-          favicomUrl:     data.favicomUrl,
+          logoUrl:        data.logoUrl    ?? '',
+          favicomUrl:     data.favicomUrl ?? '',
           principalFont:  data.principalFont,
           primaryColor:   data.primaryColor,
           secondaryColor: data.secondaryColor,
@@ -74,17 +64,80 @@ export class ConfiguracionesPageComponent implements OnInit {
         });
         this.logoPreview.set(data.logoUrl || null);
         this.faviconPreview.set(data.favicomUrl || null);
-        this.hasExistingConfig.set(true);
-        this.configService.applyStyles(this.form()); // ← service
+        this.configService.applyStyles(this.form());
         this.loading.set(false);
       },
       error: () => {
-        this.hasExistingConfig.set(false);
+        this.error.set('Failed to load configuration');
         this.loading.set(false);
       }
     });
   }
-  // Drag & drop
+
+  saveConfig() {
+    if (!this.form().commerceName.trim()) {
+      this.error.set('Store name cannot be empty');
+      setTimeout(() => this.error.set(null), 3000);
+      return;
+    }
+
+    this.saving.set(true);
+    this.error.set(null);
+    this.success.set(null);
+
+    const payload: ConfigRequest = {
+      ...this.form(),
+      updateAt: new Date().toISOString().split('T')[0]
+    };
+
+    this.configService.updateConfig(this.configId()!, payload).subscribe({
+      next: () => {
+        this.configService.applyStyles(payload);
+        this.success.set('Settings updated successfully');
+        setTimeout(() => { this.saving.set(false); this.success.set(null); }, 3000);
+      },
+      error: () => {
+        this.error.set('Failed to update configuration');
+        setTimeout(() => { this.saving.set(false); this.error.set(null); }, 3000);
+      }
+    });
+  }
+
+  restoreDefaults() {
+    if (!this.configId()) return;
+
+    const defaults: ConfigRequest = {
+      idUser:         1,
+      commerceName:   'FreeMarket',
+      logoUrl:        '',
+      favicomUrl:     '',
+      principalFont:  'DM Sans',
+      primaryColor:   '#2563EB',
+      secondaryColor: '#1D4ED8',
+      updateAt:       new Date().toISOString().split('T')[0]
+    };
+
+    this.saving.set(true);
+    this.error.set(null);
+    this.success.set(null);
+
+    this.configService.updateConfig(this.configId()!, defaults).subscribe({
+      next: () => {
+        this.form.set(defaults);
+        this.logoPreview.set(null);
+        this.faviconPreview.set(null);
+        this.configService.applyStyles(defaults);
+        this.success.set('Style restored to defaults');
+        setTimeout(() => { this.saving.set(false); this.success.set(null); }, 3000);
+      },
+      error: () => {
+        this.error.set('Failed to restore configuration');
+        setTimeout(() => { this.saving.set(false); this.error.set(null); }, 3000);
+      }
+    });
+  }
+
+  // ── Drag & drop ──────────────────────────────────────────────
   onDragEnter(e: DragEvent, type: 'logo' | 'favicon') {
     e.preventDefault(); e.stopPropagation();
     type === 'logo' ? this.isDraggingLogo.set(true) : this.isDraggingFavicon.set(true);
@@ -115,12 +168,10 @@ export class ConfiguracionesPageComponent implements OnInit {
   }
 
   private readImageFile(file: File, type: 'logo' | 'favicon') {
-    const maxSizeBytes = 2 * 1024 * 1024;
-    if (file.size > maxSizeBytes) {
-      this.error.set('La imagen no puede superar los 2MB.');
+    if (file.size > 2 * 1024 * 1024) {
+      this.error.set('Image cannot exceed 2MB');
       return;
     }
-
     const reader = new FileReader();
     reader.onload = ev => {
       const dataUrl = ev.target?.result as string;
@@ -149,102 +200,4 @@ export class ConfiguracionesPageComponent implements OnInit {
     const value = (e.target as HTMLInputElement).value;
     this.form.update(f => ({ ...f, [field]: value }));
   }
-
-  saveConfig() {
-
-   if (!this.form().commerceName.trim()) {
-    this.error.set('El nombre del comercio no puede estar vacío');
-    setTimeout(() => this.error.set(null), 3000);
-    return;
-  }  
-
-  this.saving.set(true);
-  this.error.set(null);
-  this.success.set(null);
-
-  const payload: ConfigRequest = {
-    ...this.form(),
-    updateAt: new Date().toISOString().split('T')[0]
-  };
-
-  const userId = this.auth.currentUser()?.userId!;
-
-  if (this.hasExistingConfig()) {
-    this.configService.updateConfig(this.configId()!, payload).subscribe({
-      next: () => {
-        this.configService.applyStyles(payload);
-        this.success.set('Configuración actualizada correctamente');
-        setTimeout(() => {
-          this.saving.set(false);
-          this.success.set(null);
-        }, 3000);
-      },
-      error: () => {
-        this.error.set('Error al actualizar la configuración');
-        setTimeout(() => {
-          this.saving.set(false);
-          this.error.set(null);
-        }, 3000);
-      }
-    });
-  } else {
-    this.configService.createConfig(payload).subscribe({
-      next: () => {
-        this.configService.applyStyles(payload);
-        this.hasExistingConfig.set(true);
-        this.success.set('Configuración creada correctamente');
-        setTimeout(() => {
-          this.saving.set(false);
-          this.success.set(null);
-        }, 3000);
-      },
-      error: () => {
-        this.error.set('Error al crear la configuración');
-        setTimeout(() => {
-          this.saving.set(false);
-          this.error.set(null);
-        }, 3000);
-      }
-    });
-  }
-}
-
-restoreDefaults() {
-  const userId = this.auth.currentUser()?.userId;
-  if (!userId || !this.configId()) return;
-
-  const defaults: ConfigRequest = {
-    idUser:         userId,
-    commerceName:   'FreeMarket',
-    logoUrl:        this.form().logoUrl,
-    favicomUrl:     this.form().favicomUrl,
-    principalFont:  'DM Sans',      
-    primaryColor:   '#2563EB',     
-    secondaryColor: '#1D4ED8',      
-    updateAt:       new Date().toISOString().split('T')[0]
-  };
-
-  this.saving.set(true);
-  this.error.set(null);
-  this.success.set(null);
-
-  this.configService.updateConfig(this.configId()!, defaults).subscribe({
-    next: () => {
-      this.form.set(defaults);
-      this.configService.applyStyles(defaults);
-      this.success.set('Estilo restablecido por defecto');
-      setTimeout(() => {
-        this.saving.set(false);
-        this.success.set(null);
-      }, 3000);
-    },
-    error: () => {
-      this.error.set('Error al restablecer la configuración');
-      setTimeout(() => {
-        this.saving.set(false);
-        this.error.set(null);
-      }, 3000);
-    }
-  });
-}
 }

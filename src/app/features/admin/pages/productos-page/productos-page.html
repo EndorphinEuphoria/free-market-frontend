@@ -4,28 +4,28 @@
 
   <div class="productos-header">
     <div>
-      <h1 class="productos-title">Gestión de Productos</h1>
-      <p class="productos-subtitle">Administra el catálogo de productos de tu comercio</p>
+      <h1 class="productos-title">Product Management</h1>
+      <p class="productos-subtitle">Manage your store's product catalog</p>
     </div>
     <button class="productos-btn-create" (click)="openCreateModal()">
-      + Nuevo producto
+      + New product
     </button>
   </div>
 
-  <!-- Filtros -->
+  <!-- Filters -->
   <div class="productos-filters">
     <input
       class="productos-input"
       type="text"
-      placeholder="Buscar por ID o nombre..."
+      placeholder="Search by ID or name..."
       [value]="filterText()"
       (input)="onFilterText($event)"
     />
-    <button class="productos-btn-refresh" (click)="loadProductos()">↻ Recargar</button>
+    <button class="productos-btn-refresh" (click)="loadProductos()">↻ Reload</button>
   </div>
 
   @if (loading()) {
-    <div class="productos-loading">Cargando productos...</div>
+    <div class="productos-loading">Loading products...</div>
   } @else if (error()) {
     <div class="productos-error">{{ error() }}</div>
   } @else {
@@ -34,12 +34,12 @@
         <thead>
           <tr>
             <th>ID</th>
-            <th>Imagen</th>
-            <th>Nombre</th>
-            <th>Proveedor</th>
-            <th>Precio</th>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Supplier</th>
+            <th>Price</th>
             <th>Stock</th>
-            <th>Acciones</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -61,47 +61,47 @@
               <td>
                 <div class="productos-actions">
                   <button class="productos-btn-edit" (click)="openEditModal(producto)">
-                     Editar
+                    Edit
                   </button>
                   <button class="productos-btn-delete" (click)="deleteProducto(producto.id)">
-                     Eliminar
+                    Delete
                   </button>
                 </div>
               </td>
             </tr>
           } @empty {
             <tr>
-              <td colspan="7" class="productos-empty">No se encontraron productos</td>
+              <td colspan="7" class="productos-empty">No products found</td>
             </tr>
           }
         </tbody>
       </table>
     </div>
-    <p class="productos-count">{{ filteredProductos().length }} producto(s) encontrado(s)</p>
+    <p class="productos-count">{{ filteredProductos().length }} product(s) found</p>
   }
 
 </div>
 
-<!-- Modal crear / editar -->
+<!-- Create / edit modal -->
 @if (showModal()) {
   <div class="modal-overlay" (click)="closeModal()">
     <div class="modal-card" (click)="$event.stopPropagation()">
 
       <div class="modal-header">
-        <h2 class="modal-title">{{ editingProducto() ? 'Editar producto' : 'Nuevo producto' }}</h2>
+        <h2 class="modal-title">{{ editingProducto() ? 'Edit product' : 'New product' }}</h2>
         <button class="modal-close" (click)="closeModal()">✕</button>
       </div>
 
       <div class="modal-body">
 
-        <!-- Nombre -->
+        <!-- Name -->
         <div class="modal-field">
-          <label class="modal-label">Nombre</label>
+          <label class="modal-label">Name</label>
           <input
             class="modal-input"
             [class.modal-input--error]="formErrors().name"
             type="text"
-            placeholder="Auriculares Bluetooth"
+            placeholder="Bluetooth Headphones"
             [value]="form().name"
             (input)="onFormInput($event, 'name')"
           />
@@ -110,14 +110,14 @@
           }
         </div>
 
-        <!-- Proveedor -->
+        <!-- Supplier -->
         <div class="modal-field">
-          <label class="modal-label">Proveedor</label>
+          <label class="modal-label">Supplier</label>
           <input
             class="modal-input"
             [class.modal-input--error]="formErrors().proovedorNombre"
             type="text"
-            placeholder="Distribuidora Norte"
+            placeholder="North Distributors"
             [value]="form().proovedorNombre"
             (input)="onFormInput($event, 'proovedorNombre')"
           />
@@ -126,16 +126,16 @@
           }
         </div>
 
-        <!-- Imagen drag & drop -->
+        <!-- Image drag & drop -->
         <div class="modal-field">
-          <label class="modal-label">Imagen del producto</label>
+          <label class="modal-label">Product image</label>
           @if (imagePreview()) {
-          <div class="img-preview-wrapper">
-            <img [src]="imagePreview()!" alt="Preview" class="img-preview" />
-            <button class="img-preview-remove" (click)="clearImage()" title="Quitar imagen">✕</button>
-          </div>
-          <p class="modal-input modal-input--url modal-input--readonly">{{ form().url }}</p>
-          }@else {
+            <div class="img-preview-wrapper">
+              <img [src]="imagePreview()!" alt="Preview" class="img-preview" />
+              <button class="img-preview-remove" (click)="clearImage()" title="Remove image">✕</button>
+            </div>
+            <p class="modal-input modal-input--url modal-input--readonly">{{ form().url }}</p>
+          } @else {
             <div
               class="dropzone"
               [class.dropzone--active]="isDraggingOver()"
@@ -145,29 +145,29 @@
               (drop)="onDrop($event)"
             >
               <p class="dropzone-text">
-                Arrastra una imagen aquí<br>
-                <span>o usa el botón para seleccionarla</span>
+                Drag an image here<br>
+                <span>or use the button to select one</span>
               </p>
               <label class="dropzone-btn">
-                Seleccionar archivo
+                Select file
                 <input type="file" accept="image/*" hidden (change)="onFileInputChange($event)" />
               </label>
             </div>
-            <!-- URL manual -->
+            <!-- Manual URL -->
             <input
               class="modal-input modal-input--url"
               type="text"
-              placeholder="https://cdn.ejemplo.com/imagen.png"
+              placeholder="https://cdn.example.com/image.png"
               [value]="form().url"
               (input)="onFormInput($event, 'url')"
             />
           }
         </div>
 
-        <!-- Precio y Stock -->
+        <!-- Price & Stock -->
         <div class="modal-field-row">
           <div class="modal-field">
-            <label class="modal-label">Precio (CLP)</label>
+            <label class="modal-label">Price (CLP)</label>
             <input
               class="modal-input"
               [class.modal-input--error]="formErrors().price"
@@ -205,9 +205,9 @@
       </div>
 
       <div class="modal-footer">
-        <button class="modal-btn modal-btn--cancel" (click)="closeModal()">Cancelar</button>
+        <button class="modal-btn modal-btn--cancel" (click)="closeModal()">Cancel</button>
         <button class="modal-btn modal-btn--save" (click)="saveProducto()" [disabled]="saving()">
-          {{ saving() ? 'Guardando...' : editingProducto() ? 'Actualizar' : 'Crear producto' }}
+          {{ saving() ? 'Saving...' : editingProducto() ? 'Update' : 'Create product' }}
         </button>
       </div>
 

@@ -1,4 +1,5 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -26,12 +27,12 @@ export interface ConfigResponse {
 
 @Injectable({ providedIn: 'root' })
 export class ConfigService {
+  private readonly API_URL    = 'http://localhost:8086/api-v1/config';
+  private readonly http       = inject(HttpClient);
+  private readonly platformId = inject(PLATFORM_ID);
 
-  private readonly API_URL = 'http://localhost:8086/api-v1/config';
-  private readonly http    = inject(HttpClient);
-
-  commerceName = signal<string>('FreeMarket'); 
-
+  commerceName = signal<string>('FreeMarket');
+  logoUrl      = signal<string>('');  
   getConfig(idUser: number): Observable<ConfigResponse> {
     return this.http.get<ConfigResponse>(`${this.API_URL}/get/${idUser}`);
   }
@@ -45,33 +46,48 @@ export class ConfigService {
   }
 
   applyStyles(config: ConfigRequest) {
-  const root = document.documentElement;
-  root.style.setProperty('--commerce-primary',   config.primaryColor);
-  root.style.setProperty('--commerce-secondary', config.secondaryColor);
-  root.style.setProperty('--commerce-font',      config.principalFont);
-  
-  root.style.setProperty('--color-primary',       config.primaryColor);
-  root.style.setProperty('--color-primary-hover', config.secondaryColor);
+    if (!isPlatformBrowser(this.platformId)) return; 
 
-  document.body.style.fontFamily = config.principalFont + ', sans-serif';
+    const root     = document.documentElement;
+    const fontName = config.principalFont;
 
-  if (config.commerceName) {
-    this.commerceName.set(config.commerceName);
-    document.title = config.commerceName;
-  }
+    const existingLink = document.querySelector('link[data-gfont]');
+    if (existingLink) existingLink.remove();
+    const fontLink = document.createElement('link');
+    fontLink.rel  = 'stylesheet';
+    fontLink.setAttribute('data-gfont', 'true');
+    fontLink.href = `https://fonts.googleapis.com/css2?family=${fontName.replace(/ /g, '+')}:wght@400;500;600;700&display=swap`;
+    document.head.appendChild(fontLink);
 
-  if (config.favicomUrl) {
-    let link = document.querySelector<HTMLLinkElement>("link[rel~='icon']");
-    if (!link) {
-      link = document.createElement('link');
-      link.rel = 'icon';
-      document.head.appendChild(link);
+    root.style.setProperty('--commerce-font',      `'${fontName}'`);
+    root.style.setProperty('--commerce-primary',    config.primaryColor);
+    root.style.setProperty('--commerce-secondary',  config.secondaryColor);
+    root.style.setProperty('--color-primary',        config.primaryColor);
+    root.style.setProperty('--color-primary-hover',  config.secondaryColor);
+    document.body.style.fontFamily = `'${fontName}', sans-serif`;
+
+    if (config.commerceName) {
+      this.commerceName.set(config.commerceName);
+      document.title = config.commerceName;
     }
-    link.href = config.favicomUrl;
+
+    this.logoUrl.set(config.logoUrl ?? '');
+
+    if (config.favicomUrl) {
+      let favicon = document.querySelector<HTMLLinkElement>("link[rel~='icon']");
+      if (!favicon) {
+        favicon = document.createElement('link');
+        favicon.rel = 'icon';
+        document.head.appendChild(favicon);
+      }
+      favicon.href = config.favicomUrl;
+    } else {
+      const favicon = document.querySelector<HTMLLinkElement>("link[rel~='icon']");
+      if (favicon) favicon.remove();
+    }
   }
-}
 
   getPublicConfig(): Observable<ConfigResponse> {
     return this.http.get<ConfigResponse>(`${this.API_URL}/public`);
-}
+  }
 }

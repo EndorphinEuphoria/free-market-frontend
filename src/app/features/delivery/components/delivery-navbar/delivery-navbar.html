@@ -1,0 +1,36 @@
+<nav class="delivery-navbar">
+  <div class="delivery-navbar__inner">
+    <a class="delivery-brand d-flex align-items-center gap-2" routerLink="/delivery">
+      @if (configService.logoUrl()) {
+        <img [src]="configService.logoUrl()" alt="logo" class="navbar-logo" />
+      }
+      {{ configService.commerceName() }}
+    </a>
+    <ul class="delivery-nav-links">
+      <li>
+        <a class="delivery-nav-link"
+           routerLink="/delivery"
+           routerLinkActive="delivery-nav-link--active"
+           [routerLinkActiveOptions]="{exact: true}">
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a class="delivery-nav-link"
+           routerLink="/delivery/entregas"
+           routerLinkActive="delivery-nav-link--active">
+          My Deliveries
+        </a>
+      </li>
+    </ul>
+    <div class="delivery-nav-right">
+      <a class="delivery-user" routerLink="/profile">
+        <div class="delivery-avatar">
+          {{ (auth.currentUser()?.username ?? 'R')[0].toUpperCase() }}
+        </div>
+        Hello, {{ auth.currentUser()?.username ?? 'delivery' }}
+      </a>
+      <button class="delivery-logout-btn" (click)="auth.logout()">Logout</button>
+    </div>
+  </div>
+</nav>

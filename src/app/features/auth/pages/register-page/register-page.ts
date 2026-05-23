@@ -1,8 +1,7 @@
-import { Component, inject, PLATFORM_ID, Renderer2 } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RegisterForm } from '../../components/register-form/register-form';
 import { Router } from '@angular/router';
 import { APP_THEME } from '../../../../core/config/theme.config';
-import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-register-page',
@@ -12,28 +11,10 @@ import { isPlatformBrowser } from '@angular/common';
 })
 export class RegisterPage {
   private readonly router = inject(Router);
-  private readonly renderer = inject(Renderer2);
-  private readonly platformId = inject(PLATFORM_ID);
+  readonly theme = APP_THEME; 
 
-  readonly theme = APP_THEME;
-
-  ngOnInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    const root = document.documentElement;
-    this.renderer.setStyle(root, '--color-primary', APP_THEME.primaryColor, 2);
-    this.renderer.setStyle(root, '--color-primary-hover', APP_THEME.primaryHover, 2);
-    this.renderer.setStyle(root, '--font-heading', APP_THEME.headingFont, 2);
-    this.renderer.setStyle(root, '--font-body', APP_THEME.bodyFont, 2);
-  }
 
   onRegisterSuccess(): void {
-    // ─── BACKEND: navigate to email verification, onboarding, or login ──────
-    // Option A — redirect to login after registration:
-    //   this.router.navigate(['/login']);
-    // Option B — redirect to onboarding if your flow has one:
-    //   this.router.navigate(['/onboarding']);
     this.router.navigate(['/login']);
   }
-
 }

@@ -1,23 +1,16 @@
-
-<!-- reserva-table.html -->
 <div class="at-wrapper">
-
   @if (loading()) {
-    <div class="at-loading">Cargando reservas...</div>
-  }
-
-  @else if (error()) {
+    <div class="at-loading">Loading orders...</div>
+  } @else if (error()) {
     <div class="at-error">{{ error() }}</div>
-  }
-
-  @else {
+  } @else {
     <table class="at-table">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Fecha</th>
+          <th>Date</th>
           <th>Total</th>
-          <th>Estado</th>
+          <th>Status</th>
         </tr>
       </thead>
       <tbody>
@@ -28,31 +21,25 @@
             <td class="at-bold">${{ r.totalPrice | number }}</td>
             <td>
               <span class="at-badge" [class]="'at-badge--' + r.status.toLowerCase()">
-                {{ r.status }}
+                {{ getStatusLabel(r.status) }}
               </span>
             </td>
           </tr>
         }
         @empty {
           <tr>
-            <td colspan="4" class="at-empty">No hay reservas registradas</td>
+            <td colspan="4" class="at-empty">No orders found</td>
           </tr>
         }
       </tbody>
     </table>
-
     <div class="at-footer">
-      <span class="at-count">{{ reservas().length }} reserva(s) encontrada(s)</span>
+      <span class="at-count">{{ reservas().length }} order(s) found</span>
       <div class="at-pagination">
-        <button class="at-page-btn" (click)="prevPage()" [disabled]="page() === 1">
-          Anterior
-        </button>
-        <span class="at-page-info">Página {{ page() }} de {{ totalPages() }}</span>
-        <button class="at-page-btn" (click)="nextPage()" [disabled]="page() === totalPages()">
-          Siguiente
-        </button>
+        <button class="at-page-btn" (click)="prevPage()" [disabled]="page() === 1">Previous</button>
+        <span class="at-page-info">Page {{ page() }} of {{ totalPages() }}</span>
+        <button class="at-page-btn" (click)="nextPage()" [disabled]="page() === totalPages()">Next</button>
       </div>
     </div>
   }
-
 </div>

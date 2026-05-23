@@ -29,18 +29,18 @@ export class ProductosPageComponent implements OnInit {
 
   private productosService = inject(ProductosService);
 
-  productos     = signal<ProductoResponse[]>([]);
-  loading       = signal(true);
-  error         = signal<string | null>(null);
-  filterText    = signal('');
-  showModal     = signal(false);
-  saving        = signal(false);
-  formError     = signal<string | null>(null);
-  formErrors    = signal<FormErrors>({});
-  editingProducto = signal<ProductoResponse | null>(null);
-  form          = signal<ProductoRequest>({ ...EMPTY_FORM });
-  isDraggingOver = signal(false);
-  imagePreview  = signal<string | null>(null);
+  productos        = signal<ProductoResponse[]>([]);
+  loading          = signal(true);
+  error            = signal<string | null>(null);
+  filterText       = signal('');
+  showModal        = signal(false);
+  saving           = signal(false);
+  formError        = signal<string | null>(null);
+  formErrors       = signal<FormErrors>({});
+  editingProducto  = signal<ProductoResponse | null>(null);
+  form             = signal<ProductoRequest>({ ...EMPTY_FORM });
+  isDraggingOver   = signal(false);
+  imagePreview     = signal<string | null>(null);
 
   filteredProductos = computed(() => {
     const text = this.filterText().toLowerCase();
@@ -65,7 +65,7 @@ export class ProductosPageComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('Error al cargar productos');
+        this.error.set('Failed to load products');
         this.loading.set(false);
       }
     });
@@ -88,10 +88,10 @@ export class ProductosPageComponent implements OnInit {
     this.editingProducto.set(producto);
     this.form.set({
       proovedorNombre: producto.proovedorNombre,
-      name: producto.name,
-      url: producto.url,
-      price: producto.price,
-      stock: producto.stock,
+      name:            producto.name,
+      url:             producto.url,
+      price:           producto.price,
+      stock:           producto.stock,
     });
     this.formError.set(null);
     this.formErrors.set({});
@@ -108,7 +108,7 @@ export class ProductosPageComponent implements OnInit {
   }
 
   onFormInput(e: Event, field: keyof ProductoRequest) {
-    const raw = (e.target as HTMLInputElement).value;
+    const raw   = (e.target as HTMLInputElement).value;
     const value = (field === 'price' || field === 'stock') ? Number(raw) : raw;
 
     this.form.update(f => ({ ...f, [field]: value }));
@@ -128,10 +128,10 @@ export class ProductosPageComponent implements OnInit {
     const f = this.form();
     const errors: FormErrors = {};
 
-    if (!f.name.trim())            errors.name = 'El nombre es obligatorio.';
-    if (!f.proovedorNombre.trim()) errors.proovedorNombre = 'El proveedor es obligatorio.';
-    if (!f.price || f.price < 1)   errors.price = 'El precio debe ser al menos $1.';
-    if (!f.stock || f.stock < 1)   errors.stock = 'El stock debe ser al menos 1 unidad.';
+    if (!f.name.trim())            errors.name            = 'Name is required.';
+    if (!f.proovedorNombre.trim()) errors.proovedorNombre = 'Supplier is required.';
+    if (!f.price || f.price < 1)   errors.price           = 'Price must be at least $1.';
+    if (!f.stock || f.stock < 1)   errors.stock           = 'Stock must be at least 1 unit.';
 
     this.formErrors.set(errors);
     return Object.keys(errors).length === 0;
@@ -143,7 +143,7 @@ export class ProductosPageComponent implements OnInit {
     this.saving.set(true);
     this.formError.set(null);
 
-    const f = this.form();
+    const f       = this.form();
     const editing = this.editingProducto();
 
     if (editing) {
@@ -156,7 +156,7 @@ export class ProductosPageComponent implements OnInit {
           this.closeModal();
         },
         error: () => {
-          this.formError.set('Error al actualizar el producto.');
+          this.formError.set('Failed to update product.');
           this.saving.set(false);
         }
       });
@@ -168,7 +168,7 @@ export class ProductosPageComponent implements OnInit {
           this.closeModal();
         },
         error: () => {
-          this.formError.set('Error al crear el producto.');
+          this.formError.set('Failed to create product.');
           this.saving.set(false);
         }
       });
@@ -176,19 +176,19 @@ export class ProductosPageComponent implements OnInit {
   }
 
   deleteProducto(id: number) {
-    if (!confirm('¿Eliminar este producto?')) return;
+    if (!confirm('Are you sure you want to delete this product?')) return;
 
     this.productosService.delete(id).subscribe({
       next: () => {
         this.productos.update(list => list.filter(p => p.id !== id));
       },
       error: () => {
-        alert('Error al eliminar el producto.');
+        alert('Failed to delete product.');
       }
     });
   }
 
-  // Drag & drop (sin cambios)
+  // ── Drag & drop ──────────────────────────────────────────────
   onDragEnter(e: DragEvent) { e.preventDefault(); e.stopPropagation(); this.isDraggingOver.set(true); }
   onDragOver(e: DragEvent)  { e.preventDefault(); e.stopPropagation(); if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy'; this.isDraggingOver.set(true); }
   onDragLeave(e: DragEvent) { e.preventDefault(); e.stopPropagation(); this.isDraggingOver.set(false); }
@@ -197,8 +197,6 @@ export class ProductosPageComponent implements OnInit {
     e.preventDefault(); e.stopPropagation();
     this.isDraggingOver.set(false);
 
-    
-    
     const file = e.dataTransfer?.files?.[0];
     if (file && file.type.startsWith('image/')) {
       this.readImageFile(file);
@@ -215,12 +213,12 @@ export class ProductosPageComponent implements OnInit {
   }
 
   private readImageFile(file: File) {
-    const maxSizeMB = 2;
+    const maxSizeMB    = 2;
     const maxSizeBytes = maxSizeMB * 1024 * 1024;
 
     if (file.size > maxSizeBytes) {
-    this.formError.set(`La imagen no puede superar los ${maxSizeMB}MB.`);
-    return;
+      this.formError.set(`Image cannot exceed ${maxSizeMB}MB.`);
+      return;
     }
 
     const reader = new FileReader();

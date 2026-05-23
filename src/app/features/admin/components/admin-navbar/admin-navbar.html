@@ -1,28 +1,27 @@
 <nav class="admin-navbar">
   <div class="admin-navbar__inner">
-    
-
-
-    <a class="admin-brand" routerLink="/admin">@if (configService.commerceName()) {{{ configService.commerceName() }}
-    } @else {
-      <span class="spinner-border spinner-border-sm" role="status"></span>
-    }
-    
-</a>    
+    <a class="admin-brand d-flex align-items-center gap-2" routerLink="/admin">
+      @if (configService.logoUrl()) {
+        <img [src]="configService.logoUrl()" alt="logo" class="navbar-logo" />
+      }
+      @if (configService.commerceName()) {
+        {{ configService.commerceName() }}
+      } @else {
+        <span class="spinner-border spinner-border-sm" role="status"></span>
+      }
+    </a>
     <ul class="admin-nav-links">
       <li><a class="admin-nav-link" routerLink="/admin/pim" routerLinkActive="admin-nav-link--active">PIM</a></li>
       <li><a class="admin-nav-link" routerLink="/admin/analytics" routerLinkActive="admin-nav-link--active">Analytics</a></li>
-      <li><a class="admin-nav-link" routerLink="/admin/configuraciones" routerLinkActive="admin-nav-link--active">Configuraciones</a></li>
-      <li><a class="admin-nav-link" routerLink="/admin/productos" routerLinkActive="admin-nav-link--active">Gestión de productos</a></li>
+      <li><a class="admin-nav-link" routerLink="/admin/configuraciones" routerLinkActive="admin-nav-link--active">Settings</a></li>
+      <li><a class="admin-nav-link" routerLink="/admin/productos" routerLinkActive="admin-nav-link--active">Product Management</a></li>
     </ul>
-
     <div class="admin-nav-right">
       <a class="admin-user" routerLink="/profile">
         <div class="admin-avatar">{{ (auth.currentUser()?.username ?? 'A')[0].toUpperCase() }}</div>
-        Hola, {{ auth.currentUser()?.username ?? 'admin' }}
+        Hello, {{ auth.currentUser()?.username ?? 'admin' }}
       </a>
-      <button class="admin-logout-btn" (click)="auth.logout()">logout</button>
+      <button class="admin-logout-btn" (click)="auth.logout()">Logout</button>
     </div>
-
   </div>
 </nav>

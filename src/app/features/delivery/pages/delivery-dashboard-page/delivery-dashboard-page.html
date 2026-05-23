@@ -1,0 +1,180 @@
+<app-delivery-navbar />
+<div class="delivery-container">
+
+  <div class="delivery-header">
+    <div>
+      <h1 class="delivery-title">Available Orders</h1>
+      <p class="delivery-subtitle">Take the pending orders you want to deliver</p>
+    </div>
+    <button class="delivery-btn-refresh" (click)="loadPendientes()">Reload</button>
+  </div>
+
+  <div class="delivery-stats">
+    <div class="stat-card">
+      <span class="stat-number">{{ deliveries().length }}</span>
+      <span class="stat-label">Available</span>
+    </div>
+  </div>
+
+  @if (loading()) {
+  <div class="delivery-loading">Loading orders...</div>
+  } @else if (error()) {
+  <div class="delivery-error">{{ error() }}</div>
+  } @else {
+  <div class="delivery-table-wrapper">
+    <table class="delivery-table">
+      <thead>
+        <tr>
+          <th>Customer</th>
+          <th>Start date</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (delivery of deliveries(); track delivery.idDelivery) {
+        <tr>
+          <td class="delivery-td-bold">{{ getNombreCliente(delivery.idUsuario) }}</td>
+          <td class="delivery-td-muted">{{ delivery.deliveryBeginDate }}</td>
+          <td>
+            <span class="delivery-badge" [class]="getStatusClass(delivery.status)">
+              {{ getStatusLabel(delivery.status) }}
+            </span>
+          </td>
+          <td>
+            <button class="delivery-btn-detail" (click)="abrirModal(delivery)">
+              View details →
+            </button>
+          </td>
+        </tr>
+        }
+        @empty {
+        <tr>
+          <td colspan="4" class="delivery-empty">No pending orders available</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <p class="delivery-count">{{ deliveries().length }} order(s) available</p>
+  }
+</div>
+
+<!-- MODAL -->
+@if (modalDelivery()) {
+<div class="modal-backdrop" (click)="cerrarModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title">Order from {{ getNombreCliente(modalDelivery()!.idUsuario) }}</h2>
+        <span class="delivery-badge" [class]="getStatusClass(modalDelivery()!.status)">
+          {{ getStatusLabel(modalDelivery()!.status) }}
+        </span>
+      </div>
+      <button class="modal-close" (click)="cerrarModal()">✕</button>
+    </div>
+
+    @if (modalError()) {
+    <div class="delivery-error">{{ modalError() }}</div>
+    }
+
+    <div class="modal-section">
+      <p class="modal-section-title">Delivery status</p>
+      <div class="detail-info-row">
+        <span class="detail-label">Start date: </span>
+        <span class="detail-value">{{ modalDelivery()!.deliveryBeginDate }}</span>
+      </div>
+    </div>
+
+    <div class="modal-divider"></div>
+
+    <div class="modal-section">
+      <p class="modal-section-title">Order details</p>
+      @if (loadingReserva()) {
+      <div class="delivery-loading">Loading order...</div>
+      } @else if (modalReserva(); as r) {
+      <div class="detail-info-row">
+        <span class="detail-label">Order date: </span>
+        <span class="detail-value">{{ r.reserveDate }}</span>
+      </div>
+      <div class="detail-info-row">
+        <span class="detail-label">Order status: </span>
+        <span class="detail-value">{{ getStatusLabel(r.status) }}</span>
+      </div>
+      <div class="products-list" style="margin-top: 0.75rem">
+        @for (p of r.products; track p.idProduct) {
+        <div class="product-row">
+          <div class="product-info">
+            <span class="product-name">{{ p.productName }}</span>
+            <span class="product-qty">x{{ p.quantity }}</span>
+          </div>
+          <span class="product-subtotal">${{ p.subtotal | number }}</span>
+        </div>
+        }
+      </div>
+      <div class="detail-info-row detail-total" style="margin-top: 0.5rem">
+        <span class="detail-label">Total: </span>
+        <span class="detail-value detail-value--bold">${{ r.totalPrice | number }}</span>
+      </div>
+      }
+    </div>
+
+    <div class="modal-divider"></div>
+
+    <div class="modal-section">
+      <p class="modal-section-title">Delivery location</p>
+      @if (loadingLocation()) {
+      <div class="delivery-loading">Loading location...</div>
+      } @else if (modalLocation(); as loc) {
+      <div class="location-info">
+        <div class="location-text">
+          <p class="location-address">{{ loc.streetAddress }}</p>
+          <p class="location-meta">{{ loc.comunaNombre }}, {{ loc.regionNombre }}</p>
+        </div>
+      </div>
+
+      @if (mapLoading()) {
+      <div class="map-placeholder">
+        <div class="map-spinner"></div>
+        <span>Loading map...</span>
+      </div>
+      } @else if (mapError()) {
+      <div class="map-placeholder map-placeholder--error">
+        <span>Could not load the map</span>
+      </div>
+      } @else {
+      <div class="map-wrapper" [class.map-wrapper--expanded]="mapExpanded()" (click)="!mapExpanded() && toggleMap()">
+        <div id="leaflet-map" class="map-canvas"></div>
+        @if (!mapExpanded()) {
+        <div class="map-overlay">
+          <span class="map-overlay-text">Click to view on map</span>
+        </div>
+        }
+      </div>
+      @if (mapExpanded()) {
+      <button class="map-collapse-btn" (click)="toggleMap()">↑ Collapse map</button>
+      }
+      }
+
+      } @else {
+      <p class="delivery-empty">This user has no registered location</p>
+      }
+    </div>
+
+    <div class="modal-footer">
+      @if (tomandoPedido()) {
+      <div class="modal-spinner">
+        <div class="spinner"></div>
+        <span>Taking order...</span>
+      </div>
+      } @else {
+      <button class="delivery-btn-tomar" (click)="tomarPedido()">
+        Take order
+      </button>
+      }
+    </div>
+
+  </div>
+</div>
+}

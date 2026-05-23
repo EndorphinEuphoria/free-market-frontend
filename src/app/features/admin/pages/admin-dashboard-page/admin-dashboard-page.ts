@@ -9,43 +9,44 @@ import { AdminNavbar } from '../../components/admin-navbar/admin-navbar';
   styleUrl: './admin-dashboard-page.css',
 })
 export class AdminDashboardPage implements OnInit, OnDestroy {
+
   currentSlide = signal(0);
   private timer: ReturnType<typeof setInterval> | null = null;
-  
-slides = [
-  {
-    step: 'Paso 1',
-    title: 'Configura tu cuenta',
-    desc: 'Personaliza tu perfil de administrador, ajusta tus datos y preferencias antes de empezar.',
-    action: 'Ver perfil',
-    route: '/profile',
-    icon: '👤',
-  },
-  {
-    step: 'Paso 2',
-    title: 'Configura tu catálogo',
-    desc: 'Comienza añadiendo productos y categorías en el PIM. Define atributos y variantes para tu tienda.',
-    action: 'Ir a PIM',
-    route: '/admin/pim',
-    icon: '📦',
-  },
-  {
-    step: 'Paso 3',
-    title: 'Gestiona tu inventario',
-    desc: 'Mantén el stock actualizado, asigna precios y controla la disponibilidad de cada producto.',
-    action: 'Gestión de productos',
-    route: '/admin/products',
-    icon: '🗂️',
-  },
-  {
-    step: 'Paso 4',
-    title: 'Revisa tus métricas',
-    desc: 'Analiza ventas, visitas y conversiones desde el panel de Analytics para tomar mejores decisiones.',
-    action: 'Ver Analytics',
-    route: '/admin/analytics',
-    icon: '📊',
-  },
-];
+
+  slides = [
+    {
+      step:   'Step 1',
+      title:  'Set up your account',
+      desc:   'Customize your admin profile, adjust your details and preferences before getting started.',
+      action: 'View profile',
+      route:  '/profile',
+      icon:   '👤',
+    },
+    {
+      step:   'Step 2',
+      title:  'Set up your catalog',
+      desc:   'Start by adding products and categories in the PIM. Define attributes and variants for your store.',
+      action: 'Go to PIM',
+      route:  '/admin/pim',
+      icon:   '📦',
+    },
+    {
+      step:   'Step 3',
+      title:  'Manage your inventory',
+      desc:   'Keep stock up to date, set prices and control the availability of each product.',
+      action: 'Product management',
+      route:  '/admin/products',
+      icon:   '🗂️',
+    },
+    {
+      step:   'Step 4',
+      title:  'Review your metrics',
+      desc:   'Analyze sales, visits and conversions from the Analytics dashboard to make better decisions.',
+      action: 'View Analytics',
+      route:  '/admin/analytics',
+      icon:   '📊',
+    },
+  ];
 
   ngOnInit() {
     this.startAutoplay();
