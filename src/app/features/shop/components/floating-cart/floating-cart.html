@@ -8,24 +8,30 @@
     <p class="cart-empty">Tu carrito está vacío</p>
   }
 
-  @for (item of cartService.items(); track item.idProduct) {
-    <div class="cart-item">
-      <img [src]="item.url" [alt]="item.name" />
-      <div class="cart-item-info">
-        <p>{{ item.name }}</p>
-        <p>${{ item.price }}</p>
-        <div class="qty-controls">
-          <button (click)="cartService.updateQuantity(item.idProduct, item.quantity - 1)">−</button>
-          <span>{{ item.quantity }}</span>
-          <button (click)="cartService.updateQuantity(item.idProduct, item.quantity + 1)">+</button>
+  <div class="cart-items">
+    @for (item of cartService.items(); track item.idProduct) {
+      <div class="cart-item">
+        <button class="btn-remove" (click)="cartService.removeItem(item.idProduct)">✕</button>
+        <img [src]="item.url" [alt]="item.name" />
+        <div class="cart-item-info">
+          <p>{{ item.name }}</p>
+          <p>{{ item.quantity }} x {{ item.name }}</p>
+          <p class="item-price">${{ item.price }}</p>
+          <div class="qty-controls">
+            <button (click)="cartService.updateQuantity(item.idProduct, item.quantity - 1)">−</button>
+            <span>{{ item.quantity }}</span>
+            <button (click)="cartService.updateQuantity(item.idProduct, item.quantity + 1)">+</button>
+          </div>
         </div>
       </div>
-      <button (click)="cartService.removeItem(item.idProduct)">🗑</button>
-    </div>
-  }
+    }
+  </div>
 
   <div class="cart-footer">
-    <p><strong>Total: ${{ cartService.totalPrice() }}</strong></p>
+    <div class="cart-subtotal">
+      <span>Sub-total</span>
+      <span>${{ cartService.totalPrice() }}</span>
+    </div>
     <button class="btn-checkout" (click)="checkout()">Confirmar reserva</button>
   </div>
 </div>

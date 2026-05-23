@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { Cart } from './cart';
 
 // ─── Interfaces ───────────────────────────────────────────────
 export interface User {
@@ -49,7 +50,8 @@ export class Auth {
   private readonly http       = inject(HttpClient);
   private readonly router     = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
-
+  private readonly cartService = inject(Cart)
+ 
   private _currentUser = signal<UserToken | null>(null);
   readonly currentUser = this._currentUser.asReadonly();
 
@@ -78,7 +80,7 @@ export class Auth {
       this._clearSession();
     }
   }
-
+ 
   restoreSession(): void {
     if (!isPlatformBrowser(this.platformId)) return;
     const token = localStorage.getItem('token');
@@ -90,6 +92,7 @@ export class Auth {
     if (!isPlatformBrowser(this.platformId)) return;
     localStorage.clear();
     this._currentUser.set(null);
+    this.cartService.clearCart();
     this.router.navigate(['/login']);
   }
 
@@ -104,7 +107,9 @@ export class Auth {
       rol:      { rolName: payload.roles?.[0] || 'USER' }
     };
     localStorage.setItem('user', JSON.stringify(user));
+
     this._currentUser.set(user);
+    this.cartService.clearCart();
   }
 
   private decodeToken(token: string): any {
