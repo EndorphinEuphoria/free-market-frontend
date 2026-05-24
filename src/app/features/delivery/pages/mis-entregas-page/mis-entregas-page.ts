@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { DeliveryNavbar } from '../../components/delivery-navbar/delivery-navbar';
 import { Auth } from '../../../../core/services/auth';
 import { DeliveryService, DeliveryResponse } from '../../../../core/services/delivery.service';
@@ -17,32 +18,45 @@ export class MisEntregasPage implements OnInit {
   readonly auth           = inject(Auth);
   private router          = inject(Router);
 
-  entregas        = signal<DeliveryResponse[]>([]);
-  loading         = signal(true);
-  error           = signal<string | null>(null);
-  successMsg      = signal<string | null>(null);
-  updatingId      = signal<number | null>(null); // qué fila está en loading
+  entregas    = signal<DeliveryResponse[]>([]);
+  usuarios    = signal<Map<number, string>>(new Map());
+  loading     = signal(true);
+  error       = signal<string | null>(null);
+  successMsg  = signal<string | null>(null);
+  updatingId  = signal<number | null>(null);
 
-  // Contadores para las stat cards
-  totalEntregas   = computed(() => this.entregas().length);
-  entregadas      = computed(() => this.entregas().filter(e => e.status === 'ENTREGADO').length);
-  enCamino        = computed(() => this.entregas().filter(e => e.status === 'EN_CAMINO').length);
+  totalEntregas = computed(() => this.entregas().length);
+  entregadas    = computed(() => this.entregas().filter(e => e.status === 'ENTREGADO').length);
+  enCamino      = computed(() => this.entregas().filter(e => e.status === 'EN_CAMINO').length);
 
- ngOnInit() {
-  this.auth.restoreSession();
-  
-  const idRepartidor = this.auth.currentUser()?.userId;
-  if (!idRepartidor) { this.router.navigate(['/delivery']); return; }
-  this.loadEntregas(idRepartidor);
-}
+  ngOnInit() {
+    this.auth.restoreSession();
+    const idRepartidor = this.auth.currentUser()?.userId;
+    if (!idRepartidor) { this.router.navigate(['/delivery']); return; }
+    this.loadEntregas(idRepartidor);
+  }
 
   loadEntregas(idRepartidor: number) {
     this.loading.set(true);
     this.error.set(null);
-    this.deliveryService.getDeliveriesByRepartidor(idRepartidor).subscribe({
-      next:  (data) => { this.entregas.set(data); this.loading.set(false); },
-      error: ()     => { this.error.set('Error al cargar tus entregas'); this.loading.set(false); }
+
+    forkJoin({
+      entregas: this.deliveryService.getDeliveriesByRepartidor(idRepartidor),
+      users:    this.deliveryService.getUsers()
+    }).subscribe({
+      next: ({ entregas, users }) => {
+        this.entregas.set(entregas);
+        const mapa = new Map<number, string>();
+        users.forEach(u => mapa.set(u.id, `${u.firstname} ${u.lastname}`));
+        this.usuarios.set(mapa);
+        this.loading.set(false);
+      },
+      error: () => { this.error.set('Error al cargar tus entregas'); this.loading.set(false); }
     });
+  }
+
+  getNombreCliente(idUsuario: number): string {
+    return this.usuarios().get(idUsuario) ?? `Cliente #${idUsuario}`;
   }
 
   marcarEntregado(entrega: DeliveryResponse) {
@@ -52,12 +66,12 @@ export class MisEntregasPage implements OnInit {
 
     this.deliveryService.updateStatus(entrega.idReserva, 'ENTREGADO').subscribe({
       next: (updated) => {
-        // Actualizar solo esa fila en el signal
-        this.entregas.update(list =>list.map(e => e.idDelivery === updated.idDelivery
-    ? { ...updated, deliveryEndDate: new Date().toISOString().split('T')[0] }
-    : e
-  )
-);
+        this.entregas.update(list =>
+          list.map(e => e.idDelivery === updated.idDelivery
+            ? { ...updated, deliveryEndDate: new Date().toISOString().split('T')[0] }
+            : e
+          )
+        );
         this.updatingId.set(null);
         this.successMsg.set('¡Entrega marcada como completada!');
         setTimeout(() => this.successMsg.set(null), 3000);
@@ -71,21 +85,21 @@ export class MisEntregasPage implements OnInit {
 
   getStatusClass(status: string): string {
     const map: Record<string, string> = {
-      'PENDIENTE':  'badge--pendiente',
-      'EN_CAMINO':  'badge--en-camino',
-      'ENTREGADO':  'badge--entregado',
-      'CANCELADO':  'badge--cancelado',
+      'PENDIENTE': 'badge--pendiente',
+      'EN_CAMINO': 'badge--en-camino',
+      'ENTREGADO': 'badge--entregado',
+      'CANCELADO': 'badge--cancelado',
     };
     return map[status] ?? '';
   }
 
   getStatusLabel(status: string): string {
-  const map: Record<string, string> = {
-    'PENDIENTE': 'Pending',
-    'EN_CAMINO': 'On the way',
-    'ENTREGADO': 'Delivered',
-    'CANCELADO': 'Cancelled',
-  };
-  return map[status] ?? status;
-}
+    const map: Record<string, string> = {
+      'PENDIENTE': 'Pending',
+      'EN_CAMINO': 'On the way',
+      'ENTREGADO': 'Delivered',
+      'CANCELADO': 'Cancelled',
+    };
+    return map[status] ?? status;
+  }
 }
