@@ -78,11 +78,11 @@ export class Cart {
     };
 
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
       'Idempotency-Key': crypto.randomUUID(),
+      'X-User-Id': idUser.toString()
     });
 
-    return this.http.post(`${this.API_URL}/create`, body, { headers });
+    return this.http.post(`${this.API_URL}/createReserve`, body, { headers });
   }
 
   // Helpers privados
