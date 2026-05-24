@@ -151,3 +151,39 @@
   color: #9CA3AF;
   text-decoration: line-through;
 }
+
+.out-of-stock {
+  opacity: 0.6;
+}
+
+.out-of-stock .card-img {
+  filter: grayscale(60%);
+}
+
+.out-of-stock-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+.btn-add-cart:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.stock-label {
+  font-size: 0.75rem;
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.stock-label--low {
+  color: #f97316;
+}
