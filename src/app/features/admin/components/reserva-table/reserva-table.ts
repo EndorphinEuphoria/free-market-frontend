@@ -57,6 +57,7 @@ getStatusLabel(status: string): string {
     'RESERVADO': 'Reserved',
     'COMPLETO':  'Completed',
     'CANCELADO': 'Cancelled',
+    'PENDIENTE': 'Pending'
   };
   return map[status] ?? status;
 }

@@ -45,7 +45,7 @@
         <tbody>
           @for (entrega of entregas(); track entrega.idDelivery) {
             <tr>
-              <td class="delivery-td-bold">Customer #{{ entrega.idUsuario }}</td>
+              <td class="delivery-td-bold">{{ getNombreCliente(entrega.idUsuario) }}</td>   
               <td class="delivery-td-muted">{{ entrega.deliveryBeginDate }}</td>
               <td class="delivery-td-muted">{{ entrega.status === 'ENTREGADO' ? entrega.deliveryEndDate : '—' }}</td>
               <td>
