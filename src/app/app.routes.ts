@@ -12,62 +12,30 @@ import {ConfiguracionesPageComponent} from './features/admin/pages/configuracion
 import{ProductosPageComponent} from './features/admin/pages/productos-page/productos-page'
 import{DeliveryDashboardPage} from './features/delivery/pages/delivery-dashboard-page/delivery-dashboard-page'
 import{MisEntregasPage} from './features/delivery/pages/mis-entregas-page/mis-entregas-page'
+import { authGuard } from './core/guards/auth-guard';
+import { deliveryOnlyGuard } from './core/guards/delivery-only-guard';
+import { userOnlyGuard } from './core/guards/user-only-guard';
+import { adminOnlyGuard } from './core/guards/admin-only-guard';
 export const routes: Routes = [
-  {
-    path: '',
-    redirectTo: 'login',
-    pathMatch: 'full',
-  },
-  {
-    path: 'login',
-    component: LoginPage
-  },
-  {
-    path: 'register',
-    component: RegisterPage
-  },
-  { path: 'delivery', 
-    component: DeliveryDashboardPage 
-  },
-  { path: 'delivery/entregas', 
-      component: MisEntregasPage 
-    }, 
-  {
-    path:'home',
-    component: HomePage
-  },
-  {
-  path: 'admin',
-  component: AdminDashboardPage
   
-  },
-  { path: 'admin/pim',
-   component: PimPageComponent 
-  }, 
-  { path: 'admin/analytics', 
-  component: AnalyticsPageComponent },
+  // Normal routes
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
 
-  { path: 'admin/configuraciones', 
-  component: ConfiguracionesPageComponent },
-  
-  { path: 'admin/productos', 
-  component: ProductosPageComponent },
+  { path: 'register',              component: RegisterPage },
+  { path: 'login',                 component: LoginPage },
+  { path: 'home',                  component: HomePage, canActivate: [userOnlyGuard] },
+  { path: 'shop',                  component: CatalogPage, canActivate: [userOnlyGuard]},
+  { path: 'profile',               component: ProfilePage,                  canActivate: [authGuard] },
+  { path: 'delivery',              component: DeliveryDashboardPage,        canActivate: [authGuard, deliveryOnlyGuard] },
+  { path: 'delivery/entregas',     component: MisEntregasPage,              canActivate: [authGuard, deliveryOnlyGuard] }, 
 
-  // {
-  //   path: 'home',
-  //   Component:HomePage
-  //   canActivate: [authGuard]
-  // },
-  {
-    path: 'shop',
-    component: CatalogPage
-  },
-  {
-    path: 'profile',
-    component: ProfilePage
-  },
-  {
-    path: '**',
-    component: NotFound
-  }
+  // Admin routes
+  { path: 'admin',                 component: AdminDashboardPage,           canActivate: [authGuard, adminOnlyGuard] },
+  { path: 'admin/pim',             component: PimPageComponent,             canActivate: [authGuard, adminOnlyGuard] }, 
+  { path: 'admin/analytics',       component: AnalyticsPageComponent,       canActivate: [authGuard, adminOnlyGuard] },
+  { path: 'admin/configuraciones', component: ConfiguracionesPageComponent, canActivate: [authGuard, adminOnlyGuard] },
+  { path: 'admin/productos',       component: ProductosPageComponent,       canActivate: [authGuard, adminOnlyGuard] },
+
+  // not-found route always at the bottom
+  { path: '**',                    component: NotFound }
 ];

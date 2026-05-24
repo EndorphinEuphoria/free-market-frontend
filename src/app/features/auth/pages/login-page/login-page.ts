@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { LoginForm } from '../../components/login-form/login-form';
 import { APP_THEME } from '../../../../core/config/theme.config';
 import { ConfigService } from '../../../../core/services/config-service';
+import { Auth } from '../../../../core/services/auth';
 
 @Component({
   selector: 'app-login-page',
@@ -13,6 +14,7 @@ import { ConfigService } from '../../../../core/services/config-service';
 export class LoginPage {
   private readonly router        = inject(Router);
   private readonly configService = inject(ConfigService);
+  private readonly auth = inject(Auth);
   readonly theme = APP_THEME; 
 
   constructor() {
@@ -21,6 +23,13 @@ export class LoginPage {
   }
 
   onLoginSuccess(): void {
-    this.router.navigate(['/home']);
+    if (this.auth.currentUser()?.rol?.rolName === 'ADMIN') {
+      this.router.navigate(['/admin']);
+    } else if (this.auth.currentUser()?.rol?.rolName === 'DELIVERY') {
+      this.router.navigate(['/delivery']);
+    } else {
+      this.router.navigate(['/home']);
+    }
   }
+
 }

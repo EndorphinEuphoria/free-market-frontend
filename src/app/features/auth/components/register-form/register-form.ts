@@ -99,10 +99,10 @@ export class RegisterForm {
   const formValue = this.registerForm.getRawValue();
 
   const credentials: RegisterCredentials = {
-    firstName: formValue.firstName,
-    lastName: formValue.lastName,
-    username: formValue.username,
-    email: formValue.email,
+    firstName: formValue.firstName.trim(),
+    lastName: formValue.lastName.trim(),
+    username: formValue.username.trim(),
+    email: formValue.email.trim(),
     password: formValue.password,
     genre: formValue.genre,
     rol: {
