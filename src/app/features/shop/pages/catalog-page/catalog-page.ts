@@ -18,13 +18,6 @@ import { Router } from '@angular/router';
 })
 export class CatalogPage {
 
-  constructor() {
-    effect(() => {
-      console.log('productos:', this.allProducts());
-      console.log('filtrados:', this.filteredProducts());
-    });
-  }
-
   productsService = inject(Products);
   cartService = inject(Cart);
   auth = inject(Auth);
@@ -73,6 +66,7 @@ export class CatalogPage {
       this.router.navigate(['/login']);
       return;
     }
+    if (product.stock === 0) return;
     this.cartService.addItem({
       id: product.id,
       name: product.name,
