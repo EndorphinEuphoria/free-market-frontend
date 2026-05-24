@@ -20,12 +20,6 @@ export class App implements OnInit {
   private auth          = inject(Auth);
   private platformId    = inject(PLATFORM_ID);
 
-  constructor() {
-    if (isPlatformBrowser(inject(PLATFORM_ID))) {
-      this.auth.restoreSession();
-    }
-  }
-
   private noNavRoutes: string[] = [
     '/login', '/register', '/profile',
     '/admin', '/admin/pim', '/admin/analytics',
@@ -34,14 +28,10 @@ export class App implements OnInit {
     '/delivery/:id',
   ];
 
-  
-
   protected readonly title = signal('free-market');
 
   ngOnInit() {
-    console.log('AppComponent ngOnInit, isBrowser:', isPlatformBrowser(this.platformId));
     if (!isPlatformBrowser(this.platformId)) return;
-    this.auth.restoreSession();
     this.loadAndApplyConfig();
   }
 

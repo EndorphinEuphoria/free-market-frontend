@@ -7,7 +7,7 @@ import {
   AbstractControl 
 } from '@angular/forms'
 import { Auth, LoginCredentials } from '../../../../core/services/auth'
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login-form',
@@ -16,7 +16,8 @@ import { RouterLink } from '@angular/router';
   styleUrl: './login-form.css',
 })
 export class LoginForm {
-private readonly auth = inject(Auth);
+  private readonly auth = inject(Auth);
+  private readonly router = inject(Router);
  
   readonly loginSuccess = output<void>();
  
@@ -51,22 +52,25 @@ private readonly auth = inject(Auth);
     this.isLoading.set(true);
     this.serverError.set('');
  
-    const credentials: LoginCredentials = this.loginForm.getRawValue();
+    const raw = this.loginForm.getRawValue();
  
+    const credentials: LoginCredentials = {
+      username: raw.username.trim(),
+      password: raw.password
+    }
+
     this.auth.login(credentials).subscribe({
       next: () => {
         this.isLoading.set(false);
         this.loginSuccess.emit();
       },
       error: (err) => {
-        // BACKEND: adjust error path to match API's shape
-        // Express:  err.error.message
-        // FastAPI:  err.error.detail
-        // NestJS:   err.error.message
         this.serverError.set(err?.error?.message ?? 'Invalid username or password.');
         this.isLoading.set(false);
       },
     });
   }
+
+
  
 }
