@@ -42,7 +42,13 @@
           </div>
           <div class="field-group">
             <label class="field-label">Genre</label>
-            <input class="field-input" formControlName="genre" type="text" placeholder="Your genre" />
+            <select class="field-input" formControlName="genre">
+              <option value="">Select genre</option>
+              <option value="MALE">Male</option>
+              <option value="FEMALE">Female</option>
+              <option value="NON-BINARY">Non-binary</option>
+              <option value="PREFER_NOT_TO_SAY">Prefer not to say</option>
+            </select>
           </div>
           <div class="field-group">
             <label class="field-label">New Password <span class="field-hint">(dejar vacío para no cambiar)</span></label>

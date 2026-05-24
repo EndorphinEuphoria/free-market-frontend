@@ -83,15 +83,24 @@ export class ProfilePage {
   onSubmitProfile(): void {
     this.errorProfile.set(null);
     const val = this.profileForm.value;
+    const user = this.auth.currentUser();
 
     const body: UpdateRequest = {};
-    if (val.username) body.username = val.username;
+    if (val.username && val.username !== user?.username) body.username = val.username;
     if (val.email) body.email = val.email;
     if (val.genre) body.genre = val.genre;
     if (val.password) body.password = val.password;
 
+    if (Object.keys(body).length === 0) {
+      this.isSavedProfile.set(true);
+      setTimeout(() => this.isLoadingProfile.set(false), 3000);
+      return;
+    }
+
     this.isLoadingProfile.set(true);
-    this.http.patch('http://localhost:8086/api-v1/auth/update', body).subscribe({
+    this.http.patch('http://localhost:8086/api-v1/auth/update', body, {
+      headers: { 'X-User-Id': String(user?.userId) }
+    }).subscribe({
       next: () => {
         this.isLoadingProfile.set(false);
         this.isSavedProfile.set(true);

@@ -10,7 +10,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const router     = inject(Router);
   const http       = inject(HttpClient);
-  const isBrowser = isPlatformBrowser(PLATFORM_ID)
+  const platformId = inject(PLATFORM_ID);
+  const isBrowser = isPlatformBrowser(platformId);
 
   let token: string | null = null;
 
