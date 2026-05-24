@@ -4,6 +4,15 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { Auth } from '../../../../core/services/auth';
 import { disabled } from '@angular/forms/signals';
+import { HttpClient } from '@angular/common/http';
+import { LocationService } from '../../../../core/services/location-service';
+
+export interface UpdateRequest {
+  username?: string;
+  email?: string;
+  genre?: string;
+  password?: string;
+}
 
 @Component({
   selector: 'app-profile-page',
@@ -15,25 +24,53 @@ export class ProfilePage {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private auth = inject(Auth);
+  private locationService = inject(LocationService);
+  private http = inject(HttpClient)
 
-  form!: FormGroup;
-  isLoading = signal(false);
-  isSaved = signal(false);
+  profileForm!: FormGroup;
+  locationForm!: FormGroup;
+
+  isLoadingProfile = signal(false);
+  isLoadingLocation = signal(false);
+  isSavedProfile = signal(false);
+  isSavedLocation = signal(false);
+  errorProfile = signal<string | null>(null);
+  errorLocation = signal<string | null>(null);
+
+  hasLocation = signal(false);
   avatarUrl = signal<string | null>(null);
 
-ngOnInit() {
-  const user = this.auth.currentUser();
+  ngOnInit() {
+    const user = this.auth.currentUser();
 
-  //this.form = this.fb.group({
-  //  firstName: [user?.firstName ?? '', Validators.required],
-  //  lastName: [user?.lastName ?? '', Validators.required],
-  //  username: [user?.username ?? '', Validators.required],
-  //  email: [user?.email ?? '', [Validators.required, Validators.email]],
-  //  genre: [user?.genre ?? ''],
-  //  role: [user?.rol?.rolName ?? '', Validators.required, { disabled: true }],
-  //  avatar: [null]
-  //});
-}
+    this.profileForm = this.fb.group({
+      username: [user?.username ?? '', Validators.required],
+      email: ['', [Validators.email]],
+      genre: [''],
+      password: ['']
+    });
+
+    this.locationForm = this.fb.group({
+      street: ['', Validators.required],
+      streetNumber: ['', Validators.required],
+      comuna: ['', Validators.required],
+      region: ['', Validators.required]
+    });
+
+    if (user?.userId) {
+      this.locationService.getLocation(user.userId).subscribe({
+        next: (loc) => {
+          this.hasLocation.set(true);
+          // show only streetAdress, cause getLocation returns LocationResponseForId
+          this.locationForm.patchValue({
+            comuna: loc.comunaNombre,
+            region: loc.regionNombre
+          });
+        },
+        error: () => this.hasLocation.set(false)
+      });
+    }
+  }
 
   onAvatarChange(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
@@ -43,17 +80,56 @@ ngOnInit() {
     reader.readAsDataURL(file);
   }
 
+  onSubmitProfile(): void {
+    this.errorProfile.set(null);
+    const val = this.profileForm.value;
+
+    const body: UpdateRequest = {};
+    if (val.username) body.username = val.username;
+    if (val.email) body.email = val.email;
+    if (val.genre) body.genre = val.genre;
+    if (val.password) body.password = val.password;
+
+    this.isLoadingProfile.set(true);
+    this.http.patch('http://localhost:8086/api-v1/auth/update', body).subscribe({
+      next: () => {
+        this.isLoadingProfile.set(false);
+        this.isSavedProfile.set(true);
+        setTimeout(() => this.isSavedProfile.set(false), 3000);
+      },
+      error: (err) => {
+        this.isLoadingProfile.set(false);
+        this.errorProfile.set('Error updating profile.');
+      }
+    });
+  }
+
+  onSubmitLocation(): void {
+    if (this.locationForm.invalid) return;
+    this.errorLocation.set(null);
+    this.isLoadingLocation.set(true);
+
+    const request = this.locationForm.value;
+    const action$ = this.hasLocation()
+      ? this.locationService.updateLocation(request)
+      : this.locationService.createLocation(request);
+
+    action$.subscribe({
+      next: () => {
+        this.isLoadingLocation.set(false);
+        this.hasLocation.set(true);
+        this.isSavedLocation.set(true);
+        setTimeout(() => this.isSavedLocation.set(false), 3000);
+      },
+      error: (err) => {
+        this.isLoadingLocation.set(false);
+        this.errorLocation.set('Address not found. Please verify the entered information.');
+      },
+    });
+  }
+
   onCancel(): void {
     this.router.navigate(['/home']);
   }
 
-  onSubmit(): void {
-    if (this.form.invalid) return;
-    this.isLoading.set(true);
-    setTimeout(() => {
-      this.isLoading.set(false);
-      this.isSaved.set(true);
-      setTimeout(() => this.isSaved.set(false), 3000);
-    }, 800);
-  }
 }

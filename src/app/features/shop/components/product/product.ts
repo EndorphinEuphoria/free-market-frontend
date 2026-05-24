@@ -1,10 +1,11 @@
 import { Component, input, output } from '@angular/core';
 import { ProductoResponse } from '../../models/product.model';
 import { CommonModule } from '@angular/common';
+import { ClpFormatPipe } from '../../../../core/pipes/clp-format-pipe';
 
 @Component({
   selector: 'app-product',
-  imports: [CommonModule],
+  imports: [CommonModule, ClpFormatPipe],
   templateUrl: './product.html',
   styleUrl: './product.css',
 })

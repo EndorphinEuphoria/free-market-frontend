@@ -305,3 +305,18 @@
       grid-template-columns: 1fr;
     }
   }
+
+  .field-hint {
+  font-size: 0.72rem;
+  color: #9CA3AF;
+  font-weight: 400;
+}
+
+.save-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #DC2626;
+  margin-right: auto;
+}
