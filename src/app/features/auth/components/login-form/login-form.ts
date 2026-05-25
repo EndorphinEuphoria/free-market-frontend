@@ -1,4 +1,4 @@
-import { Component, inject, signal, output } from '@angular/core';
+import { Component, inject, signal, output, afterNextRender } from '@angular/core';
 import {   
   FormGroup,
   FormControl,
@@ -8,6 +8,7 @@ import {
 } from '@angular/forms'
 import { Auth, LoginCredentials } from '../../../../core/services/auth'
 import { Router, RouterLink } from '@angular/router';
+import { ConfigService } from '../../../../core/services/config-service';
 
 @Component({
   selector: 'app-login-form',

@@ -25,9 +25,6 @@
     </ul>
     <div class="delivery-nav-right">
       <a class="delivery-user" routerLink="/profile">
-        <div class="delivery-avatar">
-          {{ (auth.currentUser()?.username ?? 'R')[0].toUpperCase() }}
-        </div>
         Hello, {{ auth.currentUser()?.username ?? 'delivery' }}
       </a>
       <button class="delivery-logout-btn" (click)="auth.logout()">Logout</button>

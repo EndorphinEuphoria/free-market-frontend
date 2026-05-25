@@ -45,8 +45,6 @@ export class ProductosService {
   }
 
   activate(id: number) {
-
-  return this.http.patch(`${this.API_URL}/activate/${id}`,{});
-
-}
+    return this.http.patch(`${this.API_URL}/activate/${id}`,{});
+  }
 }

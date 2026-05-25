@@ -27,39 +27,44 @@ export class HeroSlider implements OnInit, OnDestroy {
   isAnimating = signal(false);
 
   // BACKEND: cargar slides desde API
-  slides: Slide[] = [
-    {
-      id: 1,
-      label: 'SUMMER 2024',
-      title: 'NEW COLLECTION',
-      description: 'We know how large objects will act,\nbut things on a small scale.',
-      ctaText: 'SHOP NOW',
-      ctaLink: '/shop',
-      // BACKEND: reemplazar con imagen real del producto/campaña
-      imageUrl: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80',
-      bgColor: '#23b5d3',
-    },
-        {
-      id: 2,
-      label: 'AUTUMN 2024',
-      title: 'TREND SETTERS',
-      description: 'Discover the latest trends crafted\nfor the modern lifestyle.',
-      ctaText: 'EXPLORE',
-      ctaLink: '/shop',
-      imageUrl: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800&q=80',
-      bgColor: '#2a9d8f',
-    },
-    {
-      id: 3,
-      label: 'WINTER 2024',
-      title: 'COZY ESSENTIALS',
-      description: 'Stay warm and stylish this season\nwith our curated picks.',
-      ctaText: 'VIEW ALL',
-      ctaLink: '/shop',
-      imageUrl: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80',
-      bgColor: '#457b9d',
-    }
-  ];
+slides: Slide[] = [
+  {
+    id: 1,
+    label: 'SMART TVs 2025',
+    title: 'NEXT GEN ENTERTAINMENT',
+    description:
+      'Experience ultra HD visuals,\nimmersive sound and smart connectivity.',
+    ctaText: 'SHOP TVs',
+    ctaLink: '/shop',
+    imageUrl:
+      'https://images.unsplash.com/photo-1593784991095-a205069470b6?w=800&q=80',
+    bgColor: '#0f172a',
+  },
+  {
+    id: 2,
+    label: 'GAMING SETUP',
+    title: 'POWER YOUR PLAY',
+    description:
+      'High-performance gaming gear,\nmonitors and accessories for every gamer.',
+    ctaText: 'EXPLORE NOW',
+    ctaLink: '/shop',
+    imageUrl:
+      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&q=80',
+    bgColor: '#111827',
+  },
+  {
+    id: 3,
+    label: 'SMART HOME',
+    title: 'CONNECTED LIVING',
+    description:
+      'Upgrade your lifestyle with\nsmart speakers, lighting and home devices.',
+    ctaText: 'VIEW PRODUCTS',
+    ctaLink: '/shop',
+    imageUrl:
+      'https://images.unsplash.com/photo-1558002038-1055907df827?w=800&q=80',
+    bgColor: '#1e3a8a',
+  }
+];
 
   private autoPlayInterval: ReturnType<typeof setInterval> | null = null;
   private readonly AUTO_PLAY_MS = 5000;

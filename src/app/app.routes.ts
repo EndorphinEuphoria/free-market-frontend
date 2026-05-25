@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { RegisterPage } from './features/auth/pages/register-page/register-page';
 import { LoginPage } from './features/auth/pages/login-page/login-page';
 import { NotFound } from './features/auth/pages/not-found/not-found';
-import { HomePage } from './features/home/home-page/home-page';
+import { HomePage } from './features/home/pages/home-page/home-page'; 
 import { CatalogPage } from './features/shop/pages/catalog-page/catalog-page';
 import { ProfilePage } from './features/auth/pages/profile-page/profile-page';
 import { AdminDashboardPage } from './features/admin/pages/admin-dashboard-page/admin-dashboard-page';
@@ -19,6 +19,9 @@ import { adminOnlyGuard } from './core/guards/admin-only-guard';
 import { OrdersPage } from './features/shop/pages/orders-page/orders-page';
 import {ForgotPasswordPage} from './features/auth/pages/forgot-password-page/forgot-password-page'
 import {ResetPasswordPage} from './features/auth/pages/reset-password-page/reset-password-page'
+import { AboutPage } from './features/home/pages/about-page/about-page';
+import { BlogPage } from './features/home/pages/blog-page/blog-page';
+import { ContactPage } from './features/home/pages/contact-page/contact-page';
 export const routes: Routes = [
   
   // Normal routes
@@ -27,7 +30,10 @@ export const routes: Routes = [
   { path: 'register',              component: RegisterPage },
   { path: 'login',                 component: LoginPage },
   { path: 'home',                  component: HomePage,                     canActivate: [userOnlyGuard] },
-  { path: 'shop',                  component: CatalogPage,                  canActivate: [userOnlyGuard]},
+  { path: 'shop',                  component: CatalogPage,                  canActivate: [userOnlyGuard] },
+  { path: 'about',                 component: AboutPage,                    canActivate: [authGuard, userOnlyGuard] },
+  { path: 'blog',                  component: BlogPage,                     canActivate: [authGuard, userOnlyGuard] },
+  { path: 'contact',               component: ContactPage,                  canActivate: [authGuard, userOnlyGuard] },
   { path: 'profile',               component: ProfilePage,                  canActivate: [authGuard] },
   { path: 'orders',                component: OrdersPage,                   canActivate: [authGuard, userOnlyGuard]},
   { path: 'delivery',              component: DeliveryDashboardPage,        canActivate: [authGuard, deliveryOnlyGuard] },
