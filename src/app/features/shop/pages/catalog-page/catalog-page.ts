@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Product } from '../../components/product/product';
 import { ProductFilters } from '../../components/product-filters/product-filters';
-import { Products } from '../../../../core/services/products';
+import { ProductosService } from '../../../../core/services/productos-service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Cart } from '../../../../core/services/cart';
 import { Auth } from '../../../../core/services/auth';
@@ -20,7 +20,7 @@ export class CatalogPage {
 
   searchTerm = signal('');
 
-  productsService = inject(Products);
+  productsService = inject(ProductosService);
   cartService = inject(Cart);
   auth = inject(Auth);
   router = inject(Router)

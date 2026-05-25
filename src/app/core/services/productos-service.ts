@@ -1,7 +1,7 @@
 // productos.service.ts
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, Observable, of } from 'rxjs';
 
 export interface ProductoResponse {
   id: number;
@@ -47,4 +47,17 @@ export class ProductosService {
   activate(id: number) {
     return this.http.patch(`${this.API_URL}/activate/${id}`,{});
   }
+
+
+  getAllProducts() {
+    return this.http.get<ProductoResponse[]>(
+    `${this.API_URL}/get/active`
+    ).pipe(
+      catchError(err => {
+        console.error(err);
+        return of([]);
+      })
+    );
+  }
+
 }
