@@ -1,0 +1,170 @@
+<div class="orders-container">
+
+  <div class="orders-header">
+    <div>
+      <h1 class="orders-title">My Orders</h1>
+      <p class="orders-subtitle">Track and manage your reservations</p>
+    </div>
+  </div>
+
+  <div class="orders-tabs">
+    <button class="orders-tab" [class.orders-tab--active]="activeTab() === 'orders'"
+      (click)="activeTab.set('orders')">
+      My Orders
+    </button>
+    <button class="orders-tab" [class.orders-tab--active]="activeTab() === 'deliveries'"
+      (click)="activeTab.set('deliveries')">
+      My Deliveries
+    </button>
+  </div>
+
+  @if (activeTab() === 'orders') {
+    <div class="orders-filters">
+      <input
+        class="orders-input"
+        type="text"
+        placeholder="Search by ID or status..."
+        [value]="filterText()"
+        (input)="filterText.set($any($event.target).value)"
+      />
+      <button class="orders-btn-refresh" (click)="loadReserves()">↻ Reload</button>
+    </div>
+
+    @if (loading()) {
+      <div class="orders-loading">Loading orders...</div>
+    } @else if (error()) {
+      <div class="orders-error">{{ error() }}</div>
+    } @else {
+      <div class="orders-table-wrapper">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Date</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Products</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (reserva of filteredReserves(); track reserva.idReserva) {
+              <tr>
+                <td class="orders-td-muted">#{{ reserva.idReserva }}</td>
+                <td>{{ reserva.reserveDate | date:'dd MMM yyyy' }}</td>
+                <td class="orders-td-bold">{{ reserva.totalPrice | clpFormat }}</td>
+                <td>
+                  <span class="orders-status" [class]="'orders-status--' + reserva.status.toLowerCase()">
+                    {{ statusLabel(reserva.status) }}
+                  </span>
+                </td>
+                <td>
+                  <button class="orders-btn-expand" (click)="toggleExpand(reserva.idReserva)">
+                    {{ expandedId() === reserva.idReserva ? 'Hide' : 'View' }}
+                    ({{ reserva.products.length }})
+                  </button>
+                </td>
+                <td>
+                  @if (reserva.status !== 'CANCELADO' && reserva.status !== 'COMPLETO') {
+                    <button
+                      class="orders-btn-cancel"
+                      (click)="cancelReserve(reserva.idReserva)"
+                      [disabled]="cancelling() === reserva.idReserva"
+                    >
+                      {{ cancelling() === reserva.idReserva ? 'Cancelling...' : 'Cancel' }}
+                    </button>
+                  } @else {
+                    <span class="orders-td-muted">—</span>
+                  }
+                </td>
+              </tr>
+
+              @if (expandedId() === reserva.idReserva) {
+                <tr class="orders-detail-row">
+                  <td colspan="6">
+                    <div class="orders-detail">
+                      <table class="orders-detail-table">
+                        <thead>
+                          <tr>
+                            <th>Product</th>
+                            <th>Unit price</th>
+                            <th>Qty</th>
+                            <th>Subtotal</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (p of reserva.products; track p.idProduct) {
+                            <tr>
+                              <td>{{ p.productName }}</td>
+                              <td>{{ p.unitPrice | clpFormat }}</td>
+                              <td>{{ p.quantity }}</td>
+                              <td class="orders-td-bold">{{ p.subtotal | clpFormat }}</td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+              }
+            } @empty {
+              <tr>
+                <td colspan="6" class="orders-empty">No orders found</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="orders-count">{{ filteredReserves().length }} order(s) found</p>
+    }
+  }
+
+  @if (activeTab() === 'deliveries') {
+    <div class="orders-filters">
+      <button class="orders-btn-refresh" (click)="loadDeliveries()">↻ Reload</button>
+    </div>
+
+    @if (loadingDeliveries()) {
+      <div class="orders-loading">Loading deliveries...</div>
+    } @else {
+      <div class="orders-table-wrapper">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Order</th>
+              <th>Status</th>
+              <th>Start date</th>
+              <th>End date</th>
+              <th>Courier</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (d of deliveries(); track d.idDelivery) {
+              <tr>
+                <td class="orders-td-muted">#{{ d.idDelivery }}</td>
+                <td class="orders-td-bold">#{{ d.idReserva }}</td>
+                <td>
+                  <span class="orders-status" [class]="'orders-status--' + d.status.toLowerCase()">
+                    {{ deliveryStatusLabel(d.status) }}
+                  </span>
+                </td>
+                <td>{{ d.deliveryBeginDate | date:'dd MMM yyyy' }}</td>
+                <td>{{ d.deliveryEndDate ? (d.deliveryEndDate | date:'dd MMM yyyy') : '—' }}</td>
+                <td class="orders-td-muted">{{ d.idRepartidor ?? '—' }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="orders-empty">No deliveries found</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="orders-count">{{ deliveries().length }} delivery(s) found</p>
+    }
+  }
+
+</div>
+
+<app-toast />

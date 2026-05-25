@@ -16,6 +16,7 @@ import { authGuard } from './core/guards/auth-guard';
 import { deliveryOnlyGuard } from './core/guards/delivery-only-guard';
 import { userOnlyGuard } from './core/guards/user-only-guard';
 import { adminOnlyGuard } from './core/guards/admin-only-guard';
+import { OrdersPage } from './features/shop/pages/orders-page/orders-page';
 export const routes: Routes = [
   
   // Normal routes
@@ -23,9 +24,10 @@ export const routes: Routes = [
 
   { path: 'register',              component: RegisterPage },
   { path: 'login',                 component: LoginPage },
-  { path: 'home',                  component: HomePage, canActivate: [userOnlyGuard] },
-  { path: 'shop',                  component: CatalogPage, canActivate: [userOnlyGuard]},
+  { path: 'home',                  component: HomePage,                     canActivate: [userOnlyGuard] },
+  { path: 'shop',                  component: CatalogPage,                  canActivate: [userOnlyGuard]},
   { path: 'profile',               component: ProfilePage,                  canActivate: [authGuard] },
+  { path: 'orders',                component: OrdersPage,                   canActivate: [authGuard, userOnlyGuard]},
   { path: 'delivery',              component: DeliveryDashboardPage,        canActivate: [authGuard, deliveryOnlyGuard] },
   { path: 'delivery/entregas',     component: MisEntregasPage,              canActivate: [authGuard, deliveryOnlyGuard] }, 
 

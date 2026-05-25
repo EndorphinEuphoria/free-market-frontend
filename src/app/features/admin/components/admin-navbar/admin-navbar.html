@@ -18,7 +18,6 @@
     </ul>
     <div class="admin-nav-right">
       <a class="admin-user" routerLink="/profile">
-        <div class="admin-avatar">{{ (auth.currentUser()?.username ?? 'A')[0].toUpperCase() }}</div>
         Hello, {{ auth.currentUser()?.username ?? 'admin' }}
       </a>
       <button class="admin-logout-btn" (click)="auth.logout()">Logout</button>

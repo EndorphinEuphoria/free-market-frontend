@@ -8,28 +8,6 @@
     <!-- PERFIL -->
     <form [formGroup]="profileForm" (ngSubmit)="onSubmitProfile()">
       <section class="profile-section">
-        <h2 class="section-title">Profile Picture</h2>
-        <div class="avatar-row">
-          <div class="avatar-wrap">
-            <img *ngIf="avatarUrl()" [src]="avatarUrl()" alt="Avatar" class="avatar-img" />
-            <div *ngIf="!avatarUrl()" class="avatar-placeholder">
-              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none"
-                viewBox="0 0 24 24" stroke="#9CA3AF" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0"/>
-              </svg>
-            </div>
-          </div>
-          <label class="btn-upload">
-            Upload Photo
-            <input type="file" accept="image/*" class="input-hidden" (change)="onAvatarChange($event)" />
-          </label>
-        </div>
-      </section>
-
-      <div class="section-divider"></div>
-
-      <section class="profile-section">
         <h2 class="section-title">Personal Details</h2>
         <div class="form-grid">
           <div class="field-group">
@@ -95,14 +73,26 @@
             <label class="field-label">Número</label>
             <input class="field-input" formControlName="streetNumber" type="text" placeholder="Ej: 1234" />
           </div>
-          <div class="field-group">
-            <label class="field-label">Comuna</label>
-            <input class="field-input" formControlName="comuna" type="text" placeholder="Ej: Providencia" />
-          </div>
-          <div class="field-group">
-            <label class="field-label">Región</label>
-            <input class="field-input" formControlName="region" type="text" placeholder="Ej: Región Metropolitana" />
-          </div>
+            <div class="field-group">
+              <label class="field-label">Comuna</label>
+              <select class="field-input" formControlName="comuna" [disabled]="!locationForm.get('region')?.value">
+                <option value="">
+                  {{ locationForm.get('region')?.value ? 'Selecciona una comuna' : 'Primero elige una región' }}
+                </option>
+                @for (comuna of comunasDisponibles; track comuna) {
+                  <option [value]="comuna">{{ comuna }}</option>
+                }
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Región</label>
+              <select class="field-input" formControlName="region" (change)="onRegionChange()">
+                <option value="">Selecciona una región</option>
+                @for (region of regiones; track region) {
+                  <option [value]="region">{{ region }}</option>
+                }
+              </select>
+            </div>
         </div>
       </section>
 

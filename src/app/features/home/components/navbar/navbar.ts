@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, signal } from '@angular/core';
 import { Auth } from '../../../../core/services/auth';
 import { Router, RouterLinkActive, RouterLinkWithHref } from '@angular/router';
 import { Cart } from '../../../../core/services/cart';
@@ -15,10 +15,11 @@ export class Navbar {
   readonly router = inject(Router)
   readonly cartService = inject(Cart)
   readonly configService = inject(ConfigService);
+  private elementRef = inject(ElementRef);
 
   isScrolled       = signal(false);
   isMobileMenuOpen = signal(false);
-  isInShop = signal(false);
+  isUserMenuOpen = signal(false);
 
   @HostListener('window:scroll')
   onScroll(): void {
@@ -27,6 +28,9 @@ export class Navbar {
 
   toggleMobileMenu(): void {
     this.isMobileMenuOpen.update(v => !v);
+  }
+  toggleUserMenu(): void {
+    this.isUserMenuOpen.update(v => !v);
   }
 
   openCart(): void {
@@ -39,4 +43,11 @@ export class Navbar {
     }
     this.cartService.openCart();
   }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+  if (!this.elementRef.nativeElement.contains(event.target)) {
+    this.isUserMenuOpen.set(false);
+  }
+}
 }
