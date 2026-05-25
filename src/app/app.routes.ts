@@ -16,6 +16,8 @@ import { authGuard } from './core/guards/auth-guard';
 import { deliveryOnlyGuard } from './core/guards/delivery-only-guard';
 import { userOnlyGuard } from './core/guards/user-only-guard';
 import { adminOnlyGuard } from './core/guards/admin-only-guard';
+import {ForgotPasswordPage} from './features/auth/pages/forgot-password-page/forgot-password-page'
+import {ResetPasswordPage} from './features/auth/pages/reset-password-page/reset-password-page'
 export const routes: Routes = [
   
   // Normal routes
@@ -28,6 +30,8 @@ export const routes: Routes = [
   { path: 'profile',               component: ProfilePage,                  canActivate: [authGuard] },
   { path: 'delivery',              component: DeliveryDashboardPage,        canActivate: [authGuard, deliveryOnlyGuard] },
   { path: 'delivery/entregas',     component: MisEntregasPage,              canActivate: [authGuard, deliveryOnlyGuard] }, 
+  { path: 'forgot-password',       component: ForgotPasswordPage },
+  { path: 'reset-password',        component: ResetPasswordPage },
 
   // Admin routes
   { path: 'admin',                 component: AdminDashboardPage,           canActivate: [authGuard, adminOnlyGuard] },
