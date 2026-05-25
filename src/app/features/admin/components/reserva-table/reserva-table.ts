@@ -1,7 +1,7 @@
 // reserva-table.ts
 import { Component, inject, OnInit, signal,computed } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { AnalyticsService, ReservaResponse } from '../../../../core/services/analityc-service';
+import { AnalyticsService, ReservaResponse } from '../../../../core/services/analytics-service';
 
 @Component({
   selector: 'app-reserva-table',
