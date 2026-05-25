@@ -1,0 +1,208 @@
+.orders-container {
+  max-width: 1100px;
+  margin: 2.5rem auto;
+  padding: 0 1.5rem;
+}
+
+.orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.orders-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #252b42;
+  margin: 0 0 0.25rem;
+}
+
+.orders-subtitle {
+  font-size: 0.875rem;
+  color: #737373;
+  margin: 0;
+}
+
+.orders-filters {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.orders-input {
+  flex: 1;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.orders-input:focus { border-color: #252b42; }
+
+.orders-btn-refresh {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.orders-btn-refresh:hover { background: #f5f5f5; }
+
+.orders-table-wrapper {
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.orders-table thead tr {
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.orders-table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #252b42;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.orders-table td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid #f9f9f9;
+  color: #444;
+}
+
+.orders-table tbody tr:last-child td { border-bottom: none; }
+.orders-table tbody tr:hover > td { background: #fafafa; }
+
+.orders-td-muted { color: #9ca3af; font-size: 0.82rem; }
+.orders-td-bold  { font-weight: 600; color: #252b42; }
+
+.orders-status {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.orders-status--reservado  { background: #e8f5f1; color: #0f6e56; }
+.orders-status--pendiente  { background: #fef9e7; color: #b7860b; }
+.orders-status--cancelado  { background: #fef2f2; color: #b91c1c; }
+.orders-status--completo { background: #eff6ff; color: #1d4ed8; }
+
+.orders-btn-expand {
+  background: none;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: #737373;
+  transition: background 0.15s, color 0.15s;
+}
+
+.orders-btn-expand:hover { background: #f5f5f5; color: #252b42; }
+
+.orders-btn-cancel {
+  padding: 4px 12px;
+  border: 1px solid #fca5a5;
+  border-radius: 6px;
+  background: #fff;
+  color: #e53e3e;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.orders-btn-cancel:hover    { background: #fff5f5; }
+.orders-btn-cancel:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.orders-detail-row td { padding: 0; background: #fafafa; }
+
+.orders-detail {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.orders-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.orders-detail-table th {
+  padding: 0.4rem 0.75rem;
+  text-align: left;
+  color: #9ca3af;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.orders-detail-table td {
+  padding: 0.4rem 0.75rem;
+  color: #555;
+  border: none;
+}
+
+.orders-empty {
+  text-align: center;
+  color: #9ca3af;
+  padding: 3rem 1rem;
+  font-size: 0.9rem;
+}
+
+.orders-count {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-top: 0.75rem;
+  text-align: right;
+}
+
+.orders-tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.orders-tab {
+  background: none;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #737373;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.orders-tab:hover { color: #252b42; }
+
+.orders-tab--active {
+  color: #252b42;
+  border-bottom-color: #252b42;
+}
+
+.orders-status--en_camino  { background: #fef9e7; color: #b7860b; }
+.orders-status--entregado  { background: #e8f5f1; color: #0f6e56; }
+.orders-status--cancelado  { background: #fef2f2; color: #b91c1c; }
+.orders-status--pendiente  { background: #f5f5f5; color: #737373; }

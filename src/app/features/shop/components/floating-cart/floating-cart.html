@@ -1,3 +1,13 @@
+@if (reservaExitosa()) {
+  <div class="reserva-toast">
+    <div class="toast-icon">✓</div>
+    <div class="toast-content">
+      <p class="toast-title">Reservation confirmed!</p>
+      <p class="toast-sub">Your order was succesfully registered.</p>
+    </div>
+  </div>
+}
+
 <div class="cart-drawer" [class.open]="cartService.isOpen()">
   <div class="cart-header">
     <h2>Carrito ({{ cartService.totalItems() }})</h2>
@@ -8,24 +18,40 @@
     <p class="cart-empty">Tu carrito está vacío</p>
   }
 
-  @for (item of cartService.items(); track item.idProduct) {
-    <div class="cart-item">
-      <img [src]="item.url" [alt]="item.name" />
-      <div class="cart-item-info">
-        <p>{{ item.name }}</p>
-        <p>${{ item.price }}</p>
-        <div class="qty-controls">
-          <button (click)="cartService.updateQuantity(item.idProduct, item.quantity - 1)">−</button>
-          <span>{{ item.quantity }}</span>
-          <button (click)="cartService.updateQuantity(item.idProduct, item.quantity + 1)">+</button>
+  <div class="cart-items">
+    @for (item of cartService.items(); track item.idProduct) {
+      <div class="cart-item">
+        <button class="btn-remove" (click)="cartService.removeItem(item.idProduct)">✕</button>
+        <img [src]="item.url || 'https://placehold.co/400x400?text=Product'" />
+        <div class="cart-item-info">
+          <p>{{ item.name }}</p>
+          <p>{{ item.quantity }} x {{ item.name }}</p>
+          <p class="item-price">${{ item.price | clpFormat }}</p>
+          <div class="qty-controls">
+            <button (click)="cartService.updateQuantity(item.idProduct, item.quantity - 1)">−</button>
+            <span>{{ item.quantity }}</span>
+            <button (click)="cartService.updateQuantity(item.idProduct, item.quantity + 1)">+</button>
+          </div>
         </div>
       </div>
-      <button (click)="cartService.removeItem(item.idProduct)">🗑</button>
-    </div>
-  }
+    }
+  </div>
 
   <div class="cart-footer">
-    <p><strong>Total: ${{ cartService.totalPrice() }}</strong></p>
-    <button class="btn-checkout" (click)="checkout()">Confirmar reserva</button>
+    <div class="cart-subtotal">
+      <span>Sub-total</span>
+      <span>${{ cartService.totalPrice() | clpFormat }}</span>
+    </div>
+    <button 
+      class="btn-checkout" 
+      (click)="checkout()"
+      [disabled]="!hasLocation()"
+      [title]="!hasLocation() ? 'You must add an Address on your profile page' : ''">
+      @if (!hasLocation()) {
+        Add an address first
+      } @else {
+        Purchase
+      }
+    </button>
   </div>
 </div>

@@ -21,7 +21,7 @@
     <p class="card-category">{{ product().proovedorNombre }}</p>
     <h3 class="card-name">{{ product().name }}</h3>
     <div class="card-price-row">
-      <span class="card-price">${{ product().price }}</span>
+      <span class="card-price">${{ product().price | clpFormat }}</span>
       @if (product().stock === 0) {
         <span class="stock-label">Agotado</span>
       } @else if (product().stock <= 5) {

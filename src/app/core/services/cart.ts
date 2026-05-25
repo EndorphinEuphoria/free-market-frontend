@@ -65,9 +65,9 @@ export class Cart {
   }
 
   checkout() {
-    const token = localStorage.getItem('token'); // ajusta la key de tu JWT
+    const token = localStorage.getItem('token');
     const payload = this.decodeJwt(token);
-    const idUser = payload?.sub ?? payload?.id; // ajusta según tu JWT
+    const idUser: number = payload?.userId;
 
     const body = {
       idUser,
@@ -78,11 +78,11 @@ export class Cart {
     };
 
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Idempotency-Key': crypto.randomUUID(), // evita duplicados
+      'Idempotency-Key': crypto.randomUUID(),
+      'X-User-Id': idUser.toString()
     });
 
-    return this.http.post(`${this.API_URL}/create`, body, { headers });
+    return this.http.post(`${this.API_URL}/createReserve`, body, { headers });
   }
 
   // Helpers privados

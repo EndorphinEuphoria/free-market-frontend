@@ -99,6 +99,8 @@ getCoordinates(userId: number): Observable<{latitude: number, longitude: number}
     `${this.API}/location/coordinates/${userId}`
   );
 }
-
+  getByUser(userId: number): Observable<DeliveryResponse[]> {
+    return this.http.get<DeliveryResponse[]>(`${this.API}/delivery/usuario/${userId}`);
+  }
 
 }
