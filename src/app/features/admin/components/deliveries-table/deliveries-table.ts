@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { forkJoin } from 'rxjs';
-import { AnalyticsService, DeliveryResponse, UserResponse } from '../../../../core/services/analityc-service';
+import { AnalyticsService, DeliveryResponse, UserResponse } from '../../../../core/services/analytics-service';
 
 @Component({
   selector: 'app-deliveries-table',
