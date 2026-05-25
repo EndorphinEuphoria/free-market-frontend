@@ -18,6 +18,8 @@ import { Router } from '@angular/router';
 })
 export class CatalogPage {
 
+  searchTerm = signal('');
+
   productsService = inject(Products);
   cartService = inject(Cart);
   auth = inject(Auth);
@@ -38,19 +40,30 @@ export class CatalogPage {
   isLoading = signal(false);
 
   filteredProducts = computed(() => {
-    const f = this.filters();
-    let result = this.allProducts();
 
-    return result
-      .filter(p => p.price >= f.minPrice && p.price <= f.maxPrice && (!f.inStockOnly || p.stock > 0))
-      .sort((a, b) =>
-        f.sortBy === 'price-asc'
-          ? a.price - b.price
-          : f.sortBy === 'price-desc'
-          ? b.price - a.price
-          : 0
-      );
-  });
+  const f = this.filters();
+  const search = this.searchTerm().toLowerCase().trim();
+
+  let result = this.allProducts()
+  
+  return result
+    .filter(p =>
+      p.name.toLowerCase().includes(search)
+    )
+    .filter(
+      p =>
+        p.price >= f.minPrice &&
+        p.price <= f.maxPrice &&
+        (!f.inStockOnly || p.stock > 0)
+    )
+    .sort((a, b) =>
+      f.sortBy === 'price-asc'
+        ? a.price - b.price
+        : f.sortBy === 'price-desc'
+        ? b.price - a.price
+        : 0
+    );
+});
 
   onFiltersChange(newFilters: FilterState): void {
     this.filters.set(newFilters);

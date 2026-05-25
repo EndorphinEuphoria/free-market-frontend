@@ -1,39 +1,40 @@
-/* register-form.css */
+/* register-form.css — mismo estilo que forgot-password-form */
 
 .form-title {
-  font-family: var(--font-heading);
+  font-family: var(--commerce-font), sans-serif;
   font-size: 2rem;
   font-weight: 700;
   color: #111827;
   letter-spacing: -0.02em;
+  text-align: center;
 }
 
+/* Input con icono izquierdo */
 .input-wrapper {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   border: 1.5px solid #dee2e6;
-  border-radius: 0.5rem;
-  padding: 0 0.875rem;
-  background: #fff;
+  border-radius: 0.75rem;
+  padding: 0.25rem 1rem;
+  background: #f8f9fa;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .input-wrapper:focus-within {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--color-primary) 20%, transparent);
+  border-color: var(--commerce-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--commerce-primary) 15%, transparent);
 }
 
 .is-invalid-wrapper {
-  border-color: #dc3545;
-  background-color: #fff5f5;
+  border-color: #dc3545 !important;
 }
 
 .input-icon {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
-  color: #adb5bd;
+  color: #6c757d;
 }
 
 .custom-input {
@@ -41,9 +42,9 @@
   border: none;
   outline: none;
   background: transparent;
-  padding: 0.72rem 0;
-  font-family: var(--font-body);
-  font-size: 0.9rem;
+  padding: 0.85rem 0;
+  font-family: var(--commerce-font), sans-serif;
+  font-size: 0.95rem;
   color: #212529;
 }
 
@@ -51,29 +52,39 @@
   color: #adb5bd;
 }
 
+/* Select heredando el estilo custom-input */
+select.custom-input {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+/* Toggle password */
 .toggle-password {
   background: none;
   border: none;
   cursor: pointer;
   padding: 0;
-  color: #adb5bd;
+  color: #6c757d;
   display: flex;
   align-items: center;
   transition: color 0.15s;
 }
 
 .toggle-password:hover {
-  color: #6c757d;
+  color: #495057;
 }
 
+/* Botón primario */
 .btn-primary {
-  background-color: var(--color-primary) !important;
-  border-color: var(--color-primary) !important;
-  font-family: var(--font-body);
+  background-color: var(--commerce-primary) !important;
+  border-color: var(--commerce-primary) !important;
+  color: #fff !important;
+  font-family: var(--commerce-font), sans-serif;
   font-weight: 600;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   padding: 0.72rem 1.5rem;
-  transition: background-color 0.15s, transform 0.1s, opacity 0.15s;
+  transition: background-color 0.15s, border-color 0.15s, transform 0.1s;
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -87,30 +98,12 @@
 }
 
 .btn-primary:disabled {
+  background-color: var(--commerce-primary) !important;
+  border-color: var(--commerce-primary) !important;
   opacity: 0.65;
 }
 
-.social-btn {
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  font-weight: 500;
-  border-radius: 0.5rem;
-  border-color: #dee2e6;
-  color: #495057;
-  transition: border-color 0.15s, background 0.15s, transform 0.1s;
-}
-
-.social-btn:hover {
-  transform: translateY(-1px);
-  border-color: #adb5bd;
-  background-color: #f8f9fa;
-  color: #212529;
-}
-
-.social-btn:active {
-  transform: translateY(0);
-}
-
+/* Divisor */
 .divider {
   display: flex;
   align-items: center;
@@ -125,13 +118,15 @@
   background: #dee2e6;
 }
 
+/* Links con color de marca */
 .brand-link {
-  color: var(--color-primary);
+  color: var(--commerce-primary);
   text-decoration: none;
-  transition: opacity 0.15s;
+  font-family: var(--commerce-font), sans-serif;
+  transition: color 0.15s;
 }
 
 .brand-link:hover {
-  opacity: 0.75;
-  color: var(--color-primary);
+  color: var(--color-primary-hover);
+  text-decoration: underline;
 }

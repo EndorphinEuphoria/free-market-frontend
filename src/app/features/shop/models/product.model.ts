@@ -1,10 +1,11 @@
-export interface ProductoResponse { // OK
+export interface ProductoResponse {
   id: number;
   proovedorNombre: string;
   name: string;
   url: string;
   price: number;
   stock: number;
+  active: boolean;
 }
 
 export interface FilterState { // OK

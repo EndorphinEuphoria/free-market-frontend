@@ -1,30 +1,15 @@
 <div class="login-page">
-
-  <!-- Left panel: form -->
-  <section class="panel panel--form" aria-label="Login form">
-    <div class="panel__inner">
-      <app-login-form (loginSuccess)="onLoginSuccess()" />
+  <div class="login-card">
+    <div class="login-brand">
+      @if (configService.logoUrl()) {
+        <img [src]="configService.logoUrl()" alt="logo" class="login-brand__logo" />
+      }
+      @if (configService.commerceName()) {
+        <span class="login-brand__name">{{ configService.commerceName() }}</span>
+      } @else {
+        <span class="spinner-border spinner-border-sm"></span>
+      }
     </div>
-  </section>
-
-  <!-- Right panel: hero image + quote -->
-  <section
-    class="panel panel--hero"
-    [style.background-image]="'url(' + theme.heroImageUrl + ')'"
-    aria-hidden="true"
-  >
-    <!-- Overlay -->
-    <div class="hero-overlay" [style.background]="theme.heroOverlay"></div>
-
-    <!-- Quote block — hidden when heroQuote is empty -->
-    @if (theme.heroQuote) {
-      <blockquote class="hero-quote">
-        <p class="hero-quote__text">{{ theme.heroQuote }}</p>
-        @if (theme.heroQuoteAuthor) {
-          <cite class="hero-quote__author">{{ theme.heroQuoteAuthor }}</cite>
-        }
-      </blockquote>
-    }
-  </section>
-
+    <app-login-form (loginSuccess)="onLoginSuccess()" />
+  </div>
 </div>

@@ -176,17 +176,30 @@ export class ProductosPageComponent implements OnInit {
   }
 
   deleteProducto(id: number) {
-    if (!confirm('Are you sure you want to delete this product?')) return;
 
-    this.productosService.delete(id).subscribe({
-      next: () => {
-        this.productos.update(list => list.filter(p => p.id !== id));
-      },
-      error: () => {
-        alert('Failed to delete product.');
-      }
-    });
-  }
+  if (!confirm('Are you sure you want to deactivate this product?')) return;
+
+  this.productosService.delete(id).subscribe({
+
+    next: () => {
+
+      this.productos.update(list =>
+        list.map(p =>
+          p.id === id
+            ? { ...p, active: false }
+            : p
+        )
+      );
+
+    },
+
+    error: () => {
+      alert('Failed to deactivate product.');
+    }
+
+  });
+
+}
 
   // ── Drag & drop ──────────────────────────────────────────────
   onDragEnter(e: DragEvent) { e.preventDefault(); e.stopPropagation(); this.isDraggingOver.set(true); }
@@ -243,4 +256,28 @@ export class ProductosPageComponent implements OnInit {
   formatPrice(price: number): string {
     return price.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
   }
+
+  activateProducto(id: number) {
+
+  this.productosService.activate(id).subscribe({
+
+    next: () => {
+
+      this.productos.update(list =>
+        list.map(p =>
+          p.id === id
+            ? { ...p, active: true }
+            : p
+        )
+      );
+
+    },
+
+    error: () => {
+      alert('Failed to activate product.');
+    }
+
+  });
+
+}
 }

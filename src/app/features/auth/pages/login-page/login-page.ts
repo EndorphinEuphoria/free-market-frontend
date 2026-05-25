@@ -11,17 +11,22 @@ import { Auth } from '../../../../core/services/auth';
   templateUrl: './login-page.html',
   styleUrl: './login-page.css',
 })
+
+
 export class LoginPage {
   private readonly router        = inject(Router);
-  private readonly configService = inject(ConfigService);
+  readonly configService = inject(ConfigService);
   private readonly auth = inject(Auth);
   readonly theme = APP_THEME; 
 
   constructor() {
-    afterNextRender(() => {
+  afterNextRender(() => {
+    this.configService.getPublicConfig().subscribe({
+      next: (config) => this.configService.applyStyles(config as any),
+      error: () => {} 
     });
-  }
-
+  });
+}
   onLoginSuccess(): void {
     if (this.auth.currentUser()?.rol?.rolName === 'ADMIN') {
       this.router.navigate(['/admin']);
