@@ -2,6 +2,8 @@ import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminNavbar } from '../../components/admin-navbar/admin-navbar';
 import { ProductosService, ProductoResponse, ProductoRequest } from '../../../../core/services/productos-service';
+import { Toast } from '../../../../features/shop/components/toast/toast';
+import { ToastService } from '../../../../core/services/toast-service';
 
 export interface FormErrors {
   name?: string;
@@ -21,27 +23,35 @@ const EMPTY_FORM: ProductoRequest = {
 @Component({
   selector: 'app-productos-page',
   standalone: true,
-  imports: [CommonModule, AdminNavbar],
+  imports: [CommonModule, AdminNavbar, Toast],
   templateUrl: './productos-page.html',
   styleUrl: './productos-page.css'
 })
 export class ProductosPageComponent implements OnInit {
 
   private productosService = inject(ProductosService);
+  private toast            = inject(ToastService);
 
-  productos        = signal<ProductoResponse[]>([]);
-  loading          = signal(true);
-  error            = signal<string | null>(null);
-  filterText       = signal('');
-  showModal        = signal(false);
-  saving           = signal(false);
-  formError        = signal<string | null>(null);
-  formErrors       = signal<FormErrors>({});
-  editingProducto  = signal<ProductoResponse | null>(null);
-  form             = signal<ProductoRequest>({ ...EMPTY_FORM });
-  isDraggingOver   = signal(false);
-  imagePreview     = signal<string | null>(null);
+  // ─── Estado ───────────────────────────────────────────────
+  productos       = signal<ProductoResponse[]>([]);
+  loading         = signal(true);
+  error           = signal<string | null>(null);
+  filterText      = signal('');
+  showModal       = signal(false);
+  saving          = signal(false);
+  formError       = signal<string | null>(null);
+  formErrors      = signal<FormErrors>({});
+  editingProducto = signal<ProductoResponse | null>(null);
+  form            = signal<ProductoRequest>({ ...EMPTY_FORM });
+  isDraggingOver  = signal(false);
+  imagePreview    = signal<string | null>(null);
 
+  // ─── Delay guards ─────────────────────────────────────────
+  activatingIds   = signal<number[]>([]);
+  deactivatingIds = signal<number[]>([]);
+  processingIds = signal<number[]>([]);
+
+  // ─── Computeds ────────────────────────────────────────────
   filteredProductos = computed(() => {
     const text = this.filterText().toLowerCase();
     return this.productos().filter(p =>
@@ -51,10 +61,12 @@ export class ProductosPageComponent implements OnInit {
     );
   });
 
+  // ─── Init ─────────────────────────────────────────────────
   ngOnInit() {
     this.loadProductos();
   }
 
+  // ─── Carga ────────────────────────────────────────────────
   loadProductos() {
     this.loading.set(true);
     this.error.set(null);
@@ -75,6 +87,7 @@ export class ProductosPageComponent implements OnInit {
     this.filterText.set((e.target as HTMLInputElement).value);
   }
 
+  // ─── Modal ────────────────────────────────────────────────
   openCreateModal() {
     this.editingProducto.set(null);
     this.form.set({ ...EMPTY_FORM });
@@ -112,7 +125,6 @@ export class ProductosPageComponent implements OnInit {
     const value = (field === 'price' || field === 'stock') ? Number(raw) : raw;
 
     this.form.update(f => ({ ...f, [field]: value }));
-
     this.formErrors.update(errs => {
       const copy = { ...errs };
       delete copy[field as keyof FormErrors];
@@ -124,6 +136,7 @@ export class ProductosPageComponent implements OnInit {
     }
   }
 
+  // ─── Validación ───────────────────────────────────────────
   private validateForm(): boolean {
     const f = this.form();
     const errors: FormErrors = {};
@@ -137,6 +150,7 @@ export class ProductosPageComponent implements OnInit {
     return Object.keys(errors).length === 0;
   }
 
+  // ─── Guardar ──────────────────────────────────────────────
   saveProducto() {
     if (!this.validateForm()) return;
 
@@ -149,9 +163,8 @@ export class ProductosPageComponent implements OnInit {
     if (editing) {
       this.productosService.update(editing.id, f).subscribe({
         next: updated => {
-          this.productos.update(list =>
-            list.map(p => p.id === updated.id ? updated : p)
-          );
+          this.productos.update(list => list.map(p => p.id === updated.id ? updated : p));
+          this.toast.success('Product updated successfully');
           this.saving.set(false);
           this.closeModal();
         },
@@ -164,6 +177,7 @@ export class ProductosPageComponent implements OnInit {
       this.productosService.create(f).subscribe({
         next: created => {
           this.productos.update(list => [...list, created]);
+          this.toast.success('Product created successfully');
           this.saving.set(false);
           this.closeModal();
         },
@@ -175,33 +189,51 @@ export class ProductosPageComponent implements OnInit {
     }
   }
 
-  deleteProducto(id: number) {
+  // ─── Desactivar ───────────────────────────────────────────
+  async deleteProducto(id: number) {
+  const ok = await this.toast.confirm('Deactivate this product?');
+  if (!ok) return;
+  if (this.processingIds().includes(id)) return;
 
-  if (!confirm('Are you sure you want to deactivate this product?')) return;
-
+  this.processingIds.update(list => [...list, id]);
   this.productosService.delete(id).subscribe({
-
     next: () => {
-
-      this.productos.update(list =>
-        list.map(p =>
-          p.id === id
-            ? { ...p, active: false }
-            : p
-        )
-      );
-
+      this.toast.success('Product deactivated');
+      setTimeout(() => {
+        this.productos.update(list => list.map(p => p.id === id ? { ...p, active: false } : p));
+        this.processingIds.update(list => list.filter(i => i !== id));
+      }, 3000);
     },
-
     error: () => {
-      alert('Failed to deactivate product.');
+      this.toast.error('Failed to deactivate product');
+      this.processingIds.update(list => list.filter(i => i !== id));
     }
-
   });
-
 }
 
-  // ── Drag & drop ──────────────────────────────────────────────
+
+  // ─── Activar ──────────────────────────────────────────────
+ async activateProducto(id: number) {
+  const ok = await this.toast.confirm('Activate this product?');
+  if (!ok) return;
+  if (this.processingIds().includes(id)) return;
+
+  this.processingIds.update(list => [...list, id]);
+  this.productosService.activate(id).subscribe({
+    next: () => {
+      this.toast.success('Product activated');
+      setTimeout(() => {
+        this.productos.update(list => list.map(p => p.id === id ? { ...p, active: true } : p));
+        this.processingIds.update(list => list.filter(i => i !== id));
+      }, 3000);
+    },
+    error: () => {
+      this.toast.error('Failed to activate product');
+      this.processingIds.update(list => list.filter(i => i !== id));
+    }
+  });
+}
+  // ─── Drag & drop ──────────────────────────────────────────
   onDragEnter(e: DragEvent) { e.preventDefault(); e.stopPropagation(); this.isDraggingOver.set(true); }
   onDragOver(e: DragEvent)  { e.preventDefault(); e.stopPropagation(); if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy'; this.isDraggingOver.set(true); }
   onDragLeave(e: DragEvent) { e.preventDefault(); e.stopPropagation(); this.isDraggingOver.set(false); }
@@ -226,14 +258,11 @@ export class ProductosPageComponent implements OnInit {
   }
 
   private readImageFile(file: File) {
-    const maxSizeMB    = 2;
-    const maxSizeBytes = maxSizeMB * 1024 * 1024;
-
+    const maxSizeBytes = 2 * 1024 * 1024;
     if (file.size > maxSizeBytes) {
-      this.formError.set(`Image cannot exceed ${maxSizeMB}MB.`);
+      this.formError.set('Image cannot exceed 2MB.');
       return;
     }
-
     const reader = new FileReader();
     reader.onload = ev => {
       const dataUrl = ev.target?.result as string;
@@ -256,28 +285,4 @@ export class ProductosPageComponent implements OnInit {
   formatPrice(price: number): string {
     return price.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
   }
-
-  activateProducto(id: number) {
-
-  this.productosService.activate(id).subscribe({
-
-    next: () => {
-
-      this.productos.update(list =>
-        list.map(p =>
-          p.id === id
-            ? { ...p, active: true }
-            : p
-        )
-      );
-
-    },
-
-    error: () => {
-      alert('Failed to activate product.');
-    }
-
-  });
-
-}
 }
