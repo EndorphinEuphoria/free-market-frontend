@@ -130,7 +130,8 @@ export class DeliveryDashboardPage implements OnInit, AfterViewChecked {
   }
 
   private async initMap(coords: [number, number]) {
-    const L = await import('leaflet');
+     const leaflet = await import('leaflet');
+     const L = leaflet.default ?? leaflet;
 
     this.map = L.map('leaflet-map', {
       zoomControl: true,

@@ -239,7 +239,7 @@
 
 .cart-drawer.open::before {
   opacity: 1;
-  pointer-events: all;
+  pointer-events: none;
 }
 
 .reserva-toast {

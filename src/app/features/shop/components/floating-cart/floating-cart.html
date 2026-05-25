@@ -45,7 +45,6 @@
     <button 
       class="btn-checkout" 
       (click)="checkout()"
-      [disabled]="!hasLocation()"
       [title]="!hasLocation() ? 'You must add an Address on your profile page' : ''">
       @if (!hasLocation()) {
         Add an address first

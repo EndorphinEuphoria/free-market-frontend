@@ -2,10 +2,7 @@
 
   <!-- Sidebar filtros -->
   <aside class="catalog-sidebar">
-    <app-product-filters
-      [filters]="filters()"
-      (filtersChange)="onFiltersChange($event)"
-    />
+    <app-product-filters [filters]="filters()" (filtersChange)="onFiltersChange($event)" />
   </aside>
 
   <!-- Contenido principal -->
@@ -18,6 +15,17 @@
       </p>
 
       <div class="toolbar-right">
+
+        <div class="search-box">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"
+            class="search-icon">
+            <path
+              d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.867-3.834zm-5.242.656a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
+          </svg>
+
+          <input type="text" placeholder="Buscar producto..." [value]="searchTerm()"
+            (input)="searchTerm.set($any($event.target).value)" />
+        </div>
         <!-- Ordenar -->
         <select class="sort-select" (change)="onSortChange($event)">
           <option value="relevance">Relevancia</option>
@@ -28,41 +36,35 @@
 
         <!-- Vista grid / list -->
         <div class="view-toggle">
-          <button
-            class="view-btn"
-            [class.active]="viewMode() === 'grid'"
-            (click)="viewMode.set('grid')"
-            aria-label="Vista cuadrícula"
-          >
+          <button class="view-btn" [class.active]="viewMode() === 'grid'" (click)="viewMode.set('grid')"
+            aria-label="Vista cuadrícula">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M1 2.5A1.5 1.5 0 012.5 1h3A1.5 1.5 0 017 2.5v3A1.5 1.5 0 015.5 7h-3A1.5 1.5 0 011 5.5v-3zm8 0A1.5 1.5 0 0110.5 1h3A1.5 1.5 0 0115 2.5v3A1.5 1.5 0 0113.5 7h-3A1.5 1.5 0 019 5.5v-3zm-8 8A1.5 1.5 0 012.5 9h3A1.5 1.5 0 017 10.5v3A1.5 1.5 0 015.5 15h-3A1.5 1.5 0 011 13.5v-3zm8 0A1.5 1.5 0 0110.5 9h3a1.5 1.5 0 011.5 1.5v3a1.5 1.5 0 01-1.5 1.5h-3A1.5 1.5 0 019 13.5v-3z"/>
+              <path
+                d="M1 2.5A1.5 1.5 0 012.5 1h3A1.5 1.5 0 017 2.5v3A1.5 1.5 0 015.5 7h-3A1.5 1.5 0 011 5.5v-3zm8 0A1.5 1.5 0 0110.5 1h3A1.5 1.5 0 0115 2.5v3A1.5 1.5 0 0113.5 7h-3A1.5 1.5 0 019 5.5v-3zm-8 8A1.5 1.5 0 012.5 9h3A1.5 1.5 0 017 10.5v3A1.5 1.5 0 015.5 15h-3A1.5 1.5 0 011 13.5v-3zm8 0A1.5 1.5 0 0110.5 9h3a1.5 1.5 0 011.5 1.5v3a1.5 1.5 0 01-1.5 1.5h-3A1.5 1.5 0 019 13.5v-3z" />
             </svg>
           </button>
-          <button
-            class="view-btn"
-            [class.active]="viewMode() === 'list'"
-            (click)="viewMode.set('list')"
-            aria-label="Vista lista"
-          >
+          <button class="view-btn" [class.active]="viewMode() === 'list'" (click)="viewMode.set('list')"
+            aria-label="Vista lista">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M2.5 12a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z"/>
+              <path fill-rule="evenodd"
+                d="M2.5 12a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z" />
             </svg>
           </button>
         </div>
       </div>
     </div>
 
-  <!-- Loading -->
-  @if (isLoading()) {
+    <!-- Loading -->
+    @if (isLoading()) {
     <div class="catalog-loading">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Cargando...</span>
       </div>
     </div>
-  }
+    }
 
-  <!-- Sin resultados -->
-  @if (!isLoading() && filteredProducts().length === 0) {
+    <!-- Sin resultados -->
+    @if (!isLoading() && filteredProducts().length === 0) {
     <div class="catalog-empty">
       <p>No se encontraron productos con los filtros seleccionados.</p>
       <button class="btn btn-outline-primary btn-sm"
@@ -70,19 +72,16 @@
         Limpiar filtros
       </button>
     </div>
-  }
+    }
 
-  <!-- Grid de productos -->
-  @if (!isLoading()) {
+    <!-- Grid de productos -->
+    @if (!isLoading()) {
     <div class="products-grid" [class.list-view]="viewMode() === 'list'">
       @for (product of filteredProducts(); track product.id) {
-        <app-product
-          [product]="product"
-          (addToCart)="onAddToCart($event)"
-        />
+      <app-product [product]="product" (addToCart)="onAddToCart($event)" />
       }
     </div>
-  }
+    }
 
   </main>
 </div>

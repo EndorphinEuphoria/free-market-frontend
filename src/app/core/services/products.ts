@@ -12,9 +12,10 @@ export class Products {
 
   private readonly http = inject(HttpClient);
 
-  getAllProducts(): Observable<ProductoResponse[]> {
-    return this.http.get<ProductoResponse[]>(`${this.API_URL}/get`);
-  }
+  getAllProducts() {return this.http.get<ProductoResponse[]>(
+    'http://localhost:8086/api-v1/productos/get/active'
+  );
+}
 
 }
 /* TODO eliminar después, body para crear producto  

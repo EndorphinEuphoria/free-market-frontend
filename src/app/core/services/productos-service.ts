@@ -10,6 +10,8 @@ export interface ProductoResponse {
   url: string;
   price: number;
   stock: number;
+  active: boolean;
+  
 }
 
 export interface ProductoRequest {
@@ -41,4 +43,10 @@ export class ProductosService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/delete/${id}`);
   }
+
+  activate(id: number) {
+
+  return this.http.patch(`${this.API_URL}/activate/${id}`,{});
+
+}
 }

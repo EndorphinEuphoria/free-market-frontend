@@ -1,39 +1,26 @@
-/* login-page.component.css
-   Bootstrap no tiene un split-screen 50/50 con panel de imagen fijo,
-   así que el layout principal sigue siendo CSS custom.
-   Todo lo demás (sombra, animaciones, tipografía hero) también es custom. */
-
-/* Split layout: form izquierda fija, hero llena el resto */
+/* login-page.css */
 
 .login-page {
-  display: grid;
-  grid-template-columns: 380px 1fr;
   min-height: 100vh;
-}
-
-@media (max-width: 768px) {
-  .login-page {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Panel izquierdo: formulario */
-
-.panel--form {
+  background: #f5f0e8;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
-  padding: 3rem 2rem;
-  position: relative;
-  z-index: 1;
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.06);
+  padding: 2rem;
 }
 
-.panel__inner {
+.login-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 3rem 4rem;
   width: 100%;
+  max-width: 560px;         /* antes: 420px */
+  min-height: 80vh;         /* ocupa la mayoría de la pantalla */
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  box-shadow: 0 8px 48px rgba(0, 0, 0, 0.08);
   animation: slideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -42,59 +29,36 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Panel derecho: hero */
-
-.panel--hero {
-  position: relative;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+.login-brand {
   display: flex;
-  align-items: flex-end;
-  padding: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 0.4rem;
 }
 
-@media (max-width: 768px) {
-  .panel--hero {
-    display: none;
+.login-brand__logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+.login-brand__name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* El form ocupa todo el ancho disponible dentro de la card */
+.login-card app-login-form,
+.login-card > * {
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .login-card {
+    padding: 2rem 1.5rem;
+    min-height: 90vh;
   }
 }
-
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-/* Cita hero */
-
-.hero-quote {
-  position: relative;
-  z-index: 1;
-  margin: 0;
-  max-width: 520px;
-  animation: fadeIn 0.7s 0.3s ease both;
-}
-
-.hero-quote__text {
-  font-family: var(--font-heading);
-  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
-  font-weight: 400;
-  color: #fff;
-  line-height: 1.45;
-  margin: 0 0 0.75rem;
-}
-
-.hero-quote__author {
-  display: block;
-  font-style: normal;
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.7);
-  letter-spacing: 0.01em;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-

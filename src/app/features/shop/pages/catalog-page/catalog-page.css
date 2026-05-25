@@ -117,4 +117,30 @@
   .products-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   }
+
+  .search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-box input {
+  width: 220px;
+  padding: 10px 14px 10px 38px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  outline: none;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.search-box input:focus {
+  border-color: #0d6efd;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  color: #777;
+}
 }

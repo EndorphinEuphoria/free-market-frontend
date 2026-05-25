@@ -2,18 +2,31 @@
 
 <div class="productos-container">
 
+  <!-- Header -->
   <div class="productos-header">
+
     <div>
-      <h1 class="productos-title">Product Management</h1>
-      <p class="productos-subtitle">Manage your store's product catalog</p>
+      <h1 class="productos-title">
+        Product Management
+      </h1>
+
+      <p class="productos-subtitle">
+        Manage your store's product catalog
+      </p>
     </div>
-    <button class="productos-btn-create" (click)="openCreateModal()">
+
+    <button
+      class="productos-btn-create"
+      (click)="openCreateModal()"
+    >
       + New product
     </button>
+
   </div>
 
   <!-- Filters -->
   <div class="productos-filters">
+
     <input
       class="productos-input"
       type="text"
@@ -21,16 +34,41 @@
       [value]="filterText()"
       (input)="onFilterText($event)"
     />
-    <button class="productos-btn-refresh" (click)="loadProductos()">↻ Reload</button>
+
+    <button
+      class="productos-btn-refresh"
+      (click)="loadProductos()"
+    >
+      ↻ Reload
+    </button>
+
   </div>
 
+  <!-- Loading -->
   @if (loading()) {
-    <div class="productos-loading">Loading products...</div>
-  } @else if (error()) {
-    <div class="productos-error">{{ error() }}</div>
-  } @else {
+
+    <div class="productos-loading">
+      Loading products...
+    </div>
+
+  }
+
+  <!-- Error -->
+  @else if (error()) {
+
+    <div class="productos-error">
+      {{ error() }}
+    </div>
+
+  }
+
+  <!-- Table -->
+  @else {
+
     <div class="productos-table-wrapper">
+
       <table class="productos-table">
+
         <thead>
           <tr>
             <th>ID</th>
@@ -39,64 +77,198 @@
             <th>Supplier</th>
             <th>Price</th>
             <th>Stock</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
+
         <tbody>
+
           @for (producto of filteredProductos(); track producto.id) {
+
             <tr>
-              <td class="productos-td-muted">{{ producto.id }}</td>
-              <td>
-                <img [src]="producto.url" [alt]="producto.name" class="productos-img" />
+
+              <!-- ID -->
+              <td class="productos-td-muted">
+                {{ producto.id }}
               </td>
-              <td class="productos-td-bold">{{ producto.name }}</td>
-              <td class="productos-td-muted">{{ producto.proovedorNombre }}</td>
-              <td class="productos-td-bold">{{ formatPrice(producto.price) }}</td>
+
+              <!-- Image -->
               <td>
-                <span class="productos-stock"
-                  [class.productos-stock--low]="producto.stock < 10">
+
+                <img
+                  [src]="producto.url"
+                  [alt]="producto.name"
+                  class="productos-img"
+                />
+
+              </td>
+
+              <!-- Name -->
+              <td class="productos-td-bold">
+                {{ producto.name }}
+              </td>
+
+              <!-- Supplier -->
+              <td class="productos-td-muted">
+                {{ producto.proovedorNombre }}
+              </td>
+
+              <!-- Price -->
+              <td class="productos-td-bold">
+                {{ formatPrice(producto.price) }}
+              </td>
+
+              <!-- Stock -->
+              <td>
+
+                <span
+                  class="productos-stock"
+                  [class.productos-stock--low]="producto.stock < 10"
+                >
                   {{ producto.stock }}
                 </span>
+
               </td>
+
+              <!-- Status -->
               <td>
+
+                @if (producto.active) {
+
+                  <span class="status-badge status-badge--active">
+                    Active
+                  </span>
+
+                } @else {
+
+                  <span class="status-badge status-badge--inactive">
+                    Inactive
+                  </span>
+
+                }
+
+              </td>
+
+              <!-- Actions -->
+              <td>
+
                 <div class="productos-actions">
-                  <button class="productos-btn-edit" (click)="openEditModal(producto)">
+
+                  <!-- Edit -->
+                  <button
+                    class="productos-btn-edit"
+                    (click)="openEditModal(producto)"
+                  >
                     Edit
                   </button>
-                  <button class="productos-btn-delete" (click)="deleteProducto(producto.id)">
-                    Delete
-                  </button>
+
+                  <!-- Disable -->
+                  @if (producto.active) {
+
+                    <button
+                      class="productos-btn-delete"
+                      (click)="deleteProducto(producto.id)"
+                    >
+                      Disable
+                    </button>
+
+                  }
+
+                  <!-- Activate -->
+                  @else {
+
+                    <button
+                      class="productos-btn-activate"
+                      (click)="activateProducto(producto.id)"
+                    >
+                      Activate
+                    </button>
+
+                  }
+
                 </div>
+
               </td>
+
             </tr>
-          } @empty {
-            <tr>
-              <td colspan="7" class="productos-empty">No products found</td>
-            </tr>
+
           }
+
+          @empty {
+
+            <tr>
+
+              <td
+                colspan="8"
+                class="productos-empty"
+              >
+                No products found
+              </td>
+
+            </tr>
+
+          }
+
         </tbody>
+
       </table>
+
     </div>
-    <p class="productos-count">{{ filteredProductos().length }} product(s) found</p>
+
+    <p class="productos-count">
+      {{ filteredProductos().length }} product(s) found
+    </p>
+
   }
 
 </div>
 
-<!-- Create / edit modal -->
+<!-- Modal -->
 @if (showModal()) {
-  <div class="modal-overlay" (click)="closeModal()">
-    <div class="modal-card" (click)="$event.stopPropagation()">
 
+  <div
+    class="modal-overlay"
+    (click)="closeModal()"
+  >
+
+    <div
+      class="modal-card"
+      (click)="$event.stopPropagation()"
+    >
+
+      <!-- Header -->
       <div class="modal-header">
-        <h2 class="modal-title">{{ editingProducto() ? 'Edit product' : 'New product' }}</h2>
-        <button class="modal-close" (click)="closeModal()">✕</button>
+
+        <h2 class="modal-title">
+
+          {{
+            editingProducto()
+              ? 'Edit product'
+              : 'New product'
+          }}
+
+        </h2>
+
+        <button
+          class="modal-close"
+          (click)="closeModal()"
+        >
+          ✕
+        </button>
+
       </div>
 
+      <!-- Body -->
       <div class="modal-body">
 
         <!-- Name -->
         <div class="modal-field">
-          <label class="modal-label">Name</label>
+
+          <label class="modal-label">
+            Name
+          </label>
+
           <input
             class="modal-input"
             [class.modal-input--error]="formErrors().name"
@@ -105,14 +277,24 @@
             [value]="form().name"
             (input)="onFormInput($event, 'name')"
           />
+
           @if (formErrors().name) {
-            <span class="modal-field-error">⚠ {{ formErrors().name }}</span>
+
+            <span class="modal-field-error">
+              ⚠ {{ formErrors().name }}
+            </span>
+
           }
+
         </div>
 
         <!-- Supplier -->
         <div class="modal-field">
-          <label class="modal-label">Supplier</label>
+
+          <label class="modal-label">
+            Supplier
+          </label>
+
           <input
             class="modal-input"
             [class.modal-input--error]="formErrors().proovedorNombre"
@@ -121,21 +303,52 @@
             [value]="form().proovedorNombre"
             (input)="onFormInput($event, 'proovedorNombre')"
           />
+
           @if (formErrors().proovedorNombre) {
-            <span class="modal-field-error">⚠ {{ formErrors().proovedorNombre }}</span>
+
+            <span class="modal-field-error">
+              ⚠ {{ formErrors().proovedorNombre }}
+            </span>
+
           }
+
         </div>
 
-        <!-- Image drag & drop -->
+        <!-- Image -->
         <div class="modal-field">
-          <label class="modal-label">Product image</label>
+
+          <label class="modal-label">
+            Product image
+          </label>
+
           @if (imagePreview()) {
+
             <div class="img-preview-wrapper">
-              <img [src]="imagePreview()!" alt="Preview" class="img-preview" />
-              <button class="img-preview-remove" (click)="clearImage()" title="Remove image">✕</button>
+
+              <img
+                [src]="imagePreview()!"
+                alt="Preview"
+                class="img-preview"
+              />
+
+              <button
+                class="img-preview-remove"
+                (click)="clearImage()"
+                title="Remove image"
+              >
+                ✕
+              </button>
+
             </div>
-            <p class="modal-input modal-input--url modal-input--readonly">{{ form().url }}</p>
-          } @else {
+
+            <p class="modal-input modal-input--url modal-input--readonly">
+              {{ form().url }}
+            </p>
+
+          }
+
+          @else {
+
             <div
               class="dropzone"
               [class.dropzone--active]="isDraggingOver()"
@@ -144,16 +357,32 @@
               (dragleave)="onDragLeave($event)"
               (drop)="onDrop($event)"
             >
+
               <p class="dropzone-text">
-                Drag an image here<br>
-                <span>or use the button to select one</span>
+                Drag an image here
+                <br>
+
+                <span>
+                  or use the button to select one
+                </span>
               </p>
+
               <label class="dropzone-btn">
+
                 Select file
-                <input type="file" accept="image/*" hidden (change)="onFileInputChange($event)" />
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  (change)="onFileInputChange($event)"
+                />
+
               </label>
+
             </div>
-            <!-- Manual URL -->
+
+            <!-- URL -->
             <input
               class="modal-input modal-input--url"
               type="text"
@@ -161,13 +390,21 @@
               [value]="form().url"
               (input)="onFormInput($event, 'url')"
             />
+
           }
+
         </div>
 
-        <!-- Price & Stock -->
+        <!-- Price + Stock -->
         <div class="modal-field-row">
+
+          <!-- Price -->
           <div class="modal-field">
-            <label class="modal-label">Price (CLP)</label>
+
+            <label class="modal-label">
+              Price (CLP)
+            </label>
+
             <input
               class="modal-input"
               [class.modal-input--error]="formErrors().price"
@@ -177,12 +414,24 @@
               [value]="form().price || ''"
               (input)="onFormInput($event, 'price')"
             />
+
             @if (formErrors().price) {
-              <span class="modal-field-error">⚠ {{ formErrors().price }}</span>
+
+              <span class="modal-field-error">
+                ⚠ {{ formErrors().price }}
+              </span>
+
             }
+
           </div>
+
+          <!-- Stock -->
           <div class="modal-field">
-            <label class="modal-label">Stock</label>
+
+            <label class="modal-label">
+              Stock
+            </label>
+
             <input
               class="modal-input"
               [class.modal-input--error]="formErrors().stock"
@@ -192,25 +441,60 @@
               [value]="form().stock || ''"
               (input)="onFormInput($event, 'stock')"
             />
+
             @if (formErrors().stock) {
-              <span class="modal-field-error">⚠ {{ formErrors().stock }}</span>
+
+              <span class="modal-field-error">
+                ⚠ {{ formErrors().stock }}
+              </span>
+
             }
+
           </div>
+
         </div>
 
+        <!-- Error -->
         @if (formError()) {
-          <div class="modal-error">{{ formError() }}</div>
+
+          <div class="modal-error">
+            {{ formError() }}
+          </div>
+
         }
 
       </div>
 
+      <!-- Footer -->
       <div class="modal-footer">
-        <button class="modal-btn modal-btn--cancel" (click)="closeModal()">Cancel</button>
-        <button class="modal-btn modal-btn--save" (click)="saveProducto()" [disabled]="saving()">
-          {{ saving() ? 'Saving...' : editingProducto() ? 'Update' : 'Create product' }}
+
+        <button
+          class="modal-btn modal-btn--cancel"
+          (click)="closeModal()"
+        >
+          Cancel
         </button>
+
+        <button
+          class="modal-btn modal-btn--save"
+          (click)="saveProducto()"
+          [disabled]="saving()"
+        >
+
+          {{
+            saving()
+              ? 'Saving...'
+              : editingProducto()
+                ? 'Update'
+                : 'Create product'
+          }}
+
+        </button>
+
       </div>
 
     </div>
+
   </div>
+
 }
