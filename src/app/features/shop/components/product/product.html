@@ -1,27 +1,33 @@
-<div class="product-card">
+<div class="product-card" [class.out-of-stock]="product().stock === 0">
 
-  <!-- Imagen + acciones hover -->
   <div class="card-img-wrap">
     <img
       [src]="product().url || 'https://placehold.co/400x400?text=Product'"
       class="card-img"
     />
-
-    <!-- Botón add-to-cart visible on hover -->
-    <button class="btn-add-cart" (click)="onAddToCart($event)">
+    @if (product().stock === 0) {
+      <div class="out-of-stock-badge">Sin stock</div>
+    }
+    <button
+      class="btn-add-cart"
+      (click)="onAddToCart($event)"
+      [disabled]="product().stock === 0"
+    >
       Agregar al carrito
     </button>
   </div>
 
-  <!-- Contenido -->
   <div class="card-body">
     <p class="card-category">{{ product().proovedorNombre }}</p>
     <h3 class="card-name">{{ product().name }}</h3>
-
-    <!-- Precio -->
     <div class="card-price-row">
       <span class="card-price">${{ product().price | clpFormat }}</span>
+      @if (product().stock === 0) {
+        <span class="stock-label">Agotado</span>
+      } @else if (product().stock <= 5) {
+        <span class="stock-label stock-label--low">Últimas {{ product().stock }} unidades</span>
+      }
     </div>
   </div>
-
+  
 </div>
