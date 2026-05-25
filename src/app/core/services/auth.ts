@@ -42,6 +42,8 @@ export interface AuthResponse {
   refreshToken: string;
 }
 
+
+
 // ─── Service ──────────────────────────────────────────────────
 @Injectable({ providedIn: 'root' })
 export class Auth {
@@ -110,4 +112,16 @@ export class Auth {
   private decodeToken(token: string): any {
     return JSON.parse(atob(token.split('.')[1]));
   }
+
+  requestPasswordReset(email: string): Observable<void> {
+  return this.http.post<void>(`${this.API_URL}/password/reset-request`, { email });
+}
+
+resetPassword(token: string, newPassword: string): Observable<void> {
+  return this.http.post<void>(`${this.API_URL}/password/reset`, { token, newPassword });
+}
+
+validateToken(token: string): Observable<void> {
+  return this.http.post<void>(`${this.API_URL}/password/validate-token`, { token });
+}
 }
