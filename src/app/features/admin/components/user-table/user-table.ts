@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService, User, Role } from '../../../../core/services/admin';
 import { finalize } from 'rxjs';
+import { ToastService } from '../../../../core/services/toast-service';
 
 @Component({
   selector: 'app-user-table',
@@ -14,6 +15,7 @@ import { finalize } from 'rxjs';
 export class UserTableComponent implements OnInit {
 
   private adminService = inject(AdminService);
+  private toast = inject(ToastService);
 
   // ─── Estado ───────────────────────────────────────────────
   users        = signal<User[]>([]);
@@ -122,11 +124,15 @@ export class UserTableComponent implements OnInit {
   getPendingRole(userId: number): number | null { return this.pendingRoles()[userId] ?? null; }
 
   // ─── Acciones ─────────────────────────────────────────────
-  deleteUser(id: number) {
-  if (!confirm('Delete this user?')) return;
+  async deleteUser(id: number) {
+  const ok = await this.toast.confirm('Delete this user?');
+  if (!ok) return;
   this.adminService.deleteUser(id).subscribe({
-    next: () => this.users.update(list => list.filter(u => u.id !== id)),
-    error: () => alert('Error deleting user')
+    next: () => {
+      this.users.update(list => list.filter(u => u.id !== id));
+      this.toast.success('User deleted successfully');
+    },
+    error: () => this.toast.error('Error deleting user')
   });
 }
 
@@ -148,8 +154,9 @@ export class UserTableComponent implements OnInit {
         this.users.update(list =>
           list.map(u => u.id === user.id ? { ...u, state: newStatus } : u)
         );
+        this.toast.success(`User ${newStatus === 'ACTIVO' ? 'activated' : 'deactivated'} successfully`);
       },
-      error: () => alert('Error changing status')
+      error: () => this.toast.error('Error changing status')
     });
   }
 
@@ -190,7 +197,7 @@ export class UserTableComponent implements OnInit {
         }, 3000);
       })
     ).subscribe({
-      next: () => {
+     next: () => {
         const selectedRole = this.roles().find(r => r.idRol === roleId);
         this.users.update(list =>
           list.map(u => u.id === user.id
@@ -198,8 +205,9 @@ export class UserTableComponent implements OnInit {
             : u
           )
         );
+        this.toast.success(`Role changed to "${selectedRole?.nombreRol}" successfully`);
       },
-      error: () => alert('Error changing role')
+      error: () => this.toast.error('Error changing role')
     });
   }
 }

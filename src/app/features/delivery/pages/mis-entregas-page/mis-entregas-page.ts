@@ -51,7 +51,7 @@ export class MisEntregasPage implements OnInit {
         this.usuarios.set(mapa);
         this.loading.set(false);
       },
-      error: () => { this.error.set('Error al cargar tus entregas'); this.loading.set(false); }
+      error: () => { this.error.set('Error loading your deliveries');this.loading.set(false); }
     });
   }
 
@@ -73,11 +73,11 @@ export class MisEntregasPage implements OnInit {
           )
         );
         this.updatingId.set(null);
-        this.successMsg.set('¡Entrega marcada como completada!');
+        this.successMsg.set('Delivery marked as completed!');
         setTimeout(() => this.successMsg.set(null), 3000);
       },
       error: () => {
-        this.error.set('Error al actualizar el estado');
+        this.error.set('Error updating delivery status');
         this.updatingId.set(null);
       }
     });
