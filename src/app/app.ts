@@ -21,7 +21,7 @@ export class App implements OnInit {
   private platformId    = inject(PLATFORM_ID);
 
   private noNavRoutes: string[] = [
-    '/login', '/register',
+    '/login', '/register', '/profile',
     '/admin', '/admin/pim', '/admin/analytics',
     '/admin/configuraciones', '/admin/productos',
     '/delivery','/delivery/entregas',

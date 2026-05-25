@@ -1,4 +1,4 @@
-import { afterNextRender, Component, inject } from '@angular/core';
+import { afterNextRender, Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginForm } from '../../components/login-form/login-form';
 import { APP_THEME } from '../../../../core/config/theme.config';
@@ -15,18 +15,20 @@ import { Auth } from '../../../../core/services/auth';
 
 export class LoginPage {
   private readonly router        = inject(Router);
-  readonly configService = inject(ConfigService);
   private readonly auth = inject(Auth);
+  readonly configService = inject(ConfigService)
   readonly theme = APP_THEME; 
 
+
   constructor() {
-  afterNextRender(() => {
-    this.configService.getPublicConfig().subscribe({
-      next: (config) => this.configService.applyStyles(config as any),
-      error: () => {} 
+    afterNextRender(() => {
+      this.configService.getPublicConfig().subscribe({
+        next: (config) => this.configService.applyStyles(config as any),
+        error: () => {}
+      })
     });
-  });
-}
+  }
+
   onLoginSuccess(): void {
     if (this.auth.currentUser()?.rol?.rolName === 'ADMIN') {
       this.router.navigate(['/admin']);
@@ -36,5 +38,9 @@ export class LoginPage {
       this.router.navigate(['/home']);
     }
   }
+
+  heroImage = computed(() =>
+  `url('assets/login-illustration.jpg')`
+  );
 
 }

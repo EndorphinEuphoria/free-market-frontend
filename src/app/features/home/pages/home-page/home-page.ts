@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { Navbar } from '../components/navbar/navbar';
-import { HeroSlider } from '../components/hero-slider/hero-slider';
+import { HeroSlider } from '../../components/hero-slider/hero-slider'; 
 
 @Component({
   selector: 'app-home-page',
