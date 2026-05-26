@@ -96,6 +96,10 @@
   color: var(--color-primary);
 }
 
+.hidden-btn {
+  visibility: hidden;
+}
+
 .nav-user-name {
   display: flex;
   align-items: center;
