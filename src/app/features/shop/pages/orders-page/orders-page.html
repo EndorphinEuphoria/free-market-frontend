@@ -16,6 +16,10 @@
       (click)="activeTab.set('deliveries')">
       My Deliveries
     </button>
+    <button class="orders-tab" [class.orders-tab--active]="activeTab() === 'reports'"
+      (click)="activeTab.set('reports')">
+      My Reports
+    </button>
   </div>
 
   @if (activeTab() === 'orders') {
@@ -66,15 +70,18 @@
                 </td>
                 <td>
                   @if (reserva.status !== 'CANCELADO' && reserva.status !== 'COMPLETO') {
-                    <button
-                      class="orders-btn-cancel"
-                      (click)="cancelReserve(reserva.idReserva)"
-                      [disabled]="cancelling() === reserva.idReserva"
-                    >
+                    <button class="orders-btn-cancel" (click)="cancelReserve(reserva.idReserva)"
+                      [disabled]="cancelling() === reserva.idReserva">
                       {{ cancelling() === reserva.idReserva ? 'Cancelling...' : 'Cancel' }}
                     </button>
-                  } @else {
-                    <span class="orders-td-muted">—</span>
+                  } @else if (reserva.status === 'COMPLETO') {
+                    @if (isReported(reserva.idReserva)) {
+                      <span class="orders-status orders-status--reported">Reported</span>
+                    } @else {
+                      <button class="orders-btn-report" (click)="openReportModal(reserva.idReserva)">
+                        Report
+                      </button>
+                    }
                   }
                 </td>
               </tr>
@@ -165,6 +172,69 @@
     }
   }
 
-</div>
+  @if (activeTab() === 'reports') {
+    <div class="orders-filters">
+      <button class="orders-btn-refresh" (click)="loadMyReportsDetail()">↻ Reload</button>
+    </div>
 
-<app-toast />
+    @if (loadingReports()) {
+      <div class="orders-loading">Loading reports...</div>
+    } @else if (myReportsDetail().length === 0) {
+      <div class="orders-table-wrapper">
+        <table class="orders-table">
+          <tbody>
+            <tr><td colspan="5" class="orders-empty">No reports submitted yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <div class="orders-table-wrapper">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>Report ID</th>
+              <th>Reason</th>
+              <th>Submitted</th>
+              <th>Status</th>
+              <th>Admin note</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of myReportsDetail(); track r.idReport) {
+              <tr>
+                <td class="orders-td-muted">#{{ r.idReport }}</td>
+                <td>{{ reportReasonLabel(r.reason) }}</td>
+                <td>{{ r.createdAt | date:'dd MMM yyyy' }}</td>
+                <td>
+                  <span class="orders-report-status orders-report-status--{{ r.status.toLowerCase() }}">
+                    {{ reportStatusLabel(r.status) }}
+                  </span>
+                </td>
+                <td class="orders-td-muted">
+                  @if (r.adminNote) {
+                    <span class="orders-report-note">{{ r.adminNote }}</span>
+                  } @else {
+                    —
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="orders-count">{{ myReportsDetail().length }} report(s)</p>
+    }
+  }
+
+  @if (activeReport()) {
+    <app-report-modal
+      [idReserva]="activeReport()!.idReserva"
+      [idDelivery]="activeReport()!.idDelivery"
+      (closed)="activeReport.set(null)"
+      (submitted)="activeReport.set(null); loadMyReportsDetail()"
+    />
+  }
+
+  <app-toast />
+
+</div>

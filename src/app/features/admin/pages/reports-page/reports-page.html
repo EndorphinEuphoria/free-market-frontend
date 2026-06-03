@@ -1,163 +1,162 @@
-  <app-admin-navbar />
+<app-admin-navbar />
 
-  <div class="rp-wrapper">
+<div class="rp-wrapper">
 
-    <div class="rp-header">
-      <div>
-        <h1 class="rp-title">Reports</h1>
-        <p class="rp-subtitle">Manage delivery issue tickets submitted by users</p>
-      </div>
-      <button class="rp-btn-reload" (click)="loadAll()">↻ Reload</button>
+  <div class="rp-header">
+    <div>
+      <h1 class="rp-title">Reports</h1>
+      <p class="rp-subtitle">Manage delivery issue tickets submitted by users</p>
     </div>
-
-    <!-- Filters -->
-    <div class="rp-filters">
-      @for (s of ['ALL','ABIERTO','EN_REVISION','RESUELTO','CERRADO']; track s) {
-        <button
-          class="rp-filter-btn"
-          [class.rp-filter-btn--active]="filterStatus() === s"
-          (click)="filterStatus.set(s)">
-          {{ s === 'ALL' ? 'All' : statusLabel(s) }}
-        </button>
-      }
-    </div>
-
-    @if (loading()) {
-      <div class="rp-loading">Loading reports...</div>
-    } @else if (filtered().length === 0) {
-      <div class="rp-empty">No reports found</div>
-    } @else {
-      <div class="rp-grid">
-        @for (vm of filtered(); track vm.report.idReport) {
-          <div class="rp-card">
-            <div class="rp-card-top">
-              <span class="rp-ticket-id">#{{ vm.report.idReport }}</span>
-              <span class="rp-status rp-status--{{ vm.report.status.toLowerCase() }}">
-                {{ statusLabel(vm.report.status) }}
-              </span>
-            </div>
-
-            <div class="rp-card-reason">{{ reasonLabel(vm.report.reason) }}</div>
-
-            <div class="rp-card-meta">
-              <div class="rp-meta-row">
-                <span class="rp-meta-label">User</span>
-                <span class="rp-meta-value">{{ vm.reporter?.username ?? '—' }}</span>
-              </div>
-              <div class="rp-meta-row">
-                <span class="rp-meta-label">Date</span>
-                <span class="rp-meta-value">{{ vm.report.createdAt | date:'dd MMM yyyy' }}</span>
-              </div>
-            </div>
-
-            <button class="rp-btn-view" (click)="openDetail(vm)">View details</button>
-          </div>
-        }
-      </div>
-      <p class="rp-count">{{ filtered().length }} report(s) found</p>
-    }
-
+    <button class="rp-btn-reload" (click)="loadAll()">↻ Reload</button>
   </div>
 
-  <!-- DETAIL MODAL -->
-  @if (selectedReport()) {
-    <div class="rp-modal-backdrop" (click)="closeDetail()">
-      <div class="rp-modal-card" (click)="$event.stopPropagation()">
+  <div class="rp-filters">
+    @for (s of ['ALL','ABIERTO','EN_REVISION','RESUELTO','CERRADO']; track s) {
+      <button
+        class="rp-filter-btn"
+        [class.rp-filter-btn--active]="filterStatus() === s"
+        (click)="filterStatus.set(s)">
+        {{ s === 'ALL' ? 'All' : statusLabel(s) }}
+      </button>
+    }
+  </div>
 
-        <div class="rp-modal-header">
-          <div>
-            <h2 class="rp-modal-title">Report #{{ selectedReport()!.report.idReport }}</h2>
-            <p class="rp-modal-subtitle">{{ reasonLabel(selectedReport()!.report.reason) }}</p>
+  @if (loading()) {
+    <div class="rp-loading">Loading reports...</div>
+  } @else if (filtered().length === 0) {
+    <div class="rp-empty">No reports found</div>
+  } @else {
+    <div class="rp-grid">
+      @for (vm of filtered(); track vm.report.idReport) {
+        <div class="rp-card">
+          <div class="rp-card-top">
+            <span class="rp-ticket-id">#{{ vm.report.idReport }}</span>
+            <span class="rp-status rp-status--{{ vm.report.status.toLowerCase() }}">
+              {{ statusLabel(vm.report.status) }}
+            </span>
           </div>
-          <button class="rp-modal-close" (click)="closeDetail()">✕</button>
+          <div class="rp-card-reason">{{ reasonLabel(vm.report.reason) }}</div>
+          <div class="rp-card-meta">
+            <div class="rp-meta-row">
+              <span class="rp-meta-label">User</span>
+              <span class="rp-meta-value">{{ vm.reporter?.username ?? '—' }}</span>
+            </div>
+            <div class="rp-meta-row">
+              <span class="rp-meta-label">Date</span>
+              <span class="rp-meta-value">{{ vm.report.createdAt | date:'dd MMM yyyy' }}</span>
+            </div>
+          </div>
+          <button class="rp-btn-view" (click)="openDetail(vm)">View details</button>
+        </div>
+      }
+    </div>
+    <p class="rp-count">{{ filtered().length }} report(s) found</p>
+  }
+
+</div>
+
+@if (selectedReport()) {
+  <div class="rp-modal-backdrop" (click)="closeDetail()">
+    <div class="rp-modal-card" (click)="$event.stopPropagation()">
+
+      <div class="rp-modal-header">
+        <div>
+          <h2 class="rp-modal-title">Report #{{ selectedReport()!.report.idReport }}</h2>
+          <p class="rp-modal-subtitle">{{ reasonLabel(selectedReport()!.report.reason) }}</p>
+        </div>
+        <button class="rp-modal-close" (click)="closeDetail()">✕</button>
+      </div>
+
+      <div class="rp-modal-body">
+
+        <div class="rp-info-grid">
+          <div class="rp-info-block">
+            <span class="rp-info-label">Reported by</span>
+            <span class="rp-info-value">{{ selectedReport()!.reporter?.username ?? '—' }}</span>
+            <span class="rp-info-sub">{{ selectedReport()!.reporter?.email ?? '' }}</span>
+          </div>
+          <div class="rp-info-block">
+            <span class="rp-info-label">Courier</span>
+            <span class="rp-info-value">{{ selectedReport()!.courier?.username ?? '—' }}</span>
+            <span class="rp-info-sub">{{ selectedReport()!.courier?.email ?? '' }}</span>
+          </div>
+          <div class="rp-info-block">
+            <span class="rp-info-label">Delivery ID</span>
+            <span class="rp-info-value">#{{ selectedReport()!.report.idDelivery }}</span>
+          </div>
+          <div class="rp-info-block">
+            <span class="rp-info-label">Reported on</span>
+            <span class="rp-info-value">{{ selectedReport()!.report.createdAt | date:'dd MMM yyyy, HH:mm' }}</span>
+          </div>
+          <div class="rp-info-block">
+            <span class="rp-info-label">Order ID</span>
+            <span class="rp-info-value">#{{ selectedReport()!.delivery?.idReserva ?? '—' }}</span>
+          </div>
+          <div class="rp-info-block">
+            <span class="rp-info-label">Current status</span>
+            <span class="rp-status rp-status--{{ selectedReport()!.report.status.toLowerCase() }}">
+              {{ statusLabel(selectedReport()!.report.status) }}
+            </span>
+          </div>
         </div>
 
-        <div class="rp-modal-body">
+        <div class="rp-section">
+          <span class="rp-info-label">Description</span>
+          <p class="rp-description">{{ selectedReport()!.report.description }}</p>
+        </div>
 
-          <!-- Info grid -->
-          <div class="rp-info-grid">
-            <div class="rp-info-block">
-              <span class="rp-info-label">Reported by</span>
-              <span class="rp-info-value">{{ selectedReport()!.reporter?.username ?? '—' }}</span>
-              <span class="rp-info-sub">{{ selectedReport()!.reporter?.email ?? '' }}</span>
-            </div>
-            <div class="rp-info-block">
-              <span class="rp-info-label">Courier</span>
-              <span class="rp-info-value">{{ selectedReport()!.courier?.username ?? '—' }}</span>
-              <span class="rp-info-sub">{{ selectedReport()!.courier?.email ?? '' }}</span>
-            </div>
-            <div class="rp-info-block">
-              <span class="rp-info-label">Delivery ID</span>
-              <span class="rp-info-value">#{{ selectedReport()!.report.idDelivery }}</span>
-            </div>
-            <div class="rp-info-block">
-              <span class="rp-info-label">Reported on</span>
-              <span class="rp-info-value">{{ selectedReport()!.report.createdAt | date:'dd MMM yyyy, HH:mm' }}</span>
-            </div>
-            <div class="rp-info-block">
-              <span class="rp-info-label">Order ID</span>
-              <span class="rp-info-value">#{{ selectedReport()!.delivery?.idReserva ?? '—' }}</span>
-            </div>
-            <div class="rp-info-block">
-              <span class="rp-info-label">Current status</span>
-              <span class="rp-status rp-status--{{ selectedReport()!.report.status.toLowerCase() }}">
-                {{ statusLabel(selectedReport()!.report.status) }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Description -->
-          <div class="rp-section">
-            <span class="rp-info-label">Description</span>
-            <p class="rp-description">{{ selectedReport()!.report.description }}</p>
-          </div>
-
-          <!-- Photo -->
+        <div class="rp-section">
+          <span class="rp-info-label">Attached photo</span>
           @if (selectedReport()!.report.imageBase64) {
-            <div class="rp-section">
-              <span class="rp-info-label">Attached photo</span>
-              <img class="rp-photo" [src]="selectedReport()!.report.imageBase64!" alt="Report photo" />
-            </div>
+            <img class="rp-photo"
+                 [src]="'data:image/jpeg;base64,' + selectedReport()!.report.imageBase64"
+                 alt="Report photo" />
+          } @else {
+            <p class="rp-description" style="font-style: italic;">No photo attached.</p>
           }
-        <!-- Admin note -->
+        </div>
+
         <div class="rp-section">
           <span class="rp-info-label">Admin note</span>
           @if (selectedReport()!.report.status === 'RESUELTO' || selectedReport()!.report.status === 'CERRADO') {
-          <p class="rp-description" style="color: #6b7280; font-style: italic;">
-            {{ selectedReport()!.report.adminNote || 'No note added.' }}
-          </p>
+            <p class="rp-description" style="color: #6b7280; font-style: italic;">
+              {{ selectedReport()!.report.adminNote || 'No note added.' }}
+            </p>
           } @else {
-          <textarea class="rp-textarea" placeholder="Add a resolution note... (required to resolve or close)"
-            [value]="adminNoteInput()" (input)="adminNoteInput.set($any($event.target).value)" rows="3"></textarea>
+            <textarea class="rp-textarea" placeholder="Add a resolution note... (required to resolve or close)"
+              [value]="adminNoteInput()" (input)="adminNoteInput.set($any($event.target).value)" rows="3"></textarea>
           }
         </div>
 
-        <!-- Actions -->
         <div class="rp-actions">
           @if (selectedReport()!.report.status === 'RESUELTO' || selectedReport()!.report.status === 'CERRADO') {
-          <p style="font-size: 0.82rem; color: #9ca3af; font-style: italic;">
-            This ticket is {{ statusLabel(selectedReport()!.report.status) | lowercase }} and cannot be modified.
-          </p>
+            <p style="font-size: 0.82rem; color: #9ca3af; font-style: italic;">
+              This ticket is {{ statusLabel(selectedReport()!.report.status) | lowercase }} and cannot be modified.
+            </p>
           } @else {
-          @if (selectedReport()!.report.status === 'ABIERTO') {
-          <button class="rp-action-btn rp-action-btn--review" [disabled]="updatingId() === selectedReport()!.report.idReport"
-            (click)="updateStatus(selectedReport()!.report.idReport, 'EN_REVISION')">
-            Mark as In Review
-          </button>
-          }
-          <button class="rp-action-btn rp-action-btn--resolve" [disabled]="updatingId() === selectedReport()!.report.idReport"
-            (click)="updateStatus(selectedReport()!.report.idReport, 'RESUELTO')">
-            Mark as Resolved
-          </button>
-          <button class="rp-action-btn rp-action-btn--close" [disabled]="updatingId() === selectedReport()!.report.idReport"
-            (click)="updateStatus(selectedReport()!.report.idReport, 'CERRADO')">
-            Close ticket
-          </button>
+            @if (selectedReport()!.report.status === 'ABIERTO') {
+              <button class="rp-action-btn rp-action-btn--review"
+                [disabled]="updatingId() === selectedReport()!.report.idReport"
+                (click)="updateStatus(selectedReport()!.report.idReport, 'EN_REVISION')">
+                Mark as In Review
+              </button>
+            }
+            <button class="rp-action-btn rp-action-btn--resolve"
+              [disabled]="updatingId() === selectedReport()!.report.idReport"
+              (click)="updateStatus(selectedReport()!.report.idReport, 'RESUELTO')">
+              Mark as Resolved
+            </button>
+            <button class="rp-action-btn rp-action-btn--close"
+              [disabled]="updatingId() === selectedReport()!.report.idReport"
+              (click)="updateStatus(selectedReport()!.report.idReport, 'CERRADO')">
+              Close ticket
+            </button>
           }
         </div>
 
-        </div>
       </div>
     </div>
-  }
-  <app-toast />
+  </div>
+}
+
+<app-toast />

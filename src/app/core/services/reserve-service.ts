@@ -15,12 +15,11 @@ export interface ReservaDetalleResponse {
   reserveDate: string;
   totalPrice: number;
   status: 'RESERVADO' | 'PENDIENTE' | 'CANCELADO' | 'COMPLETO';
+  deliveryAddress: string;
   products: ProductoReservaResponse[];
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class ReserveService {
   private readonly http = inject(HttpClient);
   private readonly API = 'http://localhost:8086/api-v1/reserve';
@@ -32,5 +31,4 @@ export class ReserveService {
   cancel(idReserve: number, idUser: number): Observable<void> {
     return this.http.patch<void>(`${this.API}/cancel`, { idReserve, idUser });
   }
-
 }

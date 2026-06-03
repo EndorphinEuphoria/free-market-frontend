@@ -4,10 +4,7 @@ import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { DeliveryNavbar } from '../../components/delivery-navbar/delivery-navbar';
 import { Auth } from '../../../../core/services/auth';
-import {
-  DeliveryService, DeliveryResponse,
-  ReservaDetalleResponse, LocationResponseForId
-} from '../../../../core/services/delivery.service';
+import { DeliveryService, DeliveryResponse, ReservaDetalleResponse } from '../../../../core/services/delivery.service';
 
 @Component({
   selector: 'app-delivery-dashboard-page',
@@ -29,13 +26,11 @@ export class DeliveryDashboardPage implements OnInit, AfterViewChecked {
   error      = signal<string | null>(null);
 
   // Modal
-  modalDelivery   = signal<DeliveryResponse | null>(null);
-  modalReserva    = signal<ReservaDetalleResponse | null>(null);
-  modalLocation   = signal<LocationResponseForId | null>(null);
-  loadingReserva  = signal(false);
-  loadingLocation = signal(false);
-  tomandoPedido   = signal(false);
-  modalError      = signal<string | null>(null);
+  modalDelivery  = signal<DeliveryResponse | null>(null);
+  modalReserva   = signal<ReservaDetalleResponse | null>(null);
+  loadingReserva = signal(false);
+  tomandoPedido  = signal(false);
+  modalError     = signal<string | null>(null);
 
   // Mapa
   mapLoading  = signal(false);
@@ -87,24 +82,23 @@ export class DeliveryDashboardPage implements OnInit, AfterViewChecked {
     this.mapError.set(false);
     this.mapExpanded.set(false);
     this.loadingReserva.set(true);
-    this.loadingLocation.set(true);
     this.mapLoading.set(true);
 
     this.deliveryService.getReservaById(delivery.idReserva).subscribe({
-      next:  (r) => { this.modalReserva.set(r); this.loadingReserva.set(false); },
-      error: ()  => { this.modalError.set('Error al cargar reserva'); this.loadingReserva.set(false); }
-    });
-
-    this.deliveryService.getLocationByUserId(delivery.idUsuario).subscribe({
-      next: (loc) => {
-        this.modalLocation.set(loc);
-        this.loadingLocation.set(false);
-        this.geocodeAndInitMap(loc.streetAddress);
+      next: (r) => {
+        this.modalReserva.set(r);
+        this.loadingReserva.set(false);
+        if (r.deliveryAddress) {
+          this.geocodeAndInitMap(r.deliveryAddress);
+        } else {
+          this.mapLoading.set(false);
+          this.mapError.set(true);
+        }
       },
       error: () => {
-        this.loadingLocation.set(false);
+        this.modalError.set('Error al cargar reserva');
+        this.loadingReserva.set(false);
         this.mapLoading.set(false);
-        this.mapError.set(true);
       }
     });
   }
@@ -130,8 +124,8 @@ export class DeliveryDashboardPage implements OnInit, AfterViewChecked {
   }
 
   private async initMap(coords: [number, number]) {
-     const leaflet = await import('leaflet');
-     const L = leaflet.default ?? leaflet;
+    const leaflet = await import('leaflet');
+    const L = leaflet.default ?? leaflet;
 
     this.map = L.map('leaflet-map', {
       zoomControl: true,
@@ -151,7 +145,7 @@ export class DeliveryDashboardPage implements OnInit, AfterViewChecked {
 
     L.marker(coords, { icon })
       .addTo(this.map)
-      .bindPopup(this.modalLocation()?.streetAddress ?? '')
+      .bindPopup(this.modalReserva()?.deliveryAddress ?? '')
       .openPopup();
   }
 
@@ -170,7 +164,6 @@ export class DeliveryDashboardPage implements OnInit, AfterViewChecked {
     this.mapExpanded.set(false);
     this.modalDelivery.set(null);
     this.modalReserva.set(null);
-    this.modalLocation.set(null);
     this.modalError.set(null);
     this.tomandoPedido.set(false);
   }
@@ -187,22 +180,22 @@ export class DeliveryDashboardPage implements OnInit, AfterViewChecked {
   }
 
   getStatusClass(status: string): string {
-  const map: Record<string, string> = {
-    'PENDIENTE': 'badge--pendiente',
-    'EN_CAMINO': 'badge--en-camino',
-    'ENTREGADO': 'badge--entregado',
-    'CANCELADO': 'badge--cancelado',
-  };
-  return map[status] ?? '';
-}
+    const map: Record<string, string> = {
+      'PENDIENTE': 'badge--pendiente',
+      'EN_CAMINO': 'badge--en-camino',
+      'ENTREGADO': 'badge--entregado',
+      'CANCELADO': 'badge--cancelado',
+    };
+    return map[status] ?? '';
+  }
 
   getStatusLabel(status: string): string {
-  const map: Record<string, string> = {
-    'PENDIENTE': 'Pending',
-    'EN_CAMINO': 'On the way',
-    'ENTREGADO': 'Delivered',
-    'CANCELADO': 'Cancelled',
-  };
-  return map[status] ?? status;
-}
+    const map: Record<string, string> = {
+      'PENDIENTE': 'Pending',
+      'EN_CAMINO': 'On the way',
+      'ENTREGADO': 'Delivered',
+      'CANCELADO': 'Cancelled',
+    };
+    return map[status] ?? status;
+  }
 }

@@ -22,6 +22,8 @@ import {ResetPasswordPage} from './features/auth/pages/reset-password-page/reset
 import { AboutPage } from './features/home/pages/about-page/about-page';
 import { BlogPage } from './features/home/pages/blog-page/blog-page';
 import { ContactPage } from './features/home/pages/contact-page/contact-page';
+import { ReportsPage } from './features/admin/pages/reports-page/reports-page';
+
 export const routes: Routes = [
   
   // Normal routes
@@ -47,7 +49,7 @@ export const routes: Routes = [
   { path: 'admin/analytics',       component: AnalyticsPageComponent,       canActivate: [authGuard, adminOnlyGuard] },
   { path: 'admin/configuraciones', component: ConfiguracionesPageComponent, canActivate: [authGuard, adminOnlyGuard] },
   { path: 'admin/productos',       component: ProductosPageComponent,       canActivate: [authGuard, adminOnlyGuard] },
-
+  { path: 'admin/reports', component: ReportsPage, canActivate: [authGuard, adminOnlyGuard] },
   // not-found route always at the bottom
   { path: '**',                    component: NotFound }
 ];

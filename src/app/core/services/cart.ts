@@ -2,49 +2,45 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { CartState } from '../../features/shop/models/cart.model';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class Cart {
-
-  private readonly API_URL = 'http://localhost:8086/api-v1/reserve';
+  private readonly API_URL    = 'http://localhost:8086/api-v1/reserve';
   private readonly STORAGE_KEY = 'cart';
-  private readonly http = inject(HttpClient);
+  private readonly http        = inject(HttpClient);
 
   private state = signal<CartState>(this.loadFromStorage());
-  isOpen = signal(false);
 
-  openCart(): void {
-    this.isOpen.set(true);
-  }
-  
-  closeCart(): void {
-    this.isOpen.set(false);
+  isOpen        = signal(false);
+  activeAddress = signal<string>('');
+
+  openCart():  void { this.isOpen.set(true);  }
+  closeCart(): void { this.isOpen.set(false); }
+
+  setActiveAddress(address: string): void {
+    this.activeAddress.set(address);
   }
 
   // Selectores públicos
-  items = computed(() => this.state().items);
+  items      = computed(() => this.state().items);
   totalItems = computed(() => this.items().reduce((acc, i) => acc + i.quantity, 0));
   totalPrice = computed(() => this.items().reduce((acc, i) => acc + i.price * i.quantity, 0));
 
   addItem(product: { id: number; name: string; price: number; url: string }): void {
-    const items = this.state().items;
+    const items    = this.state().items;
     const existing = items.find(i => i.idProduct === product.id);
-
     if (existing) {
       this.updateQuantity(product.id, existing.quantity + 1);
       return;
     }
-
-    const newItems = [...items, {
-      idProduct: product.id,
-      name: product.name,
-      price: product.price,
-      url: product.url,
-      quantity: 1,
-    }];
-
-    this.setState({ items: newItems });
+    this.setState({
+      items: [...items, {
+        idProduct: product.id,
+        name:      product.name,
+        price:     product.price,
+        url:       product.url,
+        quantity:  1,
+      }]
+    });
   }
 
   removeItem(idProduct: number): void {
@@ -62,24 +58,26 @@ export class Cart {
 
   clearCart(): void {
     this.setState({ items: [] });
+    this.activeAddress.set('');
   }
 
   checkout() {
-    const token = localStorage.getItem('token');
+    const token   = localStorage.getItem('token');
     const payload = this.decodeJwt(token);
     const idUser: number = payload?.userId;
 
     const body = {
       idUser,
+      deliveryAddress: this.activeAddress(),
       products: this.items().map(i => ({
         idProduct: i.idProduct,
-        quantity: i.quantity,
+        quantity:  i.quantity,
       }))
     };
 
     const headers = new HttpHeaders({
       'Idempotency-Key': crypto.randomUUID(),
-      'X-User-Id': idUser.toString()
+      'X-User-Id':       idUser.toString()
     });
 
     return this.http.post(`${this.API_URL}/createReserve`, body, { headers });

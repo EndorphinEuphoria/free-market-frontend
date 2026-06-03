@@ -3,12 +3,13 @@
     <div class="toast-icon">✓</div>
     <div class="toast-content">
       <p class="toast-title">Reservation confirmed!</p>
-      <p class="toast-sub">Your order was succesfully registered.</p>
+      <p class="toast-sub">Your order was successfully registered.</p>
     </div>
   </div>
 }
 
 <div class="cart-drawer" [class.open]="cartService.isOpen()">
+
   <div class="cart-header">
     <h2>Carrito ({{ cartService.totalItems() }})</h2>
     <button (click)="cartService.closeCart()">✕</button>
@@ -37,20 +38,47 @@
     }
   </div>
 
+  <!-- Picker solo si tiene más de 1 dirección -->
+  @if (hasLocation() && locations().length > 1) {
+    <div class="addr-picker">
+      <p class="addr-picker-title">Select delivery address</p>
+      @for (loc of locations(); track loc.addressType) {
+        <label class="addr-picker-option" [class.selected]="selectedAddress() === loc.addressType">
+          <input
+            type="radio"
+            [value]="loc.addressType"
+            [checked]="selectedAddress() === loc.addressType"
+            (change)="selectedAddress.set(loc.addressType)" />
+          <div class="addr-picker-info">
+            <span class="addr-picker-label">{{ getLabelForType(loc.addressType) }}</span>
+            <span class="addr-picker-address">{{ loc.streetAddress }}</span>
+          </div>
+          @if (loc.active) {
+            <span class="addr-picker-badge">Active</span>
+          }
+        </label>
+      }
+    </div>
+  }
+
   <div class="cart-footer">
     <div class="cart-subtotal">
       <span>Sub-total</span>
       <span>${{ cartService.totalPrice() | clpFormat }}</span>
     </div>
-    <button 
-      class="btn-checkout" 
+    <button
+      class="btn-checkout"
       (click)="checkout()"
-      [title]="!hasLocation() ? 'You must add an Address on your profile page' : ''">
-      @if (!hasLocation()) {
+      [disabled]="isCheckingOut() || cartService.items().length === 0"
+      [title]="!hasLocation() ? 'You must add an address on your profile page' : ''">
+      @if (isCheckingOut()) {
+        Processing...
+      } @else if (!hasLocation()) {
         Add an address first
       } @else {
         Purchase
       }
     </button>
   </div>
+
 </div>
