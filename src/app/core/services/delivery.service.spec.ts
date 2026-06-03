@@ -2,7 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 
-import { DeliveryService, DeliveryResponse, ReservaDetalleResponse, LocationResponseForId, UserResponse } from './delivery.service';
+import { DeliveryService, DeliveryResponse, ReservaDetalleResponse, UserResponse } from './delivery.service';
+import { LocationResponseForId } from './location-service';
 
 describe('DeliveryService', () => {
   let service: DeliveryService;
@@ -53,34 +54,19 @@ describe('DeliveryService', () => {
 
   it('should get reserva by id', () => {
     const mock: ReservaDetalleResponse = {
-      idReserva: 1,
-      reserveDate: '2026-01-01',
-      totalPrice: 1000,
-      status: 'PENDIENTE',
-      products: [],
-    };
+  idReserva: 1,
+  reserveDate: '2026-01-01',
+  totalPrice: 1000,
+  status: 'PENDIENTE',
+  deliveryAddress: 'Av. Siempre Viva 123', 
+  products: [],
+};
 
     service.getReservaById(1).subscribe((data) => {
       expect(data).toEqual(mock);
     });
 
     const req = httpMock.expectOne(`${API}/reserve/1`);
-    expect(req.request.method).toBe('GET');
-    req.flush(mock);
-  });
-
-  it('should get location by user id', () => {
-    const mock: LocationResponseForId = {
-      streetAddress: 'Av. Siempre Viva 123',
-      comunaNombre: 'Santiago',
-      regionNombre: 'RM',
-    };
-
-    service.getLocationByUserId(1).subscribe((data) => {
-      expect(data).toEqual(mock);
-    });
-
-    const req = httpMock.expectOne(`${API}/location/getLocation/1`);
     expect(req.request.method).toBe('GET');
     req.flush(mock);
   });
@@ -140,17 +126,7 @@ describe('DeliveryService', () => {
     req.flush([]);
   });
 
-  it('should get coordinates', () => {
-    const mock = { latitude: -33.45, longitude: -70.66 };
 
-    service.getCoordinates(1).subscribe((data) => {
-      expect(data).toEqual(mock);
-    });
-
-    const req = httpMock.expectOne(`${API}/location/coordinates/1`);
-    expect(req.request.method).toBe('GET');
-    req.flush(mock);
-  });
 
   it('should get deliveries by user', () => {
     service.getByUser(1).subscribe();

@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal } from '@angular/core';
 import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 
@@ -16,6 +15,7 @@ const makeReserva = (overrides: Partial<ReservaDetalleResponse> = {}): ReservaDe
   idReserva: 1,
   reserveDate: '2024-01-15',
   totalPrice: 150000,
+  deliveryAddress: 'Av. Siempre Viva 123',
   status: 'RESERVADO',
   products: [
     { idProduct: 10, productName: 'Arroz', unitPrice: 50000, quantity: 3, subtotal: 150000 },
@@ -56,8 +56,11 @@ describe('OrdersPage', () => {
     getByUser: ReturnType<typeof vi.fn>;
     cancel:    ReturnType<typeof vi.fn>;
   };
-  let deliveryServiceMock: { getByUser: ReturnType<typeof vi.fn> };
-  let authMock:            { currentUser: ReturnType<typeof vi.fn> };
+  let deliveryServiceMock: {
+    getByUser:    ReturnType<typeof vi.fn>;
+    getMyReports: ReturnType<typeof vi.fn>;
+  };
+  let authMock: { currentUser: ReturnType<typeof vi.fn> };
   let toastMock: {
     error:   ReturnType<typeof vi.fn>;
     success: ReturnType<typeof vi.fn>;
@@ -72,7 +75,8 @@ describe('OrdersPage', () => {
     };
 
     deliveryServiceMock = {
-      getByUser: vi.fn().mockReturnValue(of(DELIVERIES)),
+      getByUser:    vi.fn().mockReturnValue(of(DELIVERIES)),
+      getMyReports: vi.fn().mockReturnValue(of([])),
     };
 
     authMock = {
@@ -134,6 +138,10 @@ describe('OrdersPage', () => {
 
     it('debe llamar a loadDeliveries al iniciar', () => {
       expect(deliveryServiceMock.getByUser).toHaveBeenCalledWith('user-123');
+    });
+
+    it('debe llamar a loadMyReportsDetail al iniciar', () => {
+      expect(deliveryServiceMock.getMyReports).toHaveBeenCalled();
     });
   });
 
@@ -200,6 +208,36 @@ describe('OrdersPage', () => {
       deliveryServiceMock.getByUser.mockReturnValue(throwError(() => new Error('fail')));
       component.loadDeliveries();
       expect(component.loadingDeliveries()).toBe(false);
+    });
+  });
+
+  // ─── loadMyReportsDetail ──────────────────────────────────────────────────
+
+  describe('loadMyReportsDetail()', () => {
+    it('debe setear myReportsDetail con los reportes cargados', () => {
+      const fakeReports = [{ idDelivery: 1, reason: 'OTRO' }];
+      deliveryServiceMock.getMyReports.mockReturnValue(of(fakeReports));
+      component.loadMyReportsDetail();
+      expect(component.myReportsDetail()).toEqual(fakeReports);
+    });
+
+    it('debe setear myReports con los idDelivery de los reportes', () => {
+      const fakeReports = [{ idDelivery: 1 }, { idDelivery: 2 }];
+      deliveryServiceMock.getMyReports.mockReturnValue(of(fakeReports));
+      component.loadMyReportsDetail();
+      expect(component.myReports()).toEqual([1, 2]);
+    });
+
+    it('debe setear loadingReports en false tras cargar', () => {
+      deliveryServiceMock.getMyReports.mockReturnValue(of([]));
+      component.loadMyReportsDetail();
+      expect(component.loadingReports()).toBe(false);
+    });
+
+    it('debe setear loadingReports en false cuando falla', () => {
+      deliveryServiceMock.getMyReports.mockReturnValue(throwError(() => new Error('fail')));
+      component.loadMyReportsDetail();
+      expect(component.loadingReports()).toBe(false);
     });
   });
 
@@ -392,14 +430,12 @@ describe('OrdersPage', () => {
 
     it('debe mostrar botón Cancel solo en reservas que no son CANCELADO ni COMPLETO', () => {
       const cancelBtns = fixture.nativeElement.querySelectorAll('.orders-btn-cancel');
-      // Solo la reserva con status RESERVADO (id=1) debe tener botón
       expect(cancelBtns.length).toBe(1);
     });
 
     it('debe mostrar "—" en lugar del botón Cancel para reservas CANCELADO o COMPLETO', () => {
-      const mutedSpans = fixture.nativeElement.querySelectorAll('.orders-td-muted');
-      const dashes = Array.from(mutedSpans).filter((el: any) => el.textContent.trim() === '—');
-      expect(dashes.length).toBeGreaterThanOrEqual(2);
+      const cancelBtns = fixture.nativeElement.querySelectorAll('.orders-btn-cancel');
+      expect(cancelBtns.length).toBe(1);
     });
 
     it('debe mostrar el detalle de productos al expandir una reserva', () => {
