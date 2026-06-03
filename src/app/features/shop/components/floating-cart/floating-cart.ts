@@ -5,6 +5,9 @@ import { ClpFormatPipe } from '../../../../core/pipes/clp-format-pipe';
 import { Auth } from '../../../../core/services/auth';
 import { LocationService, LocationResponseForId } from '../../../../core/services/location-service';
 import { Router } from '@angular/router';
+import { ToastService } from '../../../../core/services/toast-service';
+import { CartItem } from '../../../shop/models/cart.model';
+import { ProductosService } from '../../../../core/services/productos-service';
 
 @Component({
   selector: 'app-floating-cart',
@@ -17,7 +20,8 @@ export class FloatingCart {
   auth            = inject(Auth);
   locationService = inject(LocationService);
   router          = inject(Router);
-
+  toast           = inject(ToastService);
+  productsService = inject(ProductosService);
   reservaExitosa  = signal(false);
   hasLocation     = signal(false);
   locations       = signal<LocationResponseForId[]>([]);
@@ -44,9 +48,24 @@ export class FloatingCart {
     });
   }
 
+  incrementItem(item: CartItem): void {
+  if (item.quantity >= item.stock) {
+    this.toast.show(
+      `Solo hay ${item.stock} unidad(es) disponibles de "${item.name}".`,
+      'error'
+    );
+    return;
+  }
+  this.cartService.updateQuantity(item.idProduct, item.quantity + 1);
+}
+
   checkout(): void {
     if (this.isCheckingOut()) return;
-    if (this.cartService.items().length === 0) return;
+
+    if (this.cartService.items().length === 0) {
+      this.toast.show('Tu carrito está vacío.', 'info');
+      return;
+    }
 
     if (!this.auth.isLoggedIn()) {
       this.router.navigate(['/login']);
@@ -69,6 +88,7 @@ export class FloatingCart {
         next:  () => this.proceedCheckout(),
         error: (err) => {
           console.error('Error setting active location:', err);
+          this.toast.show('No se pudo actualizar la dirección de entrega.', 'error');
           this.isCheckingOut.set(false);
         }
       });
@@ -82,6 +102,7 @@ export class FloatingCart {
     const loc = this.locations().find(l => l.addressType === selected)
               ?? this.locations().find(l => l.active)
               ?? this.locations()[0];
+
     if (loc) this.cartService.setActiveAddress(loc.streetAddress);
 
     this.cartService.checkout().subscribe({
@@ -89,11 +110,14 @@ export class FloatingCart {
         this.cartService.clearCart();
         this.cartService.closeCart();
         this.reservaExitosa.set(true);
+        this.toast.show('¡Reserve Complete!', 'success');
+        this.productsService.refresh();
         setTimeout(() => this.reservaExitosa.set(false), 4000);
         setTimeout(() => this.isCheckingOut.set(false), 3000);
       },
       error: (err) => {
         console.error('Error al reservar:', err);
+        this.toast.show('An Unexpected Error Try again later.', 'error');
         this.isCheckingOut.set(false);
       }
     });

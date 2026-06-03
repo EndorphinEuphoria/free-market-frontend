@@ -20,28 +20,34 @@ export class Cart {
     this.activeAddress.set(address);
   }
 
-  // Selectores públicos
+  
   items      = computed(() => this.state().items);
   totalItems = computed(() => this.items().reduce((acc, i) => acc + i.quantity, 0));
   totalPrice = computed(() => this.items().reduce((acc, i) => acc + i.price * i.quantity, 0));
 
-  addItem(product: { id: number; name: string; price: number; url: string }): void {
-    const items    = this.state().items;
-    const existing = items.find(i => i.idProduct === product.id);
-    if (existing) {
-      this.updateQuantity(product.id, existing.quantity + 1);
+  addItem(product: { id: number; name: string; price: number; url: string; stock: number }): void {
+  const items    = this.state().items;
+  const existing = items.find(i => i.idProduct === product.id);
+
+  if (existing) {
+    if (existing.quantity >= product.stock) {
       return;
     }
-    this.setState({
-      items: [...items, {
-        idProduct: product.id,
-        name:      product.name,
-        price:     product.price,
-        url:       product.url,
-        quantity:  1,
-      }]
-    });
+    this.updateQuantity(product.id, existing.quantity + 1);
+    return;
   }
+
+  this.setState({
+    items: [...items, {
+      idProduct: product.id,
+      name:      product.name,
+      price:     product.price,
+      url:       product.url,
+      quantity:  1,
+      stock:     product.stock, 
+    }]
+  });
+}
 
   removeItem(idProduct: number): void {
     this.setState({ items: this.state().items.filter(i => i.idProduct !== idProduct) });
