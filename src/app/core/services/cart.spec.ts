@@ -39,7 +39,7 @@ describe('Cart service', () => {
   });
 
   it('should add item to cart', () => {
-    service.addItem({ id: 1, name: 'Producto 1', price: 100, url: 'img.png' });
+    service.addItem({ id: 1, name: 'Producto 1', price: 100, url: 'img.png' ,stock:10});
     const items = service.items();
     expect(items.length).toBe(1);
     expect(items[0].idProduct).toBe(1);
@@ -47,34 +47,34 @@ describe('Cart service', () => {
   });
 
   it('should increase quantity if item already exists', () => {
-    service.addItem({ id: 1, name: 'Producto 1', price: 100, url: 'img.png' });
-    service.addItem({ id: 1, name: 'Producto 1', price: 100, url: 'img.png' });
+    service.addItem({ id: 1, name: 'Producto 1', price: 100, url: 'img.png',stock:10 });
+    service.addItem({ id: 1, name: 'Producto 1', price: 100, url: 'img.png',stock:10});
     const items = service.items();
     expect(items.length).toBe(1);
     expect(items[0].quantity).toBe(2);
   });
 
   it('should remove item', () => {
-    service.addItem({ id: 1, name: 'Producto 1', price: 100, url: 'img.png' });
+    service.addItem({ id: 1, name: 'Producto 1', price: 100, url: 'img.png',stock:10});
     service.removeItem(1);
     expect(service.items().length).toBe(0);
   });
 
   it('should update quantity', () => {
-    service.addItem({ id: 1, name: 'Producto 1', price: 100, url: 'img.png' });
+    service.addItem({ id: 1, name: 'Producto 1', price: 100, url: 'img.png',stock:10});
     service.updateQuantity(1, 5);
     expect(service.items()[0].quantity).toBe(5);
   });
 
   it('should remove item when quantity <= 0', () => {
-    service.addItem({ id: 1, name: 'Producto 1', price: 100, url: 'img.png' });
+    service.addItem({ id: 1, name: 'Producto 1', price: 100, url: 'img.png',stock:10});
     service.updateQuantity(1, 0);
     expect(service.items().length).toBe(0);
   });
 
   it('should calculate totals', () => {
-    service.addItem({ id: 1, name: 'A', price: 100, url: 'a' });
-    service.addItem({ id: 2, name: 'B', price: 200, url: 'b' });
+    service.addItem({ id: 1, name: 'A', price: 100, url: 'a',stock:10 });
+    service.addItem({ id: 2, name: 'B', price: 200, url: 'b' ,stock:10});
     service.updateQuantity(1, 2);
     service.updateQuantity(2, 1);
     expect(service.totalItems()).toBe(3);
@@ -82,7 +82,7 @@ describe('Cart service', () => {
   });
 
   it('should persist state in localStorage', () => {
-    service.addItem({ id: 1, name: 'Producto 1', price: 100, url: 'img.png' });
+    service.addItem({ id: 1, name: 'Producto 1', price: 100, url: 'img.png',stock:10});
     const raw = localStorage.getItem(STORAGE_KEY);
     expect(raw).toBeTruthy();
     const parsed: CartState = JSON.parse(raw!);
@@ -97,7 +97,7 @@ describe('Cart service', () => {
       btoa(JSON.stringify({ userId: 10 })) +
       '.signature'
     );
-    service.addItem({ id: 1, name: 'Producto 1', price: 100, url: 'img.png' });
+    service.addItem({ id: 1, name: 'Producto 1', price: 100, url: 'img.png',stock:10});
     service.checkout().subscribe();
 
     const req = httpMock.expectOne('http://localhost:8086/api-v1/reserve/createReserve');

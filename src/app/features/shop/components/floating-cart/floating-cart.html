@@ -31,7 +31,7 @@
           <div class="qty-controls">
             <button (click)="cartService.updateQuantity(item.idProduct, item.quantity - 1)">−</button>
             <span>{{ item.quantity }}</span>
-            <button (click)="cartService.updateQuantity(item.idProduct, item.quantity + 1)">+</button>
+            <button (click)="incrementItem(item)">+</button>
           </div>
         </div>
       </div>
