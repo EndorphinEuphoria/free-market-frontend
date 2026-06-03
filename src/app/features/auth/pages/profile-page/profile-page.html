@@ -1,11 +1,12 @@
 <div class="profile-wrapper">
   <div class="profile-container">
+
     <div class="profile-header">
       <h1 class="profile-title">Profile Settings</h1>
       <p class="profile-subtitle">Manage your account information and preferences</p>
     </div>
 
-    <!-- PERFIL -->
+    <!-- PERSONAL DETAILS -->
     <form [formGroup]="profileForm" (ngSubmit)="onSubmitProfile()">
       <section class="profile-section">
         <h2 class="section-title">Personal Details</h2>
@@ -15,7 +16,7 @@
             <input class="field-input" formControlName="username" type="text" placeholder="Your username" />
           </div>
           <div class="field-group">
-            <label class="field-label">Email Address <span class="field-hint">(dejar vacío para no cambiar)</span></label>
+            <label class="field-label">Email Address <span class="field-hint">(leave empty to keep current)</span></label>
             <input class="field-input" formControlName="email" type="email" placeholder="your@email.com" />
           </div>
           <div class="field-group">
@@ -29,7 +30,7 @@
             </select>
           </div>
           <div class="field-group">
-            <label class="field-label">New Password <span class="field-hint">(dejar vacío para no cambiar)</span></label>
+            <label class="field-label">New Password <span class="field-hint">(leave empty to keep current)</span></label>
             <input class="field-input" formControlName="password" type="password" placeholder="••••••••" />
           </div>
         </div>
@@ -44,71 +45,117 @@
         }
         <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
         <button type="submit" class="btn-save" [disabled]="isLoadingProfile()">
-          <span *ngIf="isLoadingProfile()" class="spinner-border spinner-border-sm me-2" role="status"></span>
+          <span *ngIf="isLoadingProfile()" class="spinner-border spinner-border-sm" role="status"></span>
           Save Changes
         </button>
       </div>
     </form>
 
     <div class="section-divider"></div>
+    @if (auth.currentUser()?.rol?.rolName === 'USER') {
+    <!-- DELIVERY ADDRESSES -->
+    <section class="profile-section">
+      <h2 class="section-title">Delivery Addresses</h2>
+      <p class="profile-subtitle">You can register up to 3 delivery addresses.</p>
 
-    <!-- UBICACIÓN -->
-    <form [formGroup]="locationForm" (ngSubmit)="onSubmitLocation()">
-      <section class="profile-section">
-        <h2 class="section-title">Delivery Address</h2>
-        <p class="profile-subtitle">
-          @if (hasLocation()) {
-            Tienes una dirección registrada. Puedes actualizarla aquí.
-          } @else {
-            No tienes dirección registrada. Agrégala para poder realizar compras.
-          }
-        </p>
+      <div class="addr-grid">
+        @for (slot of addressSlots; track slot.key) {
+          <div class="addr-card"
+               [class.addr-card--empty]="!slot.hasLocation()"
+               [class.addr-card--active]="slot.isActive()">
 
-        <div class="form-grid">
-          <div class="field-group">
-            <label class="field-label">Calle</label>
-            <input class="field-input" formControlName="street" type="text" placeholder="Ej: Av. Providencia" />
-          </div>
-          <div class="field-group">
-            <label class="field-label">Número</label>
-            <input class="field-input" formControlName="streetNumber" type="text" placeholder="Ej: 1234" />
-          </div>
-            <div class="field-group">
-              <label class="field-label">Comuna</label>
-              <select class="field-input" formControlName="comuna" [disabled]="!locationForm.get('region')?.value">
-                <option value="">
-                  {{ locationForm.get('region')?.value ? 'Selecciona una comuna' : 'Primero elige una región' }}
-                </option>
-                @for (comuna of comunasDisponibles; track comuna) {
-                  <option [value]="comuna">{{ comuna }}</option>
+            <!-- HEADER -->
+            <div class="addr-header">
+              <div class="addr-icon addr-icon--{{ slot.key | lowercase }}">
+                <i class="ti {{ slot.icon }}"></i>
+              </div>
+              <div class="addr-header-text">
+                <span class="addr-label">{{ slot.label }}</span>
+                @if (slot.isActive() && slot.hasLocation()) {
+                  <span class="addr-active-badge">Active</span>
+                } @else if (!slot.hasLocation()) {
+                  <span class="addr-sublabel">No address</span>
                 }
-              </select>
+              </div>
             </div>
-            <div class="field-group">
-              <label class="field-label">Región</label>
-              <select class="field-input" formControlName="region" (change)="onRegionChange()">
-                <option value="">Selecciona una región</option>
-                @for (region of regiones; track region) {
-                  <option [value]="region">{{ region }}</option>
-                }
-              </select>
-            </div>
-        </div>
-      </section>
 
-      <div class="profile-actions">
-        @if (isSavedLocation()) {
-          <div class="save-success">✓ Dirección guardada exitosamente</div>
+            <!-- EMPTY STATE -->
+            @if (!slot.hasLocation()) {
+              <div class="addr-empty-body">
+                <i class="ti ti-map-pin-off addr-empty-icon"></i>
+                <p class="addr-empty-text">No address registered here yet</p>
+              </div>
+            }
+
+            <!-- FORM -->
+            <form [formGroup]="slot.form" (ngSubmit)="onSubmitLocation(slot)">
+              <div class="addr-body">
+                <div class="addr-field">
+                  <label class="addr-field-label">Street</label>
+                  <input class="addr-input" formControlName="street" type="text" placeholder="e.g. Av. Providencia" />
+                </div>
+                <div class="addr-field">
+                  <label class="addr-field-label">Number</label>
+                  <input class="addr-input" formControlName="streetNumber" type="text" placeholder="e.g. 1234" />
+                </div>
+                <div class="addr-field">
+                  <label class="addr-field-label">Region</label>
+                  <select class="addr-input" formControlName="region" (change)="onRegionChange(slot)">
+                    <option value="">Select a region</option>
+                    @for (region of regiones; track region) {
+                      <option [value]="region">{{ region }}</option>
+                    }
+                  </select>
+                </div>
+                <div class="addr-field">
+                  <label class="addr-field-label">Commune</label>
+                  <select class="addr-input" formControlName="comuna"
+                          [attr.disabled]="!slot.form.get('region')?.value || null">
+                    <option value="">
+                      {{ slot.form.get('region')?.value ? 'Select a commune' : 'Select a region first' }}
+                    </option>
+                    @for (comuna of getComunasDisponibles(slot); track comuna) {
+                      <option [value]="comuna">{{ comuna }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+
+              @if (slot.isSaved()) {
+                <div class="addr-feedback addr-feedback--success">✓ Address saved successfully</div>
+              }
+              @if (slot.error()) {
+                <div class="addr-feedback addr-feedback--error">{{ slot.error() }}</div>
+              }
+
+              <div class="addr-footer">
+                @if (slot.hasLocation()) {
+                  <button type="submit" class="addr-btn-primary"
+                          [disabled]="slot.isLoading() || slot.form.invalid">
+                    <span *ngIf="slot.isLoading()" class="spinner-border spinner-border-sm" role="status"></span>
+                    Update
+                  </button>
+                  <button type="button" class="addr-btn-danger"
+                          [disabled]="slot.isDeleting()"
+                          (click)="onDeleteLocation(slot)">
+                    <span *ngIf="slot.isDeleting()" class="spinner-border spinner-border-sm" role="status"></span>
+                    <ng-container *ngIf="!slot.isDeleting()">Delete</ng-container>
+                  </button>
+                } @else {
+                  <button type="submit" class="addr-btn-primary"
+                          [disabled]="slot.isLoading() || slot.form.invalid">
+                    <span *ngIf="slot.isLoading()" class="spinner-border spinner-border-sm" role="status"></span>
+                    <i *ngIf="!slot.isLoading()" class="ti ti-plus"></i>
+                    Add address
+                  </button>
+                }
+              </div>
+            </form>
+
+          </div>
         }
-        @if (errorLocation()) {
-          <div class="save-error">{{ errorLocation() }}</div>
-        }
-        <button type="submit" class="btn-save" [disabled]="isLoadingLocation() || locationForm.invalid">
-          <span *ngIf="isLoadingLocation()" class="spinner-border spinner-border-sm me-2" role="status"></span>
-          {{ hasLocation() ? 'Update Address' : 'Save Address' }}
-        </button>
       </div>
-    </form>
-
+    </section>
+  }
   </div>
 </div>

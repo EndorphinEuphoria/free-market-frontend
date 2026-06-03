@@ -202,6 +202,51 @@
   border-bottom-color: #252b42;
 }
 
+.orders-btn-report {
+  padding: 4px 12px;
+  border: 1px solid #fcd34d;
+  border-radius: 6px;
+  background: #fffbeb;
+  color: #b45309;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.orders-status--reported {
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+
+.orders-report-status {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.orders-report-status--abierto     { background: #fef9e7; color: #b7860b; }
+.orders-report-status--en_revision { background: #eff6ff; color: #1d4ed8; }
+.orders-report-status--resuelto    { background: #e8f5f1; color: #0f6e56; }
+.orders-report-status--cerrado     { background: #f3f4f6; color: #6b7280; }
+
+/* Admin note inline */
+.orders-report-note {
+  display: inline-block;
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+  color: #374151;
+  font-size: 0.82rem;
+}
+
+.orders-btn-report:hover    { background: #fef3c7; }
+.orders-btn-report:disabled { opacity: 0.5; cursor: not-allowed; }
 .orders-status--en_camino  { background: #fef9e7; color: #b7860b; }
 .orders-status--entregado  { background: #e8f5f1; color: #0f6e56; }
 .orders-status--cancelado  { background: #fef2f2; color: #b91c1c; }

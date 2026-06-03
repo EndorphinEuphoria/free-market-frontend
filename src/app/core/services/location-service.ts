@@ -7,6 +7,7 @@ export interface LocationRequest {
   streetNumber: string;
   comuna: string;
   region: string;
+  addressType: string;
 }
 
 export interface LocationResponse {
@@ -20,21 +21,25 @@ export interface LocationResponse {
   regionNombre: string;
 }
 
-export interface LocationresponseForId {
+export interface LocationResponseForId {
   streetAddress: string;
   comunaNombre: string;
   regionNombre: string;
+  addressType: string;
+  active: boolean;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class LocationService {
   private readonly http = inject(HttpClient);
   private readonly API = 'http://localhost:8086/api-v1/location';
 
-  getLocation(userId: number): Observable<LocationresponseForId> {
-    return this.http.get<LocationresponseForId>(`${this.API}/getLocation/${userId}`);
+  getLocation(userId: number): Observable<LocationResponseForId> {
+    return this.http.get<LocationResponseForId>(`${this.API}/getLocation/${userId}`);
+  }
+
+  getAllLocations(userId: number): Observable<LocationResponseForId[]> {
+    return this.http.get<LocationResponseForId[]>(`${this.API}/getLocations/${userId}`);
   }
 
   createLocation(request: LocationRequest): Observable<LocationResponse> {
@@ -42,6 +47,18 @@ export class LocationService {
   }
 
   updateLocation(request: LocationRequest): Observable<LocationResponse> {
-    return this.http.put<LocationResponse>(`${this.API}/updateLocation`, request)
+    return this.http.put<LocationResponse>(`${this.API}/updateLocation`, request);
+  }
+
+  deleteLocation(addressType: string): Observable<void> {
+    return this.http.delete<void>(`${this.API}/deleteLocation`, {
+      params: { addressType }
+    });
+  }
+
+  setActiveLocation(addressType: string): Observable<void> {
+    return this.http.patch<void>(`${this.API}/setActive`, null, {
+      params: { addressType }
+    });
   }
 }

@@ -1,0 +1,65 @@
+<div class="rm-overlay" (click)="close()"></div>
+
+<div class="rm-card" role="dialog" aria-modal="true" aria-labelledby="rm-title">
+
+  <div class="rm-header">
+    <h2 class="rm-title" id="rm-title">Report an issue</h2>
+    <p class="rm-subtitle">Order #{{ idReserva }}</p>
+    <button class="rm-close" (click)="close()" aria-label="Close">✕</button>
+  </div>
+
+  <div class="rm-body">
+
+    <label class="rm-label" for="rm-reason">
+      Reason <span class="rm-required">*</span>
+    </label>
+    <select
+      id="rm-reason"
+      class="rm-select"
+      [value]="reason()"
+      (change)="reason.set($any($event.target).value)">
+      <option value="" disabled>Select a reason...</option>
+      @for (r of reasons; track r.value) {
+        <option [value]="r.value">{{ r.label }}</option>
+      }
+    </select>
+
+    <label class="rm-label" for="rm-desc">
+      Description <span class="rm-required">*</span>
+    </label>
+    <textarea
+      id="rm-desc"
+      class="rm-textarea"
+      rows="4"
+      placeholder="Describe the issue in detail..."
+      [value]="description()"
+      (input)="description.set($any($event.target).value)">
+    </textarea>
+
+    <label class="rm-label" for="rm-img">
+      Attach image <span class="rm-optional">(optional)</span>
+    </label>
+    <input
+      id="rm-img"
+      type="file"
+      accept="image/*"
+      class="rm-file"
+      (change)="onFileChange($event)"
+    />
+
+    @if (imageBase64()) {
+      <p class="rm-img-ok">✓ Image attached</p>
+    }
+
+  </div>
+
+  <div class="rm-footer">
+    <button class="rm-btn-cancel" (click)="close()" [disabled]="submitting()">
+      Cancel
+    </button>
+    <button class="rm-btn-submit" (click)="submit()" [disabled]="submitting()">
+      {{ submitting() ? 'Sending...' : 'Submit report' }}
+    </button>
+  </div>
+
+</div>

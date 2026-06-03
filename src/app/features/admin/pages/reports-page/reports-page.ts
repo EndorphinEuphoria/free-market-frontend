@@ -1,26 +1,14 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DatePipe,LowerCasePipe } from '@angular/common';
 import { AdminService, User } from '../../../../core/services/admin';
-import { DeliveryResponse, DeliveryService } from '../../../../core/services/delivery.service';
+import { DeliveryResponse, DeliveryService,DeliveryReportResponse } from '../../../../core/services/delivery.service';
 import { AdminNavbar } from '../../components/admin-navbar/admin-navbar';
 import { ToastService } from '../../../../core/services/toast-service';
 import { Toast } from '../../../shop/components/toast/toast';
 
-export interface DeliveryReport {
-  idReport: number;
-  idDelivery: number;
-  idUsuario: number;
-  reason: string;
-  description: string;
-  status: string;
-  adminNote: string | null;
-  imageBase64: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
 
 export interface ReportViewModel {
-  report: DeliveryReport;
+  report: DeliveryReportResponse;
   delivery: DeliveryResponse | null;
   reporter: User | null;
   courier: User | null;
@@ -36,7 +24,7 @@ export class ReportsPage implements OnInit {
   private deliveryService = inject(DeliveryService);
   private adminService    = inject(AdminService);
   private toast = inject(ToastService);
-  reports    = signal<DeliveryReport[]>([]);
+  reports    = signal<DeliveryReportResponse[]>([]);
   deliveries = signal<DeliveryResponse[]>([]);
   users      = signal<User[]>([]);
   loading    = signal(true);
@@ -69,25 +57,25 @@ export class ReportsPage implements OnInit {
     this.loadAll();
   }
 
-  loadAll() {
-    this.loading.set(true);
+loadAll() {
+  this.loading.set(true);
 
-    this.deliveryService.getAllReports().subscribe({
-      next: reports => {
-        this.reports.set(reports);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false)
-    });
+  this.deliveryService.getAllReports().subscribe({
+    next: reports => {
+      this.reports.set(reports);
+      this.loading.set(false);
+    },
+    error: () => this.loading.set(false)
+  });
 
-    this.deliveryService.getAllDeliveries().subscribe({
-      next: d => this.deliveries.set(d)
-    });
+  this.deliveryService.getAllDeliveries().subscribe({
+    next: d => this.deliveries.set(d)
+  });
 
-    this.adminService.getAllUsers().subscribe({
-      next: u => this.users.set(u)
-    });
-  }
+  this.adminService.getAllUsers().subscribe({
+    next: u => this.users.set(u)
+  });
+}
 
   openDetail(vm: ReportViewModel) {
     this.adminNoteInput.set(vm.report.adminNote ?? '');
@@ -113,12 +101,17 @@ export class ReportsPage implements OnInit {
         list.map(r => r.idReport === idReport ? { ...r, ...updated } : r)
       );
       this.updatingId.set(null);
+      // Refresca el modal con los datos actualizados
       const vm = this.viewModels().find(v => v.report.idReport === idReport);
       if (vm) this.selectedReport.set(vm);
     },
-    error: () => this.updatingId.set(null)
+    error: () => {
+      this.toast.error('Failed to update report.');
+      this.updatingId.set(null);
+    }
   });
 }
+
 
   reasonLabel(reason: string): string {
     const map: Record<string, string> = {

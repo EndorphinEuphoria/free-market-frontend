@@ -26,6 +26,7 @@ export class App implements OnInit {
     '/admin/configuraciones', '/admin/productos',
     '/delivery','/delivery/entregas',
     '/delivery/:id','/forgot-password','/reset-password',
+    '/admin/reports'
   ];
 
   protected readonly title = signal('free-market');

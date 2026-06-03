@@ -1,17 +1,30 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Auth } from '../../../../core/services/auth';
-import { disabled } from '@angular/forms/signals';
 import { HttpClient } from '@angular/common/http';
-import { LocationService } from '../../../../core/services/location-service';
+import { LocationService, LocationResponseForId } from '../../../../core/services/location-service';
 
 export interface UpdateRequest {
   username?: string;
   email?: string;
   genre?: string;
   password?: string;
+}
+
+export interface AddressSlot {
+  key: string;
+  label: string;
+  icon: string;
+  form: FormGroup;
+  hasLocation: ReturnType<typeof signal<boolean>>;
+  isLoading: ReturnType<typeof signal<boolean>>;
+  isSaved: ReturnType<typeof signal<boolean>>;
+  isDeleting: ReturnType<typeof signal<boolean>>;
+  error: ReturnType<typeof signal<string | null>>;
+  streetAddress: ReturnType<typeof signal<string>>;
+  isActive: ReturnType<typeof signal<boolean>>;
 }
 
 export const REGIONES_COMUNAS: Record<string, string[]> = {
@@ -39,72 +52,101 @@ export const REGIONES_COMUNAS: Record<string, string[]> = {
   templateUrl: './profile-page.html',
   styleUrl: './profile-page.css',
 })
-export class ProfilePage {
-  private fb = inject(FormBuilder);
-  private router = inject(Router);
-  private auth = inject(Auth);
+export class ProfilePage implements OnInit {
+  private fb              = inject(FormBuilder);
+  private router          = inject(Router);
+  protected auth            = inject(Auth);
   private locationService = inject(LocationService);
-  private http = inject(HttpClient)
+  private http            = inject(HttpClient);
+
   readonly regiones = Object.keys(REGIONES_COMUNAS);
 
   profileForm!: FormGroup;
-  locationForm!: FormGroup;
+  addressSlots: AddressSlot[] = [];
 
   isLoadingProfile = signal(false);
-  isLoadingLocation = signal(false);
-  isSavedProfile = signal(false);
-  isSavedLocation = signal(false);
-  errorProfile = signal<string | null>(null);
-  errorLocation = signal<string | null>(null);
+  isSavedProfile   = signal(false);
+  errorProfile     = signal<string | null>(null);
 
-  hasLocation = signal(false);
+  private buildSlot(key: string, label: string, icon: string): AddressSlot {
+    return {
+      key,
+      label,
+      icon,
+      form: this.fb.group({
+        street:       ['', Validators.required],
+        streetNumber: ['', Validators.required],
+        region:       ['', Validators.required],
+        comuna:       ['', Validators.required],
+      }),
+      hasLocation:   signal(false),
+      isLoading:     signal(false),
+      isSaved:       signal(false),
+      isDeleting:    signal(false),
+      error:         signal(null),
+      streetAddress: signal(''),
+      isActive:      signal(false),
+    };
+  }
 
-  ngOnInit() {
+  ngOnInit(): void {
     const user = this.auth.currentUser();
 
     this.profileForm = this.fb.group({
       username: [user?.username ?? '', Validators.required],
-      email: ['', [Validators.email]],
-      genre: [''],
-      password: ['']
+      email:    ['', [Validators.email]],
+      genre:    [''],
+      password: [''],
     });
 
-    this.locationForm = this.fb.group({
-      street: ['', Validators.required],
-      streetNumber: ['', Validators.required],
-      comuna: ['', Validators.required],
-      region: ['', Validators.required]
-    });
+    this.addressSlots = [
+      this.buildSlot('HOME',  'Home',  'ti-home'),
+      this.buildSlot('WORK',  'Work',  'ti-building'),
+      this.buildSlot('OTHER', 'Other', 'ti-map-pin'),
+    ];
 
     if (user?.userId) {
-      this.locationService.getLocation(user.userId).subscribe({
-        next: (loc) => {
-          this.hasLocation.set(true);
-          // show only streetAdress, cause getLocation returns LocationResponseForId
-          this.locationForm.patchValue({
-            comuna: loc.comunaNombre,
-            region: loc.regionNombre
+      this.locationService.getAllLocations(user.userId).subscribe({
+        next: (locations: LocationResponseForId[]) => {
+          locations.forEach(loc => {
+            const slot = this.addressSlots.find(s => s.key === loc.addressType);
+            if (!slot) return;
+
+            slot.hasLocation.set(true);
+            slot.isActive.set(loc.active);
+            slot.streetAddress.set(loc.streetAddress);
+            slot.form.patchValue({ region: loc.regionNombre });
+
+            setTimeout(() => {
+              const firstPart = loc.streetAddress?.split(',')[0]?.trim() ?? '';
+              const lastSpaceIndex = firstPart.lastIndexOf(' ');
+              const street       = lastSpaceIndex > 0 ? firstPart.substring(0, lastSpaceIndex) : firstPart;
+              const streetNumber = lastSpaceIndex > 0 ? firstPart.substring(lastSpaceIndex + 1) : '';
+              slot.form.patchValue({ comuna: loc.comunaNombre, street, streetNumber });
+            }, 0);
           });
         },
-        error: () => this.hasLocation.set(false)
+        error: () => {}
       });
     }
   }
 
   onSubmitProfile(): void {
+    if (this.profileForm.invalid) return;
+
     this.errorProfile.set(null);
-    const val = this.profileForm.value;
+    const val  = this.profileForm.value;
     const user = this.auth.currentUser();
 
     const body: UpdateRequest = {};
     if (val.username && val.username !== user?.username) body.username = val.username;
-    if (val.email) body.email = val.email;
-    if (val.genre) body.genre = val.genre;
+    if (val.email)    body.email    = val.email;
+    if (val.genre)    body.genre    = val.genre;
     if (val.password) body.password = val.password;
 
     if (Object.keys(body).length === 0) {
       this.isSavedProfile.set(true);
-      setTimeout(() => this.isLoadingProfile.set(false), 3000);
+      setTimeout(() => this.isSavedProfile.set(false), 3000);
       return;
     }
 
@@ -117,35 +159,70 @@ export class ProfilePage {
         this.isSavedProfile.set(true);
         setTimeout(() => this.isSavedProfile.set(false), 3000);
       },
-      error: (err) => {
+      error: () => {
         this.isLoadingProfile.set(false);
         this.errorProfile.set('Error updating profile.');
       }
     });
   }
 
-  onSubmitLocation(): void {
-    if (this.locationForm.invalid) return;
-    this.errorLocation.set(null);
-    this.isLoadingLocation.set(true);
+  onSubmitLocation(slot: AddressSlot): void {
+    if (slot.form.invalid) return;
 
-    const request = this.locationForm.value;
-    console.log(request)
-    const action$ = this.hasLocation()
+    slot.error.set(null);
+    slot.isLoading.set(true);
+
+    const request = { ...slot.form.value, addressType: slot.key };
+
+    const action$ = slot.hasLocation()
       ? this.locationService.updateLocation(request)
       : this.locationService.createLocation(request);
 
     action$.subscribe({
+      next: (res) => {
+        slot.isLoading.set(false);
+        slot.hasLocation.set(true);
+        slot.streetAddress.set(res.streetAddress);
+        slot.isSaved.set(true);
+        setTimeout(() => slot.isSaved.set(false), 3000);
+      },
+      error: () => {
+        slot.isLoading.set(false);
+        slot.error.set('Address not found. Please verify the information.');
+      }
+    });
+  }
+
+  onDeleteLocation(slot: AddressSlot): void {
+    slot.isDeleting.set(true);
+    this.locationService.deleteLocation(slot.key).subscribe({
       next: () => {
-        this.isLoadingLocation.set(false);
-        this.hasLocation.set(true);
-        this.isSavedLocation.set(true);
-        setTimeout(() => this.isSavedLocation.set(false), 3000);
+        slot.isDeleting.set(false);
+        slot.hasLocation.set(false);
+        slot.isActive.set(false);
+        slot.streetAddress.set('');
+        slot.form.reset();
+        this.refreshActiveStates();
       },
-      error: (err) => {
-        this.isLoadingLocation.set(false);
-        this.errorLocation.set('Address not found. Please verify the entered information.');
+      error: () => {
+        slot.isDeleting.set(false);
+        slot.error.set('Error deleting address.');
+      }
+    });
+  }
+
+  private refreshActiveStates(): void {
+    const user = this.auth.currentUser();
+    if (!user?.userId) return;
+    this.locationService.getAllLocations(user.userId).subscribe({
+      next: (locations) => {
+        this.addressSlots.forEach(s => s.isActive.set(false));
+        locations.forEach(loc => {
+          const slot = this.addressSlots.find(s => s.key === loc.addressType);
+          if (slot) slot.isActive.set(loc.active);
+        });
       },
+      error: () => {}
     });
   }
 
@@ -156,13 +233,12 @@ export class ProfilePage {
     else this.router.navigate(['/home']);
   }
 
-    get comunasDisponibles(): string[] {
-    const region = this.locationForm?.get('region')?.value;
+  getComunasDisponibles(slot: AddressSlot): string[] {
+    const region = slot.form.get('region')?.value;
     return region ? (REGIONES_COMUNAS[region] ?? []) : [];
   }
 
-  onRegionChange(): void {
-    this.locationForm.get('comuna')?.setValue('');
+  onRegionChange(slot: AddressSlot): void {
+    slot.form.get('comuna')?.setValue('');
   }
-
 }
