@@ -7,30 +7,43 @@ import { vi, afterEach } from 'vitest';
 import { FloatingCart } from './floating-cart';
 import { Cart } from '../../../../core/services/cart';
 import { Auth } from '../../../../core/services/auth';
-import { LocationService } from '../../../../core/services/location-service';
+import { LocationService, LocationResponseForId } from '../../../../core/services/location-service';
 import { ClpFormatPipe } from '../../../../core/pipes/clp-format-pipe';
+
+const makeLocation = (overrides: Partial<LocationResponseForId> = {}): LocationResponseForId => ({
+  addressType:   'HOME',
+  streetAddress: 'Av. Siempre Viva 123',
+  comunaNombre:  'Santiago',
+  regionNombre:  'Metropolitana',
+  active:        true,
+  ...overrides,
+});
 
 describe('FloatingCart', () => {
   let fixture: ComponentFixture<FloatingCart>;
   let component: FloatingCart;
 
   let cartServiceMock: {
-    checkout:       ReturnType<typeof vi.fn>;
-    clearCart:      ReturnType<typeof vi.fn>;
-    closeCart:      ReturnType<typeof vi.fn>;
-    isOpen:         ReturnType<typeof vi.fn>;
-    totalItems:     ReturnType<typeof vi.fn>;
-    totalPrice:     ReturnType<typeof vi.fn>;
-    items:          ReturnType<typeof vi.fn>;
-    removeItem:     ReturnType<typeof vi.fn>;
-    updateQuantity: ReturnType<typeof vi.fn>;
+    checkout:         ReturnType<typeof vi.fn>;
+    clearCart:        ReturnType<typeof vi.fn>;
+    closeCart:        ReturnType<typeof vi.fn>;
+    isOpen:           ReturnType<typeof vi.fn>;
+    totalItems:       ReturnType<typeof vi.fn>;
+    totalPrice:       ReturnType<typeof vi.fn>;
+    items:            ReturnType<typeof vi.fn>;
+    removeItem:       ReturnType<typeof vi.fn>;
+    updateQuantity:   ReturnType<typeof vi.fn>;
+    setActiveAddress: ReturnType<typeof vi.fn>;
   };
   let authMock: {
     currentUser: ReturnType<typeof vi.fn>;
     isLoggedIn:  ReturnType<typeof vi.fn>;
   };
-  let locationServiceMock: { getLocation: ReturnType<typeof vi.fn> };
-  let routerMock:          { navigate:    ReturnType<typeof vi.fn> };
+  let locationServiceMock: {
+    getAllLocations:    ReturnType<typeof vi.fn>;
+    setActiveLocation: ReturnType<typeof vi.fn>;
+  };
+  let routerMock: { navigate: ReturnType<typeof vi.fn> };
 
   let currentUserSignal: ReturnType<typeof signal<{ userId: string } | null>>;
 
@@ -38,15 +51,16 @@ describe('FloatingCart', () => {
     currentUserSignal = signal<{ userId: string } | null>(null);
 
     cartServiceMock = {
-      checkout:       vi.fn().mockReturnValue(of({})),
-      clearCart:      vi.fn(),
-      closeCart:      vi.fn(),
-      isOpen:         vi.fn().mockReturnValue(false),
-      totalItems:     vi.fn().mockReturnValue(0),
-      totalPrice:     vi.fn().mockReturnValue(0),
-      items:          vi.fn().mockReturnValue([]),
-      removeItem:     vi.fn(),
-      updateQuantity: vi.fn(),
+      checkout:         vi.fn().mockReturnValue(of({})),
+      clearCart:        vi.fn(),
+      closeCart:        vi.fn(),
+      isOpen:           vi.fn().mockReturnValue(false),
+      totalItems:       vi.fn().mockReturnValue(0),
+      totalPrice:       vi.fn().mockReturnValue(0),
+      items:            vi.fn().mockReturnValue([]),
+      removeItem:       vi.fn(),
+      updateQuantity:   vi.fn(),
+      setActiveAddress: vi.fn(),
     };
 
     authMock = {
@@ -55,12 +69,11 @@ describe('FloatingCart', () => {
     };
 
     locationServiceMock = {
-      getLocation: vi.fn().mockReturnValue(of({})),
+      getAllLocations:    vi.fn().mockReturnValue(of([])),
+      setActiveLocation: vi.fn().mockReturnValue(of({})),
     };
 
-    routerMock = {
-      navigate: vi.fn(),
-    };
+    routerMock = { navigate: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [FloatingCart, ClpFormatPipe],
@@ -81,6 +94,8 @@ describe('FloatingCart', () => {
     vi.useRealTimers();
   });
 
+  // ─── Creación ─────────────────────────────────────────────────────────────
+
   describe('creación', () => {
     it('debe crear el componente', () => {
       expect(component).toBeTruthy();
@@ -95,42 +110,64 @@ describe('FloatingCart', () => {
     });
   });
 
+  // ─── effect de ubicación ──────────────────────────────────────────────────
+
   describe('effect de ubicación', () => {
-    it('debe llamar a getLocation cuando hay un usuario autenticado', () => {
+    it('debe llamar a getAllLocations cuando hay un usuario autenticado', () => {
       currentUserSignal.set({ userId: 'user-123' });
       fixture.detectChanges();
 
-      expect(locationServiceMock.getLocation).toHaveBeenCalledWith('user-123');
+      expect(locationServiceMock.getAllLocations).toHaveBeenCalledWith('user-123');
     });
 
-    it('debe setear hasLocation en true cuando getLocation tiene éxito', () => {
-      locationServiceMock.getLocation.mockReturnValue(of({}));
+    it('debe setear hasLocation en true cuando getAllLocations devuelve ubicaciones', () => {
+      locationServiceMock.getAllLocations.mockReturnValue(of([makeLocation()]));
       currentUserSignal.set({ userId: 'user-123' });
       fixture.detectChanges();
 
       expect(component.hasLocation()).toBe(true);
     });
 
-    it('debe setear hasLocation en false cuando getLocation falla', () => {
-      locationServiceMock.getLocation.mockReturnValue(throwError(() => new Error('sin ubicación')));
+    it('debe setear hasLocation en false cuando getAllLocations devuelve lista vacía', () => {
+      locationServiceMock.getAllLocations.mockReturnValue(of([]));
       currentUserSignal.set({ userId: 'user-123' });
       fixture.detectChanges();
 
       expect(component.hasLocation()).toBe(false);
     });
 
-    it('no debe llamar a getLocation si no hay usuario', () => {
+    it('debe setear hasLocation en false cuando getAllLocations falla', () => {
+      locationServiceMock.getAllLocations.mockReturnValue(throwError(() => new Error('sin ubicación')));
+      currentUserSignal.set({ userId: 'user-123' });
+      fixture.detectChanges();
+
+      expect(component.hasLocation()).toBe(false);
+    });
+
+    it('debe setear selectedAddress con la dirección activa', () => {
+      locationServiceMock.getAllLocations.mockReturnValue(of([
+        makeLocation({ addressType: 'HOME', active: true }),
+      ]));
+      currentUserSignal.set({ userId: 'user-123' });
+      fixture.detectChanges();
+
+      expect(component.selectedAddress()).toBe('HOME');
+    });
+
+    it('no debe llamar a getAllLocations si no hay usuario', () => {
       currentUserSignal.set(null);
       fixture.detectChanges();
 
-      expect(locationServiceMock.getLocation).not.toHaveBeenCalled();
+      expect(locationServiceMock.getAllLocations).not.toHaveBeenCalled();
     });
   });
 
-  
+  // ─── checkout() – usuario no autenticado ──────────────────────────────────
+
   describe('checkout() - usuario no autenticado', () => {
     beforeEach(() => {
       authMock.isLoggedIn.mockReturnValue(false);
+      cartServiceMock.items.mockReturnValue([{ idProduct: 1, quantity: 1 }]);
     });
 
     it('debe redirigir a /login si el usuario no está logueado', () => {
@@ -144,10 +181,13 @@ describe('FloatingCart', () => {
     });
   });
 
+  // ─── checkout() – sin ubicación ───────────────────────────────────────────
+
   describe('checkout() - sin ubicación', () => {
     beforeEach(() => {
       authMock.isLoggedIn.mockReturnValue(true);
       component.hasLocation.set(false);
+      cartServiceMock.items.mockReturnValue([{ idProduct: 1, quantity: 1 }]);
     });
 
     it('debe cerrar el carrito si no hay ubicación', () => {
@@ -166,11 +206,15 @@ describe('FloatingCart', () => {
     });
   });
 
+  // ─── checkout() – flujo exitoso ───────────────────────────────────────────
 
   describe('checkout() - flujo exitoso', () => {
     beforeEach(() => {
       authMock.isLoggedIn.mockReturnValue(true);
       component.hasLocation.set(true);
+      component.locations.set([makeLocation({ addressType: 'HOME', active: true })]);
+      component.selectedAddress.set('HOME');
+      cartServiceMock.items.mockReturnValue([{ idProduct: 1, quantity: 1 }]);
       cartServiceMock.checkout.mockReturnValue(of({}));
     });
 
@@ -212,13 +256,15 @@ describe('FloatingCart', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
-  // checkout(): error en el servidor
-  // ---------------------------------------------------------------------------
+  // ─── checkout() – error en el servidor ───────────────────────────────────
+
   describe('checkout() - error en el servidor', () => {
     beforeEach(() => {
       authMock.isLoggedIn.mockReturnValue(true);
       component.hasLocation.set(true);
+      component.locations.set([makeLocation({ addressType: 'HOME', active: true })]);
+      component.selectedAddress.set('HOME');
+      cartServiceMock.items.mockReturnValue([{ idProduct: 1, quantity: 1 }]);
       cartServiceMock.checkout.mockReturnValue(throwError(() => new Error('server error')));
     });
 
@@ -241,7 +287,8 @@ describe('FloatingCart', () => {
     });
   });
 
-  
+  // ─── Template ─────────────────────────────────────────────────────────────
+
   describe('template', () => {
     it('no debe mostrar el toast de reserva exitosa por defecto', () => {
       const toast = fixture.nativeElement.querySelector('.reserva-toast');
@@ -273,8 +320,6 @@ describe('FloatingCart', () => {
     });
 
     it('debe abrir el drawer cuando isOpen retorna true', async () => {
-      // isOpen debe retornar true desde antes de crear el componente
-      // para evitar ExpressionChangedAfterItHasBeenCheckedError
       cartServiceMock.isOpen.mockReturnValue(true);
 
       await TestBed.resetTestingModule();

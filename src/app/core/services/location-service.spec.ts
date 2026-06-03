@@ -1,13 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
-
-import { LocationService, LocationRequest, LocationResponse, LocationresponseForId } from './location-service';
+import { LocationService, LocationRequest, LocationResponse, LocationResponseForId } from './location-service';
 
 describe('LocationService', () => {
   let service: LocationService;
   let httpMock: HttpTestingController;
-
   const API = 'http://localhost:8086/api-v1/location';
 
   beforeEach(() => {
@@ -18,7 +16,6 @@ describe('LocationService', () => {
         provideHttpClientTesting(),
       ],
     });
-
     service = TestBed.inject(LocationService);
     httpMock = TestBed.inject(HttpTestingController);
   });
@@ -32,10 +29,12 @@ describe('LocationService', () => {
   });
 
   it('should get location by userId', () => {
-    const mock: LocationresponseForId = {
+    const mock: LocationResponseForId = {
       streetAddress: 'Av. Siempre Viva 123',
       comunaNombre: 'Santiago',
       regionNombre: 'Metropolitana',
+      addressType: 'CASA',   
+      active: true,          
     };
 
     service.getLocation(1).subscribe((data) => {
@@ -43,9 +42,7 @@ describe('LocationService', () => {
     });
 
     const req = httpMock.expectOne(`${API}/getLocation/1`);
-
     expect(req.request.method).toBe('GET');
-
     req.flush(mock);
   });
 
@@ -55,6 +52,7 @@ describe('LocationService', () => {
       streetNumber: '123',
       comuna: 'Providencia',
       region: 'Metropolitana',
+      addressType: 'CASA',  
     };
 
     const mockResponse: LocationResponse = {
@@ -73,10 +71,8 @@ describe('LocationService', () => {
     });
 
     const req = httpMock.expectOne(`${API}/createLocation`);
-
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(request);
-
     req.flush(mockResponse);
   });
 
@@ -86,6 +82,7 @@ describe('LocationService', () => {
       streetNumber: '999',
       comuna: 'Providencia',
       region: 'Metropolitana',
+      addressType: 'CASA',  
     };
 
     const mockResponse: LocationResponse = {
@@ -104,10 +101,8 @@ describe('LocationService', () => {
     });
 
     const req = httpMock.expectOne(`${API}/updateLocation`);
-
     expect(req.request.method).toBe('PUT');
     expect(req.request.body).toEqual(request);
-
     req.flush(mockResponse);
   });
 });

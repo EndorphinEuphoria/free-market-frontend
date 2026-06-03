@@ -1,13 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
-
 import { ReserveService, ReservaDetalleResponse } from './reserve-service';
 
 describe('ReserveService', () => {
   let service: ReserveService;
   let httpMock: HttpTestingController;
-
   const API = 'http://localhost:8086/api-v1/reserve';
 
   beforeEach(() => {
@@ -18,7 +16,6 @@ describe('ReserveService', () => {
         provideHttpClientTesting(),
       ],
     });
-
     service = TestBed.inject(ReserveService);
     httpMock = TestBed.inject(HttpTestingController);
   });
@@ -38,6 +35,7 @@ describe('ReserveService', () => {
         reserveDate: '2026-05-25',
         totalPrice: 20000,
         status: 'RESERVADO',
+        deliveryAddress: 'Av. Siempre Viva 123',
         products: [
           {
             idProduct: 1,
@@ -55,9 +53,7 @@ describe('ReserveService', () => {
     });
 
     const req = httpMock.expectOne(`${API}/user/10`);
-
     expect(req.request.method).toBe('GET');
-
     req.flush(mock);
   });
 
@@ -67,13 +63,11 @@ describe('ReserveService', () => {
     });
 
     const req = httpMock.expectOne(`${API}/cancel`);
-
     expect(req.request.method).toBe('PATCH');
     expect(req.request.body).toEqual({
       idReserve: 1,
       idUser: 10,
     });
-
     req.flush(null);
   });
 });
