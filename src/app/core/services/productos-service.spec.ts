@@ -137,27 +137,38 @@ describe('ProductosService', () => {
     });
   });
 
-  describe('getAllProducts', () => {
-    it('should GET active products', () => {
-      service.getAllProducts().subscribe((res: ProductoResponse[]) => {
-        expect(res).toEqual([mockProducto]);
-      });
-      const req = httpMock.expectOne(`${BASE}/get/active`);
-      expect(req.request.method).toBe('GET');
-      req.flush([mockProducto]);
+  describe('products$', () => {
+
+  it('should GET active products', () => {
+    service.products$.subscribe((res: ProductoResponse[]) => {
+      expect(res).toEqual([mockProducto]);
     });
 
-    it('should return empty array on error', () => {
-      service.getAllProducts().subscribe((res: ProductoResponse[]) => {
-        expect(res).toEqual([]);
-      });
-      httpMock.expectOne(`${BASE}/get/active`)
-        .flush('Error', { status: 500, statusText: 'Internal Server Error' });
-    });
-
-    it('should return empty array when no active products', () => {
-      service.getAllProducts().subscribe((res: ProductoResponse[]) => expect(res).toEqual([]));
-      httpMock.expectOne(`${BASE}/get/active`).flush([]);
-    });
+    const req = httpMock.expectOne(`${BASE}/get/active`);
+    expect(req.request.method).toBe('GET');
+    req.flush([mockProducto]);
   });
+
+  it('should return empty array on error', () => {
+    service.products$.subscribe((res: ProductoResponse[]) => {
+      expect(res).toEqual([]);
+    });
+
+    httpMock.expectOne(`${BASE}/get/active`)
+      .flush('Error', {
+        status: 500,
+        statusText: 'Internal Server Error'
+      });
+  });
+
+  it('should return empty array when no active products', () => {
+    service.products$.subscribe((res: ProductoResponse[]) => {
+      expect(res).toEqual([]);
+    });
+
+    httpMock.expectOne(`${BASE}/get/active`)
+      .flush([]);
+  });
+
+});
 });
